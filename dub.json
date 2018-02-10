@@ -3,6 +3,7 @@
 	"targetType": "library",
 	"license": "MIT",
 	"description": "The base library of the polyplex engine. (Heavily WIP, non-idiomatic)",
+	"version": "0.0.1",
 	"dependencies": {
 		"derelict-sdl2": "~>3.1.0-alpha.3",
 		"derelict-util": ">2.0.0",
