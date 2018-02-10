@@ -1,0 +1,13 @@
+{
+	"name": "pp",
+	"targetType": "library",
+	"license": "MIT",
+	"dependencies": {
+		"derelict-sdl2": "~>3.1.0-alpha.3",
+		"derelict-util": ">2.0.0",
+		"derelict-gl3": "~>2.0.0-beta",
+		"derelict-vulkan": ">0.0.10",
+		"derelict-il": ">0.0.0",
+		"colorize": "~>1.0.5"
+	}
+}
