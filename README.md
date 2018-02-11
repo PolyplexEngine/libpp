@@ -6,9 +6,9 @@ Polyplex is an XNA like framework and engine written in D. Polyplex supports Ope
 The framework is written to be easy to read and understand for people comming from an C#/XNA background.
 
 ## Using libpp
-Find libpp on the [dub database](https://code.dlang.org/packages/pp) for instructions on adding dub as a dependency.
+Find libpp on the [dub database](https://code.dlang.org/packages/pp) for instructions on adding libpp as a dependency to your dub project.
 
-Once added, you will need to create a set logging, choose a backend and create a window.
+Once added, you will need to set logging levels, choose a backend and create a window.
 
 Example of simple polyplex application:
 ```d
