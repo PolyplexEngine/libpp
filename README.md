@@ -1,4 +1,4 @@
-![alt text][logo]
+[![alt text][logo]](https://github.com/PolyplexEngine/ppbranding)
 # Polyplex Main Library (libpp)
 Polyplex is an XNA like framework and engine written in D. Polyplex supports OpenGL and will in the future support Vulkan.
 
@@ -70,4 +70,4 @@ Notice, the library is written in what would be considered non-idiomatic D.
 A styleguide will be drafted at some point and the code will be cleaned up once it's in a more functional state.
 
 
-[logo]: https://github.com/PolyplexEngine/ppbranding/blob/master/polyplex3.jpg
+[logo]: https://github.com/PolyplexEngine/ppbranding/blob/master/pptxtf.jpg
