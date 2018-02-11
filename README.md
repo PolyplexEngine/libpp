@@ -50,7 +50,7 @@ class Game1 : Game {
   //Update is run before draw in the game loop.
   public override void Update() {
     // Quit game if Q is pressed.
-    if (Input.IsKeyDown(KeyCode.Q) this.Quit();
+    if (Input.IsKeyDown(KeyCode.Q)) this.Quit();
     
     //FPS counter as window title.
     Window.Title = "FPS: " ~ to!string(AverageFPS);
