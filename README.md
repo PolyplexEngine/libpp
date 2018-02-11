@@ -31,6 +31,8 @@ void main(string[] args) {
   // 2. bind the new prefered graphics backend.
   ChosenBackend = GraphicsBackend.OpenGL;
   InitLibraries();
+  Game my_game = new Game1();
+  my_game.Run();
 }
 
 class Game1 : Game {
