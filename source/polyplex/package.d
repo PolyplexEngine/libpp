@@ -8,6 +8,7 @@ import derelict.opengl;
 import polyplex.utils.logging;
 import std.stdio;
 import std.conv;
+static import std.file;
 
 public static GraphicsBackend ChosenBackend = GraphicsBackend.OpenGL;
 private static bool sdl_init = false;
@@ -20,15 +21,60 @@ public enum GraphicsBackend {
 	OpenGL
 }
 
+private string get_arch() {
+	version(X86) return "i386";
+	version(X86_64) return "amd64";
+	version(ARM) return "arm";
+	version(AArch64) return "arm64";
+}
+
+private string get_system_lib(string libname, bool s = true) {
+	string lstr = "libs/"~get_arch()~"/lib"~libname~".so";
+
+	string plt = "linux/bsd";
+	version(Windows) {
+		lstr = "libs/"~get_arch()~"/"~libname~".dll";
+		plt = "win32";
+	}
+	
+	version(FreeBSD) {
+		lstr = "libs/"~get_arch()~"/lib"~libname~"-freebsd.so";
+		plt = "linux/bsd";
+	}
+	
+	version(OpenBSD) {
+		lstr = "libs/"~get_arch()~"/lib"~libname~"-openbsd.so";
+		plt = "linux/bsd";
+	}
+
+	version(OSX) {
+		lstr = "libs/"~get_arch()~"/lib"~libname~".dylib";
+		plt = "darwin/osx";
+	}
+	Logger.Info("Binding library {0}: [{1} on {2}] from {3}", libname, plt, get_arch(), lstr);
+	return lstr;
+}
+
 /*
 	InitLibraries loads the Derelict libraries for Vulkan, SDL and OpenGL
 */
 public void InitLibraries() {
 	if (!sdl_init) {
-		DerelictSDL2.load();
-		DerelictSDL2Image.load();
-		DerelictSDL2Mixer.load();
-		DerelictSDL2ttf.load();
+		if (std.file.exists("libs/")) {
+			// Load bundled libraries.
+			Logger.Info("Binding to runtime libraries...");
+			DerelictSDL2.load(get_system_lib("SDL2"));
+			DerelictSDL2Image.load(get_system_lib("SDL2_image"));
+			DerelictSDL2Mixer.load(get_system_lib("SDL2_mixer"));
+			DerelictSDL2ttf.load(get_system_lib("SDL2_ttf"));
+		} else {
+			// Load system libraries
+			Logger.Info("Binding to system libraries....");
+			DerelictSDL2.load();
+			DerelictSDL2Image.load();
+			DerelictSDL2Mixer.load();
+			DerelictSDL2ttf.load();
+		}
 		SDL_version linked;
 		SDL_version compiled;
 		SDL_GetVersion(&linked);

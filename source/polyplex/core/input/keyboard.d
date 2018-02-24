@@ -1,6 +1,7 @@
 module polyplex.core.input.keyboard;
 import derelict.sdl2.sdl;
 import std.stdio;
+import std.conv;
 
 enum KeyCode {
 	KeyUnknown,
@@ -196,7 +197,12 @@ enum KeyCode {
 	KeyEject,
 	KeySleep,
 	KeyApp1,
-	KeyApp2
+	KeyApp2,
+
+	KeyUp = SDL_SCANCODE_UP,
+	KeyDown = SDL_SCANCODE_DOWN,
+	KeyLeft = SDL_SCANCODE_LEFT,
+	KeyRight = SDL_SCANCODE_RIGHT,
 }
 
 enum ModKey {
@@ -255,11 +261,16 @@ public class Keyboard {
 		if (mk in mkstates) return mkstates[mk]; 
 		return KeyState.Up;
 	}
+
 	public KeyState GetState(KeyCode kc) {
 		if (kc in kcstates) return kcstates[kc];
 		return KeyState.Up;
 	}
 	
+	public string KeyToString(KeyCode kc) {
+		const(char)* name = SDL_GetKeyName(cast(SDL_Keycode)kc);
+		return to!string(name);
+	}
 
 
 	public void Update(SDL_Event kev) {

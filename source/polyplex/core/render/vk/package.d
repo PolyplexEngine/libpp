@@ -12,6 +12,9 @@ import derelict.vulkan.vulkan;
 public import polyplex.core.render.vk.shader;
 
 public class VkRenderer : Renderer {
+
+	this(GameWindow parent) { super(parent); }
+	
 	public override void Init(SDL_Window* w) {
 		ApplicationInfo info = new ApplicationInfo("AAAA", "EEEEE", new Version(), new Version(), new Version());
 		InstanceCreateInfo cinfo = info.CreateInfo;
@@ -26,16 +29,15 @@ public class VkRenderer : Renderer {
 		
 	}
 
-	public override void SetViewport(Rectangle size) {
-
-	}
-
 	public override void SwapBuffers() {
 		
 	}
-
-	protected override void UpdateViewport(int width, int height) {
 		
+	public override @property bool VSync() {
+		return false;
+	}
+
+	public override @property void VSync(bool state) {
 	}
 
 	public override Shader CreateShader(ShaderCode code) {

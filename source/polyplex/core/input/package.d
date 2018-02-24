@@ -29,7 +29,7 @@ class InputHandler {
 	public bool IsKeyDown(KeyCode kc) { return keyboard.IsKeyDown(kc);}
 	public bool IsKeyDown(ModKey mk) { return keyboard.IsKeyDown(mk); }
 	public bool IsKeyUp(KeyCode kc) { return keyboard.IsKeyUp(kc); }
-	public bool IsKeyDown(ModKey mk) { return keyboard.IsKeyUp(mk); }
+	public bool IsKeyUp(ModKey mk) { return keyboard.IsKeyUp(mk); }
 
 	public KeyState GetState(KeyCode kc) { return keyboard.GetState(kc); }
 	public KeyState GetState(ModKey mk) { return keyboard.GetState(mk); }

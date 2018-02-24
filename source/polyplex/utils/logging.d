@@ -55,7 +55,7 @@ public class Logger {
 	/*T... impl.*/
 
 	public static void Debug(T...) (string message, T args) {
-		Logger.Log(message, args, LogType.Info);
+		Logger.Log(message, args, LogType.Debug);
 	}
 
 	public static void Info(T...) (string message, T args) {
@@ -97,9 +97,11 @@ public class Logger {
 			if (type == LogType.Fatal) stxt = stxt.color(fg.red);
 			if (type == LogType.Recover) stxt = stxt.color(fg.light_blue);
 			string txt = "<".color(fg.light_black) ~ stxt ~ ">".color(fg.light_black);
+			
 			cwriteln(txt, " ", Format(message, args));
 		}
 		if (type == LogType.Fatal) throw new Exception(Format(message, args));
+		
 	}
 
 }

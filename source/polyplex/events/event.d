@@ -3,7 +3,7 @@ import std.variant;
 
 alias EventHandler = void delegate(void* sender, void* data);
 
-public abstract class Event {
+public class Event {
 	private EventHandler[] handlers;
 	this() { }
 
@@ -40,8 +40,4 @@ public abstract class Event {
 		handlers.length -= remove;
 		return this;
 	}
-}
-
-public class BasicEvent : Event {
-	this() { super(); }
 }

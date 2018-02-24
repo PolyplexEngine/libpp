@@ -36,6 +36,13 @@ class VkShader : Shader {
 	public override void SetUniform(int location, Vector4i value) {
 
 	}
-	public override uint GetUniform(string name) { return 0; }
+	
+	public override uint GetUniform(string name) { return -1; }
+	
+	public override bool HasUniform(string name) {
+		auto u = GetUniform(name);
+		if (u == -1) return false;
+		return true;
+	}
 
 }

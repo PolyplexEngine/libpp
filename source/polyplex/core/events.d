@@ -11,8 +11,8 @@ public class GameEventSystem {
 
 	public @property InputHandler Input() { return input; }
 
-	public Event OnWindowSizeChanged = new BasicEvent();
-	public Event OnExitRequested = new BasicEvent();
+	public Event OnWindowSizeChanged = new Event();
+	public Event OnExitRequested = new Event();
 
 	this(InputHandler handler) {
 		this.input = handler;

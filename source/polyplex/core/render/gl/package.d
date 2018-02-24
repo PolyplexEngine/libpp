@@ -18,6 +18,8 @@ public class GlRenderer : Renderer {
 	private SDL_Window* win;
 	private SDL_GLContext context;
 
+	this(GameWindow parent) { super(parent); }
+
 	~this() {
 		SDL_GL_DeleteContext(context);
 		Logger.Log("Deleted OpenGL context.");
@@ -30,22 +32,39 @@ public class GlRenderer : Renderer {
 		if (context == null) throw new Error(to!string(SDL_GetError()));
 		int wd, hd;
 		SDL_GetWindowSize(w, &wd, &hd);
-		SetViewport(Rectangle(0, 0, wd, hd));
-		this.sprite_batch = new GlSpriteBatch();
+		GlSpriteBatch.InitializeSpritebatch();
+		Renderer r = cast(Renderer)this;
+		this.Batch = new GlSpriteBatch(r);
 		
-		Logger.Log("OpenGL version: {0}", to!string(glGetString(GL_VERSION)), LogType.Info);
+		//Default settings for sprite clamping and wrapping
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
+		Logger.Log("OpenGL version: {0}", to!string(glGetString(GL_VERSION)), LogType.Info);
+		glEnable (GL_BLEND);
+		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		//Crash if system has unsupported opengl version.
 		if (glver < GLVersion.gl30) throw new Error("Sorry, your graphics card does not support Open GL 3 or above.");
+		Logger.Log("OpenGL initialized...");
 	}
 	
+	public override @property bool VSync() {
+		int i = SDL_GL_GetSwapInterval();
+		if (i == 1) return true;
+		return false;
+	}
+
+	public override @property void VSync(bool state) {
+		if (state) SDL_GL_SetSwapInterval(1);
+		else SDL_GL_SetSwapInterval(0);
+	}
+
 	public override void ClearColor(Color color) {
-		glClearColor(color.Red, color.Green, color.Blue, color.Alpha);
+		glClearColor(color.Rf, color.Gf, color.Bf, color.Af);
 		glClear(GL_COLOR_BUFFER_BIT);
-	}
-	
-	protected override void UpdateViewport(int width, int height) {
-		glViewport(0, 0, width, height);
+		ClearDepth();
 	}
 
 	public override void ClearDepth() {

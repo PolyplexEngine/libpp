@@ -6,6 +6,7 @@ import polyplex.math;
 import std.stdio;
 import std.string : toStringz;
 
+
 class GLShader : Shader {
 	private GLuint shaderprogram;
 	private GLuint vertexshader;
@@ -38,6 +39,14 @@ class GLShader : Shader {
 		}
 		return attributes;
 	}
+
+	public override @property bool Attached() {
+		int i;
+		glGetIntegerv(GL_CURRENT_PROGRAM, &i);
+		if (i == shaderprogram) return true;
+		return false;
+	}
+
 	//Uniform stuff.
 	public override void SetUniform(int location, float value) { glUniform1f(cast(GLint)location, cast(GLfloat)value); }
 	public override void SetUniform(int location, Vector2 value) { glUniform2f(cast(GLint)location, cast(GLfloat)value.X, cast(GLfloat)value.Y); }
@@ -51,17 +60,40 @@ class GLShader : Shader {
 	public override void SetUniform(int location, Matrix3x3 value) { glUniformMatrix3fv(location, 1, GL_TRUE, value.value_ptr); }
 	public override void SetUniform(int location, Matrix4x4 value) { glUniformMatrix4fv(location, 1, GL_TRUE, value.value_ptr); }
 
+	/**
+		GetUniform gets the position of a uniform.
+	*/
 	public override uint GetUniform(string name) {
-		Attach();
+		bool wasAttached = true;
+		if (!Attached) {
+			wasAttached = false;
+			Attach();
+		}
 		uint u = glGetUniformLocation(shaderprogram, name.ptr);
-		Detach();
+		if (!wasAttached) Detach();
 		return u;
 	}
 
+	/**
+		HasUniform checks whenever the shader contains a unform with name "name"
+		Returns true if it exists, false otherwise.
+	*/
+	public override bool HasUniform(string name) {
+		auto u = GetUniform(name);
+		if (u == -1) return false;
+		return true;
+	}
+
+	/**
+		Attach attaches the shader.
+	*/
 	public override void Attach() {
 		glUseProgram(this.shaderprogram);
 	}
 
+	/**
+		Detatch detatches the shader. (Binds shader 0)
+	*/
 	public override void Detach() {
 		glUseProgram(0);
 	}

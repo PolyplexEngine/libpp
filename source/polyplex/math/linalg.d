@@ -1016,18 +1016,18 @@ struct Matrix(type, int rows_, int cols_) if((rows_ > 0) && (cols_ > 0)) {
         }
 
         /// Transposes the current matrix;
-        void transpose() {
-            matrix = transposed().matrix;
+        void Transpose() {
+            matrix = Transposed().matrix;
         }
 
         unittest {
             mat2 m2 = mat2(1.0f);
-            m2.transpose();
+            m2.Transpose();
             assert(m2.matrix == mat2(1.0f).matrix);
             m2.make_identity();
             assert(m2.matrix == [[1.0f, 0.0f],
                                  [0.0f, 1.0f]]);
-            m2.transpose();
+            m2.Transpose();
             assert(m2.matrix == [[1.0f, 0.0f],
                                  [0.0f, 1.0f]]);
             assert(m2.matrix == m2.identity.matrix);
@@ -1035,13 +1035,13 @@ struct Matrix(type, int rows_, int cols_) if((rows_ > 0) && (cols_ > 0)) {
             mat3 m3 = mat3(1.1f, 1.2f, 1.3f,
                            2.1f, 2.2f, 2.3f,
                            3.1f, 3.2f, 3.3f);
-            m3.transpose();
+            m3.Transpose();
             assert(m3.matrix == [[1.1f, 2.1f, 3.1f],
                                  [1.2f, 2.2f, 3.2f],
                                  [1.3f, 2.3f, 3.3f]]);
 
             mat4 m4 = mat4(2.0f);
-            m4.transpose();
+            m4.Transpose();
             assert(m4.matrix == mat4(2.0f).matrix);
             m4.make_identity();
             assert(m4.matrix == [[1.0f, 0.0f, 0.0f, 0.0f],
@@ -1054,7 +1054,7 @@ struct Matrix(type, int rows_, int cols_) if((rows_ > 0) && (cols_ > 0)) {
     }
 
     /// Returns a transposed copy of the matrix.
-    @property Matrix!(mt, cols, rows) transposed() const {
+    @property Matrix!(mt, cols, rows) Transposed() const {
         typeof(return) ret;
 
         foreach(r; TupleRange!(0, rows)) {

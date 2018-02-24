@@ -1,16 +1,20 @@
-module polyplex.core.render.gl.buffers;
+module polyplex.core.render.gl.objects;
+import polyplex.core.render.shapes;
+import polyplex.core.color;
+import polyplex.math;
+
 import derelict.sdl2.sdl;
 import derelict.opengl;
 import derelict.opengl.gl;
-import polyplex.core.color;
-import polyplex.core.render.shapes;
-import polyplex.math;
+import polyplex.utils.logging;
 import std.stdio;
+import std.conv;
 import std.format;
 
 enum DrawType {
 	LineStrip,
-	TriangleStrip
+	TriangleStrip,
+	Triangles
 }
 
 enum OptimizeMode {
@@ -18,16 +22,27 @@ enum OptimizeMode {
 	Mode2D
 }
 
+enum BufferMode {
+	Static,
+	Dynamic
+}
+
 class RenderObject {
 	private VAO vao;
 	private VBO vbo;
 	private IBO ibo;
 	private OptimizeMode optimize_for;
+	private BufferMode buff_mode;
+
+	public @property VBO* Vbo() { return &vbo; }
+	public @property VAO* Vao() { return &vao; }
+	public @property IBO* Ibo() { return &ibo; }
 
 	public @property int FirstSize() { return vbo.FirstSize; }
 
-	this(OptimizeMode optimize_for) {
+	this(OptimizeMode optimize_for, BufferMode mode) {
 		this.optimize_for = optimize_for;
+		this.buff_mode = mode;
 		vao = new VAO();
 	}
 
@@ -44,19 +59,24 @@ class RenderObject {
 		vao.Unbind();
 	}
 
-	public void Draw(DrawType t = DrawType.LineStrip) {
+	public void Draw(DrawType t = DrawType.LineStrip, int d_amnt = -1) {
+		if (d_amnt == -1) d_amnt = vbo.FirstSize; 
 		Bind();
 		if (this.optimize_for == OptimizeMode.Mode2D) {
 			//glDrawArrays is more optimal for 2D as there's less reuse of verticies.
 			if (t == DrawType.TriangleStrip) {
-				glDrawArrays(GL_TRIANGLE_STRIP, 0, vbo.FirstSize);
+				glDrawArrays(GL_TRIANGLE_STRIP, 0, d_amnt);
+			} else if (t == DrawType.Triangles) {
+				glDrawArrays(GL_TRIANGLES, 0, d_amnt);
 			} else {
-				glDrawArrays(GL_LINE_STRIP, 0, vbo.FirstSize);
+				glDrawArrays(GL_LINE_STRIP, 0, d_amnt);
 			}
 		} else {
 			//glDrawElements is more optimal for 3D as 3D contains reuse of vertex structures, etc.
 			if (t == DrawType.TriangleStrip) {
 				glDrawElements(GL_TRIANGLE_STRIP, cast(int)ibo.Indices.length, GL_UNSIGNED_INT, ibo.Indices.ptr);
+			} else if (t == DrawType.Triangles) {
+				glDrawElements(GL_TRIANGLES, cast(int)ibo.Indices.length, GL_UNSIGNED_INT, ibo.Indices.ptr);
 			} else {
 				glDrawElements(GL_LINE_STRIP, cast(int)ibo.Indices.length, GL_UNSIGNED_INT, ibo.Indices.ptr);
 			}
@@ -86,7 +106,7 @@ class RenderObject {
 
 	public void AddFloats(float[][] verts) {
 		if (vbo is null) {
-			vbo = new VBO();
+			vbo = new VBO(this.buff_mode);
 		}
 		vbo.AddVertices(verts);
 	}
@@ -124,6 +144,7 @@ class VAO {
 // Index Buffer Object contains indexes for the different models/etc.
 class IBO {
 	private GLuint id;
+	private BufferMode buff_mode;
 	private uint[] indices;
 
 	public @property uint Id() { return id; }
@@ -134,7 +155,16 @@ class IBO {
 	this() {
 		glGenBuffers(1, &id);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.length * uint.sizeof, indices.ptr, GL_DYNAMIC_DRAW);
+		this.buff_mode = BufferMode.Dynamic;
+	}
+
+	this(uint[] indices) {
+		this.indices = indices;
+		glGenBuffers(1, &id);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.length * uint.sizeof, indices.ptr, GL_STATIC_DRAW);
+		this.buff_mode = BufferMode.Static;
 	}
 }
 
@@ -151,21 +181,40 @@ class VBOVertices {
 
 	public this(float[][] verts) {
 		this.dimensions = cast(int)verts[0].length;
+		Add(verts);
+	}
+
+	public void Flush() {
+		this.Vertices.length = 0;
+	}
+
+	public void Add(float[][] verts) {
+		int c = cast(int)verts[0].length;
+		if (this.dimensions != c) throw new Exception("Mismatching dimension lengths of data! " ~ c.text ~ " does not fit in " ~ this.dimensions.text);
 		foreach(float[] fc; verts) {
 			foreach (float f; fc) {
 				Vertices.length++;
 				Vertices[$-1] = cast(GLfloat)f;
 			}
 		}
-		//writeln(Vertices);
+	}
+
+	public void Add(float[] verts) {
+		int c = cast(int)verts.length;
+		if (c % this.dimensions != 0) throw new Exception("Mismatching dimension lengths of data! " ~ c.text ~ " does not fit in " ~ this.dimensions.text ~ " dimensions.");
+		foreach (float f; verts) {
+			Vertices.length++;
+			Vertices[$-1] = cast(GLfloat)f;
+		}
 	}
 }
 
 //Vertex Buffer Object, contains a buffer of vertices.
 class VBO {
-	VBOVertices[] verts;
-
 	private GLuint[] ids;
+	private BufferMode buff_mode;
+	private VBOVertices[] verts;
+
 	public @property uint[] Ids() { return cast(uint[])ids; }
 	public @property ref VBOVertices[] Vertices() { return verts; }
 
@@ -181,7 +230,9 @@ class VBO {
 		return s;
 	}
 
-	this() {}
+	this(BufferMode mode) {
+		this.buff_mode = mode;
+	}
 
 	~this() {
 		Clear();
@@ -193,22 +244,50 @@ class VBO {
 	}
 
 	void Generate() {
+		Generate(this.buff_mode);
+	}
+
+	void Generate(BufferMode buff) {
 		ids.length = verts.length;
 		glGenBuffers(cast(int)verts.length, ids.ptr);
-		//writeln("Generating ", verts.length, " buffers, at ", ids.ptr);
+		Logger.Debug("Generating {0} buffers @ {1}", verts.length, ids.ptr);
 		for (int i = 0; i < verts.length; i++) {
 			glBindBuffer(GL_ARRAY_BUFFER, ids[i]);
-			glBufferData(GL_ARRAY_BUFFER, (verts[i].Length) * GLfloat.sizeof, verts[i].Vertices.ptr, GL_STATIC_DRAW);
+			if (buff == BufferMode.Static) glBufferData(GL_ARRAY_BUFFER, (verts[i].Length) * GLfloat.sizeof, verts[i].Vertices.ptr, GL_STATIC_DRAW);
+			else glBufferData(GL_ARRAY_BUFFER, (verts[i].Length) * GLfloat.sizeof, verts[i].Vertices.ptr, GL_DYNAMIC_DRAW);
 			glVertexAttribPointer(cast(GLuint)i, verts[i].Dimensions, GL_FLOAT, GL_FALSE, 0, null);
-			//TODO: Logging
-			//writeln("Created attribs for ", ids[i], ":", i, " containing array: ", verts[i].Vertices, " with ", verts[i].VertexAmount, " triangles and with ", verts[i].Dimensions, " dimensions.");
+			Logger.Debug("Created attribs for {0}; i={1}; verts={2}; dims={3}", ids[i], i, verts[i].VertexAmount, verts[i].Dimensions);
 			glEnableVertexAttribArray(i);
 		}
 	}
 
+	void Update() {
+		if (this.buff_mode == BufferMode.Dynamic) {
+			for (int i = 0; i < verts.length; i++) {
+				glBindBuffer(GL_ARRAY_BUFFER, ids[i]);
+				glBufferData(GL_ARRAY_BUFFER, (verts[i].Length) * GLfloat.sizeof, verts[i].Vertices.ptr, GL_DYNAMIC_DRAW);
+				glVertexAttribPointer(cast(GLuint)i, verts[i].Dimensions, GL_FLOAT, GL_FALSE, 0, null);
+				glEnableVertexAttribArray(i);
+				//Logger.Debug("Updated attribs for {0}; i={1}; verts={2}; dims={3}", ids[i], i, verts[i].VertexAmount, verts[i].Dimensions);
+			}
+		}
+	}
+
 	void Regenerate() {
+		if (this.buff_mode == BufferMode.Dynamic) throw new Exception("Trying to regenerate a dynamic buffer! Try changing the data instead.");
+		Regenerate(this.buff_mode);
+	}
+
+	void Regenerate(BufferMode buff) {
 		Clear();
-		Generate();
+		Generate(buff);
+	}
+
+	void Flush() {
+		if (this.buff_mode != BufferMode.Dynamic) throw new Exception("Trying to flush a static buffer! Try regenerating the data instead.");
+		foreach (VBOVertices v; verts) {
+			v.Flush();
+		}
 	}
 
 	void Clear() {

@@ -2,68 +2,72 @@ module polyplex.core.content.textures;
 import derelict.sdl2.image;
 import derelict.sdl2.sdl;
 import polyplex.core.color;
+import polyplex.utils.logging;
+import polyplex.core.content.gl;
+import polyplex.core.render;
 
-public abstract class TextureImg {
-	private uint[][] pixels;
-	private int width;
-	private int height;
+public class TextureImg {
+	public SDL_Surface* Surface;
 
-	public @property uint[][] Pixels() { return pixels; }
-	public @property int Width() { return width; }
-	public @property int Height() { return height; }
+	/*public @property void* Pixels() { return surface.pixels; }
+	public @property int Width() { return surface.w; }
+	public @property int Height() { return surface.h; }*/
 
-	this(Color[][] colordata) {
+	//TODO: Contributor, make capability of adding own pixel data?
+	//TODO: Contributor, add capability of editing pixels?
+
+	/*this(Color[][] colordata) {
 		this.width = cast(int)(colordata[0].length);
 		this.height = cast(int)colordata.length;
 		int i = 0;
+		uint[][] pixels;
 		for (int y = 0; y < colordata.length; y++) {
 			for (int x = 0; x < colordata[y].length; x++) {
-				this.pixels.length++;
-				this.pixels[i].length += 3;
-				this.pixels[i][0] = colordata[y][x].Red;
-				this.pixels[i][1] = colordata[y][x].Green;
-				this.pixels[i][2] = colordata[y][x].Blue;
+				pixels.length += 3;
+				pixels[][i+0] = colordata[y][x].Red;
+				pixels[][i+1] = colordata[y][x].Green;
+				pixels[][i+2] = colordata[y][x].Blue;
 				i++;
 			}
 		}
-	}
+		this.surface = new SDL_Surface(SDL_D_SurfaceFlags.SDL_PREALLOC, SDL_PIXELFORMAT_RGBA8888, colordata.length, colordata[0].length, 1, cast(void*)pixels, null,)
+		SDL_Surface()
+	}*/
 
 	this(SDL_Surface* input) {
-		//this.pixels = input.pixels;
-		this.width = input.w;
-		this.height = input.h;
+		this.Surface = input;
+	}
+
+	~this() {
+		SDL_FreeSurface(this.Surface);
 	}
 }
 
-public abstract class Texture {
+public static Texture2D LoadTexture2DTemp(string file) {
+	auto f = IMG_Load(file.ptr);
+	if (f is null) throw new Exception("Could not load " ~ file);
+	TextureImg img = new TextureImg(f);
+	return new GlTexture2D(img);
+}
+
+public abstract class Texture2D {
 	protected TextureImg image;
-
-
-	this(TextureImg input) {
-		this.image = input;
-	}
-}
-
-public class Texture2D : Texture {
 	private int width;
 	private int height;
 	public @property int Width() { return width; }
 	public @property int Height() { return height; }
+
+	this(TextureImg input) {
+		this.image = input;
+		this.width = input.Surface.w;
+		this.height = input.Surface.h;
+	}
 
 	this(int width, int height) {
 		this.width = width;
 		this.height = height;
-		super(null);
 	}
 
-	this(TextureImg input) {
-		super(input);
-	}
-}
-
-public class Texture3D : Texture {
-
-	this(TextureImg input) {
-		super(input);
-	}
+	public abstract void Attach(Shader s = null);
+	public abstract void Detach();
 }

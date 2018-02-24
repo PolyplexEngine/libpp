@@ -26,6 +26,8 @@ public class GameWindow {
 	public @property int Width() { return this.width; }
 	public @property int Height() { return this.height; }
 
+	public @property Renderer Backend() { return this.renderer; }
+
 	/*
 		Gets whenever the window is visible
 	*/
@@ -37,6 +39,13 @@ public class GameWindow {
 		return ((flags & SDL_WINDOW_RESIZABLE) > 0);
 	}
 	public @property void AllowResizing(bool allow) { SDL_SetWindowResizable(this.window, ToSDL(allow)); }
+
+	//Vertical Syncronization
+	public @property bool VSync() {
+		return renderer.VSync;
+	}
+	public @property void VSync(bool allow) {renderer.VSync = allow; }
+
 
 	//Borderless
 	public @property bool Borderless() {
@@ -139,7 +148,7 @@ public class GameWindow {
     void Show() {
 		if (polyplex.ChosenBackend == polyplex.GraphicsBackend.Vulkan) this.window = SDL_CreateWindow(inf.Name.dup.ptr, inf.Bounds.X, inf.Bounds.Y, inf.Bounds.Width, inf.Bounds.Height, SDL_WINDOW_VULKAN);
 		else this.window = SDL_CreateWindow(inf.Name.dup.ptr, inf.Bounds.X, inf.Bounds.Y, inf.Bounds.Width, inf.Bounds.Height, SDL_WINDOW_OPENGL);
-		this.renderer = CreateBackendRenderer();
+		this.renderer = CreateBackendRenderer(this);
 		this.renderer.Init(this.window);
 		if (this.window == null) {
 			destroy(this.window);

@@ -6,6 +6,8 @@ import polyplex.core.render.gl;
 import polyplex.core.render.vk;
 import polyplex.core.content;
 import polyplex.core.color;
+import polyplex.core.content;
+import polyplex.core.window;
 import polyplex.math;
 import derelict.sdl2.sdl;
 import polyplex.math;
@@ -13,37 +15,66 @@ import polyplex;
 import std.stdio;
 
 public class Renderer {
-	private int width;
-	private int height;
-	
-	protected SprBatch sprite_batch;
+	public SpriteBatch Batch;
+	public GameWindow Window;
 
-	public @property SprBatch SpriteBatch() { return this.sprite_batch; }
+	this(GameWindow parent) {
+		this.Window = parent;
+	}
+
 	public abstract void Init(SDL_Window* win);
 	public abstract void ClearColor(Color color);
 	public abstract void ClearDepth();
 	public abstract void SwapBuffers();
 	public abstract Shader CreateShader(ShaderCode code);
-	protected abstract void UpdateViewport(int width, int height);
 
-	public void SetViewport(Rectangle size) {
-		this.width = size.Width;
-		this.height = size.Height;
-		UpdateViewport(this.width, this.height);
-	}
-
-	public @property Matrix4x4 Project(float znear, float zfar) {
-		return Matrix4x4.Orthographic(0f, cast(float)this.width, cast(float)this.height, 0f, znear, zfar);
-	}
+	public abstract @property bool VSync();
+	public abstract @property void VSync(bool state);
 }
 
+public enum Blending {
+	Opqaue,
+	AlphaBlend,
+	NonPremultiplied,
+	Additive 
+}
 
-public class SprBatch {
-	public abstract void Begin(Camera2D camera);
+public enum Sampling {
+	AnisotropicClamp,
+	AnisotropicWrap,
+	LinearClamp,
+	LinearWrap,
+	PointClamp,
+	PointWrap
+}
+
+public enum SpriteSorting {
+	BackToFront,
+	Deferred,
+	FrontToBack,
+	Immediate,
+	Texture
+}
+/*
+public enum Stencil {
+	Default,
+	DepthRead,
+	None
+}*/
+
+public abstract class SpriteBatch {
+	public abstract void Begin();
+	public abstract void Begin(SpriteSorting sort_mode, Blending blend_state, Sampling sample_State, Shader s, Matrix4x4 matrix);
+	public abstract void Begin(SpriteSorting sort_mode, Blending blend_state, Sampling sample_State, Shader s, Camera camera);
+	public abstract void Draw(Texture2D texture, Rectangle pos, Rectangle cutout, Color color);
+	public abstract void Draw(Texture2D texture, Rectangle pos, Rectangle cutout, float rotation, Vector2 Origin, Color color, float zlayer = 0f);
+	public abstract void Flush();
 	public abstract void End();
 }
 
 public abstract class Shader {
+	public abstract @property bool Attached();
+
 	public abstract void Attach();
 	public abstract void Detach();
 	public abstract void SetUniform(int location, float value);
@@ -58,6 +89,7 @@ public abstract class Shader {
 	public abstract void SetUniform(int location, Matrix3x3 value);
 	public abstract void SetUniform(int location, Matrix4x4 value);
 	public abstract uint GetUniform(string name);
+	public abstract bool HasUniform(string name);
 
 }
 
@@ -97,7 +129,7 @@ class ShaderCode {
 	}
 }
 
-public Renderer CreateBackendRenderer() {
-	if (ChosenBackend == GraphicsBackend.Vulkan) return new VkRenderer();
-	return new GlRenderer();
+public Renderer CreateBackendRenderer(GameWindow parent) {
+	if (ChosenBackend == GraphicsBackend.Vulkan) return new VkRenderer(parent);
+	return new GlRenderer(parent);
 }
