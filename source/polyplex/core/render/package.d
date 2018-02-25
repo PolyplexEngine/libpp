@@ -62,12 +62,18 @@ public enum Stencil {
 	None
 }*/
 
+public enum SpriteFlip {
+	None = 0x0,
+	FlipVertical = 0x1,
+	FlipHorizontal = 0x2
+}
+
 public abstract class SpriteBatch {
 	public abstract void Begin();
 	public abstract void Begin(SpriteSorting sort_mode, Blending blend_state, Sampling sample_State, Shader s, Matrix4x4 matrix);
 	public abstract void Begin(SpriteSorting sort_mode, Blending blend_state, Sampling sample_State, Shader s, Camera camera);
-	public abstract void Draw(Texture2D texture, Rectangle pos, Rectangle cutout, Color color);
-	public abstract void Draw(Texture2D texture, Rectangle pos, Rectangle cutout, float rotation, Vector2 Origin, Color color, float zlayer = 0f);
+	public abstract void Draw(Texture2D texture, Rectangle pos, Rectangle cutout, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f);
+	public abstract void Draw(Texture2D texture, Rectangle pos, Rectangle cutout, float rotation, Vector2 Origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f);
 	public abstract void Flush();
 	public abstract void End();
 }

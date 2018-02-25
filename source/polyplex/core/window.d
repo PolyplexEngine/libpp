@@ -97,7 +97,7 @@ public class GameWindow {
 	public @property Rectangle Placement() {
 		int x, y;
 		SDL_GetWindowPosition(this.window, &x, &y);
-		return Rectangle(x, y, width, height);
+		return new Rectangle(x, y, width, height);
 	}
 
     this(WindowInfo info) {
@@ -123,7 +123,7 @@ public class GameWindow {
     }
 
 	void UpdateInfo() {
-		SDL_GetWindowSize(this.window, &width, &height);
+		SDL_GetWindowSize(this.window, &this.width, &this.height);
 	}
 
 	void Close() {

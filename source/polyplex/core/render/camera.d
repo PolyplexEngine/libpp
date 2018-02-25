@@ -65,10 +65,10 @@ public class Camera2D : Camera {
 
 	public override void Update() {
 		this.matrix = Matrix4x4.identity
+		.Translate(Vector3(-Position.X, -Position.Y, 0))
+		.RotateZ(this.Rotation)
 		.Scale(Zoom, Zoom, Zoom)
-		.Translate(Vector3(Origin.X/(Zoom), Origin.Y/(Zoom), -1))
-		.RotateZ(this.Rotation);
-		//.Translate(Vector3(-Position.X, -Position.Y, 0));
+		.Translate(Vector3(Origin.X, Origin.Y, -1));
 	}
 
 	public override Matrix4x4 Project(float width, float height) {

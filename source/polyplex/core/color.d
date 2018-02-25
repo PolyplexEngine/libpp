@@ -4721,14 +4721,14 @@ public class Color {
 	private Vector4i coldata;
 	public @property Vector4i GLColor() { return coldata; };
 
-	public @property int Red() { return coldata.X; }
-	public @property void Red(int r) { coldata.X = r; }
+	public @property int R() { return coldata.X; }
+	public @property void R(int r) { coldata.X = r; }
 
-	public @property int Green() { return coldata.Y; }
-	public @property void Green(int g) { coldata.Y = g; }
+	public @property int G() { return coldata.Y; }
+	public @property void G(int g) { coldata.Y = g; }
 
-	public @property int Blue() { return coldata.Z; }
-	public @property void Blue(int b) { coldata.Z = b; }
+	public @property int B() { return coldata.Z; }
+	public @property void B(int b) { coldata.Z = b; }
 
 	public @property int Alpha() { return coldata.W; }
 	public @property void Alpha(int a) { coldata.W = a; }

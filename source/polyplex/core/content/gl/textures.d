@@ -10,6 +10,8 @@ import polyplex.core.render.gl.shader;
 public class GlTexture2D : Texture2D {
 	private GLuint id;
 
+	private static int MAX_TEX_UNITS = -1;
+
 	this(TextureImg img) {
 		Logger.Debug("{0}", img.Surface);
 		super(img);
@@ -25,19 +27,28 @@ public class GlTexture2D : Texture2D {
 
 		glTexImage2D(GL_TEXTURE_2D, 0, mode, img.Surface.w, img.Surface.h, 0, mode, GL_UNSIGNED_BYTE, img.Surface.pixels);
 		Detach();
+
+		if (MAX_TEX_UNITS == -1) {
+			glGetIntegerv(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, &MAX_TEX_UNITS);
+			Logger.Info("Set max texture units to: {0}", MAX_TEX_UNITS);
+		}
 	}
 
 	~this() {
 		glDeleteTextures(1, &id);
 	}
 
-	public override void Attach(Shader s = null) {
+	public override void Attach(int attach_pos = 0, Shader s = null) {
 		if (s is null) {
 			glBindTexture(GL_TEXTURE_2D, id);
 			return;
 		}
 		if (!s.HasUniform("ppTexture")) throw new Exception("Texture2D requires ppTexture sampler2d uniform to attach to!");
-		glActiveTexture(GL_TEXTURE0);
+		int tpos = GL_TEXTURE0+attach_pos;
+
+		if (tpos > MAX_TEX_UNITS) tpos = MAX_TEX_UNITS;
+		if (tpos < GL_TEXTURE0) tpos = GL_TEXTURE0;
+		glActiveTexture(tpos);
 		glBindTexture(GL_TEXTURE_2D, id);
 	}
 

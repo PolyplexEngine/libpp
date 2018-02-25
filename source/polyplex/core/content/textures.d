@@ -43,12 +43,6 @@ public class TextureImg {
 	}
 }
 
-public static Texture2D LoadTexture2DTemp(string file) {
-	auto f = IMG_Load(file.ptr);
-	if (f is null) throw new Exception("Could not load " ~ file);
-	TextureImg img = new TextureImg(f);
-	return new GlTexture2D(img);
-}
 
 public abstract class Texture2D {
 	protected TextureImg image;
@@ -68,6 +62,6 @@ public abstract class Texture2D {
 		this.height = height;
 	}
 
-	public abstract void Attach(Shader s = null);
+	public abstract void Attach(int attach_pos = 0, Shader s = null);
 	public abstract void Detach();
 }

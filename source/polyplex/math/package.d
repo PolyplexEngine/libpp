@@ -1,4 +1,5 @@
 module polyplex.math;
+public import polyplex.math.rectangle;
 /**
 polyplex.math
 
@@ -265,7 +266,6 @@ alias linalg.Vector!(double, 4) Vector4d;
 alias linalg.Vector!(int, 2) Vector2i;
 alias linalg.Vector!(int, 3) Vector3i;
 alias linalg.Vector!(int, 4) Vector4i;
-alias rect.RectangleT!(int) Rectangle;
 
 alias linalg.Matrix!(float, 2, 2) Matrix2x2;
 alias linalg.Matrix!(float, 3, 3) Matrix3x3;

@@ -5,17 +5,14 @@ import polyplex.events;
 import std.stdio;
 
 public class GameEventSystem {
-	private InputHandler input;
 	private bool lastHandled;
 	private SDL_Event ev;
-
-	public @property InputHandler Input() { return input; }
 
 	public Event OnWindowSizeChanged = new Event();
 	public Event OnExitRequested = new Event();
 
-	this(InputHandler handler) {
-		this.input = handler;
+	this() {
+		Input.Init();
 	}
 
 	public void Update() {
@@ -31,7 +28,7 @@ public class GameEventSystem {
 				}
 			}
 
-			input.Update(ev);
+			Input.Update(ev);
 
 			//Update last handled.
 			lastHandled = false;

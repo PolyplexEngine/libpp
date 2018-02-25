@@ -95,18 +95,18 @@ void main(void) {
 
 	private void set_blend_state(Blending state) {
 		if (state == Blending.Additive) {
-			glBlendFunc (GL_SRC_ALPHA, GL_ONE);
 			glBlendFunc (GL_SRC_COLOR, GL_ONE);
+			glBlendFunc (GL_SRC_ALPHA, GL_ONE);
 			return;
 		}
 		if (state == Blending.AlphaBlend) {
-			glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 			glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+			glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 			return;
 		}
 		if (state == Blending.NonPremultiplied) {
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			glBlendFunc(GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			return;
 		}
 		glBlendFunc(GL_ONE, GL_ZERO);
@@ -177,6 +177,7 @@ void main(void) {
 		this.blend_state = blend_state;
 		this.view_project = matrix;
 		this.shader = s;
+		if (this.shader is null) this.shader = default_shader;
 		this.current_texture = null;
 		this.queued = 0;
 	}
@@ -208,7 +209,7 @@ void main(void) {
 
 	private void render() {
 		this.shader.Attach();
-		if (!(current_texture is null)) current_texture.Attach(this.shader);
+		if (!(current_texture is null)) current_texture.Attach(0, this.shader);
 		set_sampler_state(sample_state);
 		set_blend_state(blend_state);
 		this.shader.SetUniform(this.shader.GetUniform(uniform_prj_name), mult_matrices());
@@ -219,14 +220,14 @@ void main(void) {
 	/**
 		Draw draws a texture.
 	*/
-	public override void Draw(Texture2D texture, Rectangle pos, Rectangle cutout, Color color) {
-		Draw(texture, pos, cutout, 0f, Vector2(-1, -1), color);
+	public override void Draw(Texture2D texture, Rectangle pos, Rectangle cutout, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f) {
+		Draw(texture, pos, cutout, 0f, Vector2(-1, -1), color, flip, zlayer);
 	}
 
 	/**
 		Draw draws a texture.
 	*/
-	public override void Draw(Texture2D texture, Rectangle pos, Rectangle cutout, float rotation, Vector2 Origin, Color color, float zlayer = 0) {
+	public override void Draw(Texture2D texture, Rectangle pos, Rectangle cutout, float rotation, Vector2 Origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0) {
 		check_flush(texture);
 		float x1, y1;
 		float x2, y2;
@@ -286,9 +287,21 @@ void main(void) {
 			y4 = pos.Y+pos.Height;
 		}
 		float u = cutout.X/cast(float)texture.Width;
+		float u2 = (cutout.X+cutout.Width)/cast(float)texture.Width;
+		if ((flip&SpriteFlip.FlipVertical)>0) {
+			float ux = u;
+			u = u2;
+			u2 = ux;
+
+		}
+
 		float v = cutout.Y/cast(float)texture.Height;
-		float u2 = cutout.Width/cast(float)texture.Width;
-		float v2 = cutout.Height/cast(float)texture.Height;
+		float v2 = (cutout.Y+cutout.Height)/cast(float)texture.Height;
+		if ((flip&SpriteFlip.FlipHorizontal)>0) {
+			float vx = v;
+			v = v2;
+			v2 = vx;
+		}
 
 		add_vertex(x1, y1, zlayer, color.Rf(), color.Gf(), color.Bf(), color.Af(), u, v); // TOP LEFT
 		add_vertex(x2, y2, zlayer, color.Rf(), color.Gf(), color.Bf(), color.Af(), u2, v), // TOP RIGHT

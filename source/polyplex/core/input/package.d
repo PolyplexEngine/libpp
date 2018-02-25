@@ -13,7 +13,31 @@ enum InputType {
 	Mouse
 }
 
-class InputHandler {
+public class Input {
+	private static InputHandler handler;
+
+	public static void Init() {
+		handler = new InputHandler();
+	}
+
+	public static bool IsKeyDown(KeyCode kc) { return handler.IsKeyDown(kc);}
+	public static bool IsKeyDown(ModKey mk) { return handler.IsKeyDown(mk); }
+	public static bool IsKeyUp(KeyCode kc) { return handler.IsKeyUp(kc); }
+	public static bool IsKeyUp(ModKey mk) { return handler.IsKeyUp(mk); }
+
+	public static KeyState GetState(KeyCode kc) { return handler.GetState(kc); }
+	public static KeyState GetState(ModKey mk) { return handler.GetState(mk); }
+
+	public static void Update(SDL_Event ev) {
+		handler.Update(ev);
+	}
+
+	public static void Refresh() {
+		handler.Refresh();
+	}
+}
+
+public class InputHandler {
 	private Controller controller;
 	private Keyboard keyboard;
 	private Mouse mouse;

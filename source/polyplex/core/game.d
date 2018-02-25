@@ -5,6 +5,8 @@ import polyplex.core.window;
 import polyplex.core.render;
 import polyplex.core.input;
 import polyplex.core.events;
+import polyplex.core.content;
+import polyplex.utils.logging;
 import polyplex.events.event;
 import derelict.sdl2.sdl;
 
@@ -13,7 +15,7 @@ import  std.math,
         std.typecons;
 import std.stdio;
 
-public struct GameTime {
+public class GameTime {
 	private ulong ticks;
 
 	public @property ulong BaseValue() { return ticks; }
@@ -34,18 +36,22 @@ public struct GameTime {
 	}
 }
 
-public struct GameTimes {
-	public GameTime* TotalTime;
-	public GameTime* DeltaTime;
+public class GameTimes {
+
+	this(GameTime total, GameTime delta) {
+		TotalTime = total;
+		DeltaTime = delta;
+	}
+
+	public GameTime TotalTime;
+	public GameTime DeltaTime;
 }
 
 public abstract class Game {
     //Private properties
     private GameWindow window;
 	private GameEventSystem events;
-
 	private GameTimes times;
-
 	private static uint MAX_SAMPLES = 100;
 	private long[] samples;
 	private ulong start_frames = 0;
@@ -53,10 +59,11 @@ public abstract class Game {
 	private ulong last_frames = 0;
 	private double avg_fps = 0;
 
-	public Event OnWindowSizeChanged = new Event();
+	protected ContentManager Content;
 
-	public @property GameTime* TotalTime() { return times.TotalTime; }
-	public @property GameTime* DeltaTime() { return times.DeltaTime; }
+	public Event OnWindowSizeChanged = new Event();
+	public @property GameTime TotalTime() { return times.TotalTime; }
+	public @property GameTime DeltaTime() { return times.DeltaTime; }
 
 	public @property float FPS() {
 		if (delta_frames != 0) {
@@ -73,14 +80,13 @@ public abstract class Game {
 	}
 
 	protected @property GameWindow Window() { return window; }
-	protected @property InputHandler Input() { return events.Input; }
 	protected @property Renderer Drawing() { return window.Drawing; }
 
 	protected @property SpriteBatch sprite_batch() { return window.Drawing.Batch; }
 
 	this(WindowInfo inf) {
 		window = new GameWindow(inf);
-		events = new GameEventSystem(new InputHandler());
+		events = new GameEventSystem();
 	}
 
 	~this() {
@@ -95,12 +101,13 @@ public abstract class Game {
     private void do_update() {
 		//Preupdate before init, just in case some event functions are use there.
 		events.Update();
-		writeln("~~~ Init ~~~");
-		while (!window.Visible) {}
-		Init();
-		window.UpdateInfo();
-		writeln("~~~ Gameloop ~~~");
 
+		//Wait for window to open.
+		Logger.Debug("~~~ Init ~~~");
+		while (!window.Visible) {}
+
+		//Update window info.
+		window.UpdateInfo();
 		events.OnExitRequested += (void* sender, void* data) {
 			window.Close(); 
 		};
@@ -110,8 +117,11 @@ public abstract class Game {
 			OnWindowSizeChanged(sender, data);
 		};
 		
-		times = GameTimes(new GameTime(0), new GameTime(0));
+		times = new GameTimes(new GameTime(0), new GameTime(0));
 		int avg_c = 0;
+
+		Init();
+		Logger.Debug("~~~ Gameloop ~~~");
 		while (window.Visible) {
 			//FPS begin counting.
 			start_frames = SDL_GetTicks();
@@ -119,8 +129,8 @@ public abstract class Game {
 
 			//Do actual updating and drawing.
 			events.Update();
-			Update(&times);
-			Draw(&times);
+			Update(times);
+			Draw(times);
 
 			//Swap buffers.
 			window.SwapBuffers();
@@ -149,7 +159,7 @@ public abstract class Game {
 			t /= MAX_SAMPLES;
 			avg_fps = t;
 		}
-		writeln("~~~ GAME ENDED ~~~\nHave a nice day! c:");
+		Logger.Success("~~~ GAME ENDED ~~~\nHave a nice day! c:");
     }
 
 	public void Quit() {
@@ -157,7 +167,7 @@ public abstract class Game {
 	}
 
 	public abstract void Init();
-	public abstract void Update(GameTimes* game_time);
-	public abstract void Draw(GameTimes* game_time);
+	public abstract void Update(GameTimes game_time);
+	public abstract void Draw(GameTimes game_time);
 }
 
