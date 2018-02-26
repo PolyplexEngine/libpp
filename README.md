@@ -19,6 +19,7 @@ import polyplex.core.input;
 import polyplex.core.game;
 import polyplex.core.color;
 import polyplex.core.render;
+import polyplex.core.content;
 import std.conv;
 
 void main(string[] args) {
@@ -45,7 +46,10 @@ class Game1 : Game {
   }
   
   //Init is run before the game loop starts.
-  public override void Init() { }
+  public override void Init() {
+    //Content manager that loads raw files instead of bundles (only form supported right now)
+    this.Content = new RawContentManager();
+  }
   
   //Update is run before draw in the game loop.
   public override void Update(GameTimes game_time) {
