@@ -1,6 +1,8 @@
 [![Polyplex Logo][logo]](https://github.com/PolyplexEngine/ppbranding)
 
 # Polyplex Main Library (libpp)
+<a href='https://ko-fi.com/O4O59UGN' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://az743702.vo.msecnd.net/cdn/kofi2.png?v=0' border='0' alt='Buy Clipsey a Coffee at ko-fi.com' /></a>
+
 Polyplex is an XNA like framework and engine written in D. Polyplex supports OpenGL and will in the future support Vulkan.
 
 The framework is written to be easy to read and understand for people comming from an C#/XNA background.
