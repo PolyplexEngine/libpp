@@ -40,7 +40,7 @@ class Game1 : Game {
   this() {
     WindowInfo inf = new WindowInfo();
     inf.Name = "Game1";
-    inf.Bounds = Rectangle(0, 0, 1080, 1024);
+    inf.Bounds = new Rectangle(WindowPosition.Undefined, WindowPosition.Undefined, 1080, 1024);
     super(inf);
   }
   
@@ -48,7 +48,7 @@ class Game1 : Game {
   public override void Init() { }
   
   //Update is run before draw in the game loop.
-  public override void Update(GameTimes* game_time) {
+  public override void Update(GameTimes game_time) {
     // Quit game if Q is pressed.
     if (Input.IsKeyDown(KeyCode.Q)) this.Quit();
     
@@ -57,7 +57,7 @@ class Game1 : Game {
   }
   
   //Draw is run after the logic update of the game loop.
-  public override void Draw(GameTimes* game_time) {
+  public override void Draw(GameTimes game_time) {
   
     //Clears color, generally put first in the Draw method.
     Drawing.ClearColor(Colors.Black);

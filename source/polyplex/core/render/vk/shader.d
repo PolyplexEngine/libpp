@@ -1,7 +1,7 @@
 module polyplex.core.render.vk.shader;
 import polyplex.core.render;
 import derelict.sdl2.sdl;
-import derelict.vulkan.vk;
+import derelict.vulkan;
 import polyplex.math;
 import polyplex.core.render;
 
