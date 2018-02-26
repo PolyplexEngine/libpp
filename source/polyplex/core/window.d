@@ -11,6 +11,11 @@ import std.stdio;
 import std.conv;
 
 
+public enum WindowPosition {
+	Center = -1,
+	Undefined = 0
+}
+
 public class WindowInfo {
     public string Name;
     public Rectangle Bounds;
@@ -115,6 +120,10 @@ public class GameWindow {
 
 		//Set info.
         this.inf = info;
+		if (this.inf.Bounds.X == WindowPosition.Center) this.inf.Bounds.X = SDL_WINDOWPOS_CENTERED;
+		if (this.inf.Bounds.Y == WindowPosition.Center) this.inf.Bounds.Y = SDL_WINDOWPOS_CENTERED;
+		if (this.inf.Bounds.X == WindowPosition.Undefined) this.inf.Bounds.X = SDL_WINDOWPOS_UNDEFINED;
+		if (this.inf.Bounds.Y == WindowPosition.Undefined) this.inf.Bounds.Y = SDL_WINDOWPOS_UNDEFINED;
     }
 
     ~this() {

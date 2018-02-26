@@ -9,6 +9,7 @@ import polyplex.utils.logging;
 import std.stdio;
 import std.conv;
 static import std.file;
+static import std.process;
 
 public static GraphicsBackend ChosenBackend = GraphicsBackend.OpenGL;
 private static bool sdl_init = false;
@@ -55,6 +56,22 @@ private string get_system_lib(string libname, bool s = true) {
 	return lstr;
 }
 
+private string trimexe(string input) {
+	string i = input;
+	version(Windows) {
+		while (i[i.length-1] != '\\') {
+			i.length--;
+		}
+		return i;
+	}
+	else {
+		while (i[i.length-1] != '/') {
+			i.length--;
+		}
+		return i;
+	}
+}
+
 /*
 	InitLibraries loads the Derelict libraries for Vulkan, SDL and OpenGL
 */
@@ -63,6 +80,17 @@ public void InitLibraries() {
 		if (std.file.exists("libs/")) {
 			// Load bundled libraries.
 			Logger.Info("Binding to runtime libraries...");
+			string path_sep = ":";
+			string sys_sep = "/";
+			version(Windows) {
+				path_sep = ";";
+				sys_sep = "\\";
+			}
+			string path = std.process.environment["PATH"];
+			string path_begin = std.file.thisExePath();
+			path_begin = trimexe(path_begin);
+			std.process.environment["PATH"] = path_begin ~ "libs" ~ sys_sep ~ get_arch() ~ path_sep ~ path;
+			Logger.Debug("Updated PATH to {0}", std.process.environment["PATH"]);
 			DerelictSDL2.load(get_system_lib("SDL2"));
 			DerelictSDL2Image.load(get_system_lib("SDL2_image"));
 			DerelictSDL2Mixer.load(get_system_lib("SDL2_mixer"));
