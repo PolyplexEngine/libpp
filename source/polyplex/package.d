@@ -11,7 +11,7 @@ import std.conv;
 static import std.file;
 static import std.process;
 
-public static GraphicsBackend ChosenBackend = GraphicsBackend.OpenGL;
+public static GraphicsBackend ChosenBackend = GraphicsBackend.NoneChosen;
 private static bool sdl_init = false;
 private static bool vk_init = false;
 private static bool gl_init = false;
@@ -19,7 +19,8 @@ private static bool gl_init = false;
 
 public enum GraphicsBackend {
 	Vulkan,
-	OpenGL
+	OpenGL,
+	NoneChosen
 }
 
 private string get_arch() {
@@ -111,6 +112,7 @@ public void InitLibraries() {
 		Logger.Log("SDL (linked): {0}.{1}.{2}", to!string(linked.major), to!string(linked.minor), to!string(linked.patch), LogType.Info);
 		sdl_init = true;
 	}
+	if (ChosenBackend == GraphicsBackend.NoneChosen) return;
 
 	if (ChosenBackend == GraphicsBackend.Vulkan) {
 		if (gl_init) DerelictGL3.unload();

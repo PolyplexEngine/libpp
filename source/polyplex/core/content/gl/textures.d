@@ -13,7 +13,6 @@ public class GlTexture2D : Texture2D {
 	private static int MAX_TEX_UNITS = -1;
 
 	this(TextureImg img) {
-		Logger.Debug("{0}", img.Surface);
 		super(img);
 
 		int mode = GL_RGBA;

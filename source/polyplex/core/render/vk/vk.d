@@ -1,5 +1,6 @@
 module polyplex.core.render.vk.vk;
 import derelict.vulkan;
+import derelict.vulkan.base;
 import derelict.sdl2.sdl;
 import std.conv;
 import std.stdio;

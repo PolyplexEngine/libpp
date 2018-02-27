@@ -29,6 +29,10 @@ public class VkRenderer : Renderer {
 		
 	}
 
+	public override void AdjustViewport() {
+		
+	}
+
 	public override void SwapBuffers() {
 		
 	}

@@ -7,8 +7,9 @@ import polyplex.core.input;
 import polyplex.core.events;
 import polyplex.core.content;
 import polyplex.utils.logging;
-import polyplex.events.event;
+
 import derelict.sdl2.sdl;
+import sev.event;
 
 import  std.math,
         std.random,
@@ -79,13 +80,23 @@ public abstract class Game {
 		return 0;
 	}
 
-	protected @property GameWindow Window() { return window; }
-	protected @property Renderer Drawing() { return window.Drawing; }
+	public @property GameWindow Window() { return window; }
+	public @property Renderer Drawing() { return window.Drawing; }
 
-	protected @property SpriteBatch sprite_batch() { return window.Drawing.Batch; }
+	public @property SpriteBatch sprite_batch() { return window.Drawing.Batch; }
 
-	this(WindowInfo inf) {
-		window = new GameWindow(inf);
+	this(string title, Rectangle bounds) {
+		window = new GameWindow(title, bounds);
+		events = new GameEventSystem();
+	}
+	 
+	this(Rectangle bounds) {
+		window = new GameWindow(bounds);
+		events = new GameEventSystem();
+	}
+
+	this() {
+		window = new GameWindow();
 		events = new GameEventSystem();
 	}
 
@@ -108,12 +119,13 @@ public abstract class Game {
 
 		//Update window info.
 		window.UpdateInfo();
-		events.OnExitRequested += (void* sender, void* data) {
+		events.OnExitRequested += (void* sender, EventArgs data) {
 			window.Close(); 
 		};
 
-		events.OnWindowSizeChanged += (void* sender, void* data) {
+		events.OnWindowSizeChanged += (void* sender, EventArgs data) {
 			window.UpdateInfo();
+			window.Drawing.AdjustViewport();
 			OnWindowSizeChanged(sender, data);
 		};
 		

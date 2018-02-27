@@ -1,7 +1,7 @@
 module polyplex.core.content.audio;
 import derelict.sdl2.mixer;
 import polyplex.math;
-import polyplex.events.event;
+import sev.event;
 
 private static int ids = 0;
 

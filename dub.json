@@ -1,27 +1,15 @@
 {
-	"description": "The base library of the polyplex engine. (Heavily WIP, non-idiomatic)",
-	"importPaths": [
-		"source/"
-	],
 	"name": "pp",
-	"version": "0.0.2-alpha.3",
-	"dependencies": {
-		"derelict-sdl2": ">=3.1.0-alpha.3 <3.2.0-0",
-		"derelict-vulkan": ">0.0.10",
-		"derelict-util": ">2.0.0",
-		"derelict-gl3": ">=2.0.0-beta <2.1.0-0",
-		"derelict-il": "~>2.0.0-beta.2",
-		"colorize": "~>1.0.5"
-	},
 	"license": "MIT",
-	"sourcePaths": [
-		"source/"
-	],
-	"configurations": [
-		{
-			"name": "library",
-			"targetType": "library"
-		}
-	],
-	"targetType": "library"
+	"targetType": "dynamicLibrary",
+	"version": "0.0.2-alpha.4",
+	"description": "The base library of the polyplex engine. (Heavily WIP, non-idiomatic)",
+	"dependencies": {
+		"derelict-util": "~>3.0.0-beta.2",
+		"derelict-sdl2": "~>3.1.0-alpha.3",
+		"derelict-gl3": "~>2.0.0-beta.5",
+		"derelict-vulkan": "~>0.0.13",
+		"colorize": "~>1.0.5",
+		"sharpevents": "~>1.0.0"
+	}
 }

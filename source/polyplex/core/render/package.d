@@ -28,6 +28,8 @@ public class Renderer {
 	public abstract void SwapBuffers();
 	public abstract Shader CreateShader(ShaderCode code);
 
+	public abstract void AdjustViewport();
+
 	public abstract @property bool VSync();
 	public abstract @property void VSync(bool state);
 }

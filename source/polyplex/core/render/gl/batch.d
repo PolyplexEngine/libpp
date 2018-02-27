@@ -286,16 +286,15 @@ void main(void) {
 			x4 = pos.X;
 			y4 = pos.Y+pos.Height;
 		}
-		float u = cutout.X/cast(float)texture.Width;
+		float u = (cutout.X)/cast(float)texture.Width;
 		float u2 = (cutout.X+cutout.Width)/cast(float)texture.Width;
 		if ((flip&SpriteFlip.FlipVertical)>0) {
 			float ux = u;
 			u = u2;
 			u2 = ux;
-
 		}
 
-		float v = cutout.Y/cast(float)texture.Height;
+		float v = (cutout.Y)/cast(float)texture.Height;
 		float v2 = (cutout.Y+cutout.Height)/cast(float)texture.Height;
 		if ((flip&SpriteFlip.FlipHorizontal)>0) {
 			float vx = v;

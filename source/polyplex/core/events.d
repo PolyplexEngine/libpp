@@ -1,8 +1,12 @@
 module polyplex.core.events;
 import polyplex.core.input;
 import derelict.sdl2.sdl;
-import polyplex.events;
 import std.stdio;
+import sev.event;
+
+public class GameResizeEventArgs : EventArgs {
+	public void* SDLEvent;
+}
 
 public class GameEventSystem {
 	private bool lastHandled;
@@ -24,7 +28,9 @@ public class GameEventSystem {
 			
 			if (ev.type == SDL_WINDOWEVENT) {
 				if (ev.window.event == SDL_WINDOWEVENT_SIZE_CHANGED || ev.window.event == SDL_WINDOWEVENT_RESIZED) {
-					OnWindowSizeChanged(cast(void*)this, cast(void*)ev.window.event);
+					GameResizeEventArgs args = new GameResizeEventArgs();
+					args.SDLEvent = cast(void*)ev.window.event;
+					OnWindowSizeChanged(cast(void*)this, args);
 				}
 			}
 

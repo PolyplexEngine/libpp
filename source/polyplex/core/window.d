@@ -16,17 +16,13 @@ public enum WindowPosition {
 	Undefined = 0
 }
 
-public class WindowInfo {
-    public string Name;
-    public Rectangle Bounds;
-}
-
 public class GameWindow {
 	private int width;
 	private int height;
     private SDL_Window* window;
 	private Renderer renderer;
-    private WindowInfo inf;
+	private string start_title;
+	private Rectangle start_bounds;
 
 	public @property int Width() { return this.width; }
 	public @property int Height() { return this.height; }
@@ -105,9 +101,7 @@ public class GameWindow {
 		return new Rectangle(x, y, width, height);
 	}
 
-    this(WindowInfo info) {
-		//Initialize SDL.
-        Logger.Debug("Creating window...");
+    this(string name, Rectangle bounds) {
         if (!SDL_Init(SDL_INIT_EVERYTHING) < 0) {
             Logger.Fatal("Initialization of SDL2 failed!...\n{0}", SDL_GetError());
         }
@@ -115,16 +109,26 @@ public class GameWindow {
 		if (!IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF | IMG_INIT_WEBP) < 0 ) {
 			Logger.Fatal("Initialization of image formats failed!...\n{0}", IMG_GetError());
 		}
-		//Create window.
-        Logger.Debug("GameWindow created!");
 
 		//Set info.
-        this.inf = info;
-		if (this.inf.Bounds.X == WindowPosition.Center) this.inf.Bounds.X = SDL_WINDOWPOS_CENTERED;
-		if (this.inf.Bounds.Y == WindowPosition.Center) this.inf.Bounds.Y = SDL_WINDOWPOS_CENTERED;
-		if (this.inf.Bounds.X == WindowPosition.Undefined) this.inf.Bounds.X = SDL_WINDOWPOS_UNDEFINED;
-		if (this.inf.Bounds.Y == WindowPosition.Undefined) this.inf.Bounds.Y = SDL_WINDOWPOS_UNDEFINED;
+        this.start_bounds = bounds;
+		this.start_title = name;
+
+		//Cap info.
+		if (this.start_bounds is null) this.start_bounds = new Rectangle(WindowPosition.Undefined, WindowPosition.Undefined, 640, 480);
+		if (this.start_bounds.X == WindowPosition.Center) this.start_bounds.X = SDL_WINDOWPOS_CENTERED;
+		if (this.start_bounds.Y == WindowPosition.Center) this.start_bounds.Y = SDL_WINDOWPOS_CENTERED;
+		if (this.start_bounds.X == WindowPosition.Undefined) this.start_bounds.X = SDL_WINDOWPOS_UNDEFINED;
+		if (this.start_bounds.Y == WindowPosition.Undefined) this.start_bounds.Y = SDL_WINDOWPOS_UNDEFINED;
     }
+
+	this (Rectangle bounds) {
+		this("My Game", bounds);
+	}
+
+	this() {
+		this(new Rectangle(WindowPosition.Undefined, WindowPosition.Undefined, 640, 480));
+	}
 
     ~this() {
 		if (this.window != null) Close();
@@ -155,13 +159,16 @@ public class GameWindow {
 	}
 
     void Show() {
-		if (polyplex.ChosenBackend == polyplex.GraphicsBackend.Vulkan) this.window = SDL_CreateWindow(inf.Name.dup.ptr, inf.Bounds.X, inf.Bounds.Y, inf.Bounds.Width, inf.Bounds.Height, SDL_WINDOW_VULKAN);
-		else this.window = SDL_CreateWindow(inf.Name.dup.ptr, inf.Bounds.X, inf.Bounds.Y, inf.Bounds.Width, inf.Bounds.Height, SDL_WINDOW_OPENGL);
+		Logger.Debug("Spawning window...");
+		if (polyplex.ChosenBackend == polyplex.GraphicsBackend.Vulkan) this.window = SDL_CreateWindow(this.start_title.dup.ptr, this.start_bounds.X, this.start_bounds.Y, this.start_bounds.Width, this.start_bounds.Height, SDL_WINDOW_VULKAN);
+		else this.window = SDL_CreateWindow(this.start_title.dup.ptr, this.start_bounds.X, this.start_bounds.Y, this.start_bounds.Width, this.start_bounds.Height, SDL_WINDOW_OPENGL);
 		this.renderer = CreateBackendRenderer(this);
 		this.renderer.Init(this.window);
 		if (this.window == null) {
 			destroy(this.window);
 			Logger.Fatal("Window creation error: {0}", SDL_GetError());
 		}
+
+		this.Focus();
     }
 }

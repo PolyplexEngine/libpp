@@ -61,6 +61,10 @@ public class GlRenderer : Renderer {
 		else SDL_GL_SetSwapInterval(0);
 	}
 
+	public override void AdjustViewport() {
+		glViewport(0, 0, Window.Width, Window.Height);
+	}
+
 	public override void ClearColor(Color color) {
 		glClearColor(color.Rf, color.Gf, color.Bf, color.Af);
 		glClear(GL_COLOR_BUFFER_BIT);
