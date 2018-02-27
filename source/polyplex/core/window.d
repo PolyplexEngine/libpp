@@ -101,6 +101,15 @@ public class GameWindow {
 		return new Rectangle(x, y, width, height);
 	}
 
+	public @property Vector2 Position() {
+		Rectangle r = Placement();
+		return Vector2(r.X, r.Y);
+	}
+
+	public @property void Position(Vector2 pos) {
+		SDL_SetWindowPosition(this.window, cast(int)pos.X, cast(int)pos.Y);
+	}
+
     this(string name, Rectangle bounds) {
         if (!SDL_Init(SDL_INIT_EVERYTHING) < 0) {
             Logger.Fatal("Initialization of SDL2 failed!...\n{0}", SDL_GetError());
