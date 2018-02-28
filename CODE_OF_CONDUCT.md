@@ -27,5 +27,10 @@ This document specifices what we see as ideal behaviour. Currently there is no o
 	The pages associated with this project (be it mailing lists, issues, forums, etc.) are for discussing the project. Please keep politics off those pages, arguing over politics is not productive.
 
 ## This applies to
-
 All projects in the [PolyplexEngine](https://github.com/PolyplexEngine) organization.
+
+
+
+
+#### Footnotes
+We allow virtual hugs. c:
