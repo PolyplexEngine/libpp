@@ -3,7 +3,8 @@
 ## Summary
 This Code of Conduct is based of [GNOME's Code of Conduct](https://wiki.gnome.org/action/show/Foundation/CodeOfConduct).
 
-This document specifices what we see as ideal behaviour. Currently there is no official enforcement of these principles, but following them would be very appriciated.
+This document specifices what we see as ideal behaviour.
+Only the Polyplex Discord server strictly follows these principles, but following them elsewhere would be very appriciated.
 
 ## Advice
 * Be respectful and considerate:
