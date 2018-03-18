@@ -16,8 +16,7 @@ public static string Format(T...)(string format, T args) {
 public static string Format(string message, ...) {
 	string[] formatstr;
 	for (int i = 0; i < _arguments.length; i++) {
-		formatstr.length++;
-		formatstr[$-1] = va_arg!string(_argptr);
+		formatstr ~= va_arg!string(_argptr);
 	}
 	return FormatStr(message, formatstr);
 }
