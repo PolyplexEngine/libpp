@@ -129,6 +129,8 @@ public class GameWindow {
 		if (this.start_bounds.Y == WindowPosition.Center) this.start_bounds.Y = SDL_WINDOWPOS_CENTERED;
 		if (this.start_bounds.X == WindowPosition.Undefined) this.start_bounds.X = SDL_WINDOWPOS_UNDEFINED;
 		if (this.start_bounds.Y == WindowPosition.Undefined) this.start_bounds.Y = SDL_WINDOWPOS_UNDEFINED;
+		if (this.start_bounds.Width == WindowPosition.Undefined) this.start_bounds.Width = 640;
+		if (this.start_bounds.Height == WindowPosition.Undefined) this.start_bounds.Height = 480;
     }
 
 	this (Rectangle bounds) {

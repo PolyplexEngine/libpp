@@ -80,6 +80,10 @@ public abstract class Game {
 		return 0;
 	}
 
+	public @property float Frametime() {
+		return delta_frames;
+	}
+
 	public @property GameWindow Window() { return window; }
 	public @property Renderer Drawing() { return window.Drawing; }
 
@@ -132,7 +136,11 @@ public abstract class Game {
 		times = new GameTimes(new GameTime(0), new GameTime(0));
 		int avg_c = 0;
 
+		this.Content = new PPCContentManager();
+
 		Init();
+
+		LoadContent();
 		Logger.Debug("~~~ Gameloop ~~~");
 		while (window.Visible) {
 			//FPS begin counting.
@@ -179,6 +187,7 @@ public abstract class Game {
 	}
 
 	public abstract void Init();
+	public abstract void LoadContent();
 	public abstract void Update(GameTimes game_time);
 	public abstract void Draw(GameTimes game_time);
 }

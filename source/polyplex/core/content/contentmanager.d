@@ -8,6 +8,8 @@ import polyplex.core.content.audio;
 import polyplex.utils.logging;
 import polyplex.utils.strutils;
 
+static import ppc;
+
 import derelict.sdl2.image;
 import derelict.sdl2.mixer;
 import derelict.sdl2.sdl;
@@ -69,7 +71,7 @@ public abstract class ContentManager {
 				Logger.Warn(Format("ContentManagerWarmup: OGG support initiated failed. {0}", err));
 			}
 			content_init = true;
-
+			Logger.Debug("ContentManager initialized...");
 		}
 	}
 
@@ -81,6 +83,47 @@ public abstract class ContentManager {
 	public abstract Audio LoadAudio(string name);
 }
 
+public class PPCContentManager : ContentManager {
+
+	this() {
+		super();
+		// Setup PPC content factories.
+		ppc.SetupBaseFactories();
+	}
+
+	public override Texture2D LoadTexture(string name) {
+		try {
+			ppc.Image i = cast(ppc.Image)ppc.ContentManager.Load(this.ContentRoot~name~".ppc");
+			if (i is null) throw new Exception("Could not find "~this.ContentRoot~name~".ppc");
+			TextureImg img = new TextureImg(cast(int)i.Width, cast(int)i.Height, i.Colors);
+			return new GlTexture2D(img);
+		} catch (Exception ex) {
+			Logger.Debug("{0}", ex.message);
+			return null;
+		}
+	}
+
+	public override Data LoadText(string name) {
+		return null;
+	}
+	
+	public override Font LoadFont(string name) {
+		throw new Exception("Fonts not implemented in libppc yet!");
+	}
+
+	public override Sound LoadSound(string name) {
+		throw new Exception("Audio not implemented in libppc yet!");
+	}
+
+	public override Music LoadMusic(string name) {
+		throw new Exception("Audio not implemented in libppc yet!");
+	}
+
+	public override Audio LoadAudio(string name) {
+		throw new Exception("Audio not implemented in libppc yet!");
+	}
+}
+
 public class RawContentManager : ContentManager {
 
 	this() {
@@ -88,11 +131,12 @@ public class RawContentManager : ContentManager {
 	}
 
 	public override Texture2D LoadTexture(string name) {
-		auto f = IMG_Load((this.ContentRoot~name).ptr);
+		/*auto f = IMG_Load((this.ContentRoot~name).ptr);
 		if (f is null) throw new Exception("Could not load " ~ name);
 		TextureImg img = new TextureImg(f);
 		//TODO: Return VkTexture2D when vulkan support is implemented.
-		return new GlTexture2D(img);
+		return new GlTexture2D(img);*/
+		throw new Exception("Loading textures via RawContentManger is unsupported currently.");
 	}
 
 	public override Data LoadText(string name) {

@@ -56,37 +56,9 @@ public class GlSpriteBatch : SpriteBatch {
 	public static void InitializeSpritebatch() {
 	if (!has_init) has_init = !has_init;
 	else return;
-default_vert = Format("#version 130
-in vec3 {0};
-in vec2 {1};
-in vec4 {2};
 
-uniform mat4 {3};
-
-out vec4 exColor;
-out vec2 exTexcoord;
-
-void main(void) {
-	exTexcoord = {1};
-	exColor = {2};
-	gl_Position = {3} * vec4({0}.xyz, 1.0);
-}
-", attrib_position_name, attrib_texcoord_name, attrib_color_name, uniform_prj_name);
-default_frag = Format("#version 130
-
-precision highp float;
-
-uniform sampler2D {0};
-in vec4 exColor;
-in vec2 exTexcoord;
-out vec4 outColor;
-
-void main(void) {
-	vec4 tex_col = texture2D({0}, exTexcoord);
-	outColor = exColor * tex_col;
-}
-", uniform_tex_name);
-	//Logger.Debug("DEFAULT_SHADER:\nVERT:\n{0}\nFRAG:\n{1}", default_vert, default_frag);
+	default_vert = import("sprite_batch.vsh");
+	default_frag = import("sprite_batch.fsh");
 
 	default_shader = new GLShader(new ShaderCode(default_vert, default_frag, [attrib_position_name, attrib_texcoord_name, attrib_color_name]));
 	default_cam = new Camera2D(Vector2(0, 0));

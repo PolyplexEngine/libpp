@@ -9,8 +9,9 @@ import std.string : toStringz;
 
 class GLShader : Shader {
 	private GLuint shaderprogram;
-	private GLuint vertexshader;
-	private GLuint fragmentshader;
+	private GLuint vertexshader = 0;
+	private GLuint fragmentshader = 0;
+	private GLuint geometryshader = 0;
 	private ShaderCode shadersource;
 
 	this(ShaderCode code) {
@@ -22,14 +23,32 @@ class GLShader : Shader {
 	~this() {
 		glUseProgram(0);
 		glDetachShader(shaderprogram, vertexshader);
+		if (geometryshader != 0) glDetachShader(shaderprogram, geometryshader);
 		glDetachShader(shaderprogram, fragmentshader);
 		glDeleteProgram(shaderprogram);
 		glDeleteShader(vertexshader);
+		if (geometryshader != 0) glDeleteShader(geometryshader);
 		glDeleteShader(fragmentshader);
 	}
-
+	
+	/**
+		Vertex Shader Id.
+	*/
 	public @property GLchar* VertGL() { return cast(GLchar*)(shadersource.Vertex.ptr); }
+	
+	/**
+		Fragment Shader Id.
+	*/
 	public @property GLchar* FragGL() { return cast(GLchar*)(shadersource.Fragment.ptr); }
+	
+	/**
+		Geometry Shader Id.
+	*/
+	public @property GLchar* GeoGL() { return cast(GLchar*)(shadersource.Geometry.ptr); }
+
+	/**
+		Shader Attributes.
+	*/
 	public @property GLchar*[] AttribGL() {
 		GLchar*[] attributes = new GLchar*[shadersource.Attributes.length];
 		for (int i = 0; i < attributes.length; i++) {
@@ -40,6 +59,9 @@ class GLShader : Shader {
 		return attributes;
 	}
 
+	/**
+		Gets whenever this shader is attached.
+	*/
 	public override @property bool Attached() {
 		int i;
 		glGetIntegerv(GL_CURRENT_PROGRAM, &i);
@@ -131,9 +153,11 @@ class GLShader : Shader {
 	//Compilation of shaders
 	private void compile_shaders() {
 		compile_shader(shadersource, ShaderType.Vertex);
+		if (!(shadersource.Geometry is null)) compile_shader(shadersource, ShaderType.Geometry);
 		compile_shader(shadersource, ShaderType.Fragment);
 		shaderprogram = glCreateProgram();
 		glAttachShader(shaderprogram, vertexshader);
+		if (!(shadersource.Geometry is null)) glAttachShader(shaderprogram, geometryshader);
 		glAttachShader(shaderprogram, fragmentshader);
 	}
 
@@ -152,6 +176,22 @@ class GLShader : Shader {
 			glGetShaderiv(vertexshader, GL_COMPILE_STATUS, &c);
 			if (c == 0) {
 				log_shader(vertexshader);
+				return;
+			}
+		} else if (type == ShaderType.Geometry) {
+			geometryshader = glCreateShader(GL_GEOMETRY_SHADER);
+
+			//Get source
+			int l = cast(int)shadersource.Geometry.length;
+			GLchar* cs = GeoGL;
+			glShaderSource(geometryshader, 1, &cs, &l);
+
+			//Compile
+			glCompileShader(geometryshader);
+			int c;
+			glGetShaderiv(geometryshader, GL_COMPILE_STATUS, &c);
+			if (c == 0) {
+				log_shader(geometryshader);
 				return;
 			}
 		} else {

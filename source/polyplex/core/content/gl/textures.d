@@ -5,6 +5,7 @@ import derelict.opengl.gl;
 import polyplex.utils.logging;
 import polyplex.core.render;
 import polyplex.core.render.gl.shader;
+import std.stdio;
 
 
 public class GlTexture2D : Texture2D {
@@ -17,14 +18,13 @@ public class GlTexture2D : Texture2D {
 
 		int mode = GL_RGBA;
 
-		if (img.Surface.format.BytesPerPixel == 3) {
+		// Reallow GL_RGB again in the future?
+		/*if (img.Surface.format.BytesPerPixel == 3) {
 			mode = GL_RGB;
-		}
-
+		}*/
 		glGenTextures(1, &id);
 		Attach();
-
-		glTexImage2D(GL_TEXTURE_2D, 0, mode, img.Surface.w, img.Surface.h, 0, mode, GL_UNSIGNED_BYTE, img.Surface.pixels);
+		glTexImage2D(GL_TEXTURE_2D, 0, mode, img.Width, img.Height, 0, mode, GL_UNSIGNED_BYTE, img.Pixels.ptr);
 		Detach();
 
 		if (MAX_TEX_UNITS == -1) {
