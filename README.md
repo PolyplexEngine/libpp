@@ -16,8 +16,14 @@ Once added, you will need to set logging levels, choose a backend and create a w
 
 ### Current capabilities
 Polyplex is still very early in development, but libpp can already be used to make simple 2D games, that are relatively easy to port to other platforms.
+Polyplex packages textures, sounds, etc. into files with the extension ppc. To convert png, jpeg or tga files to .ppc, use [ppcc](https://github.com/PolyplexEngine/ppcc)
+
 
 ### Examples
+## PPCC
+`ppcc -c (or --convert) my_texture.png` output will be put in `my_texture.ppc`.
+
+## libpp
 Example of simple polyplex application:
 ```d
 import polyplex;
@@ -57,9 +63,7 @@ class Game1 : Game {
   
   //Init is run before the game loop starts.
   public override void Init() {
-    //Content manager that loads raw files instead of bundles (only form supported right now)
-    this.Content = new RawContentManager();
-    my_texture = this.Content.LoadTexture("my_texture.png");
+    my_texture = this.Content.LoadTexture("my_texture");
   }
   
   //Update is run before draw in the game loop.
