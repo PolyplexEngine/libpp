@@ -45,6 +45,8 @@ void main(string[] args) {
 }
 
 class Game1 : Game {
+  Texture2D my_texture;
+
   // Constructor
   this() {
     WindowInfo inf = new WindowInfo();
@@ -57,6 +59,7 @@ class Game1 : Game {
   public override void Init() {
     //Content manager that loads raw files instead of bundles (only form supported right now)
     this.Content = new RawContentManager();
+    my_texture = this.Content.LoadTexture("my_texture.png");
   }
   
   //Update is run before draw in the game loop.
@@ -73,6 +76,10 @@ class Game1 : Game {
   
     //Clears color, generally put first in the Draw method.
     Drawing.ClearColor(Colors.Black);
+    
+    sprite_batch.Begin();
+    sprite_batch.Draw(my_texture, new Rectangle(0, 0, 32, 32), new Rectangle(0, 0, my_texture.Width, my_texture.Height), Color.White);
+    sprite_batch.End();
   }
 }
 ```
