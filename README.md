@@ -5,9 +5,11 @@
 
 [Join the Discord Server](https://discord.gg/Dus5ArV)
 
-Polyplex is an XNA like framework and engine written in D. Polyplex supports OpenGL and will in the future support Vulkan.
+libpp is an XNA like framework written in D. libpp supports OpenGL and will in the future support Vulkan.
 
 The framework is written to be easy to read and understand for people comming from an C#/XNA background.
+
+libpp is the base rendering, input handling, content handling, etc. library for the WIP Polyplex engine.
 
 ## Using libpp
 Find libpp on the [dub database](https://code.dlang.org/packages/pp) for instructions on adding libpp as a dependency to your dub project.
