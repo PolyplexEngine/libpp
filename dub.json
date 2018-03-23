@@ -67,8 +67,5 @@
 		"pp:derelict-sdl2": "*",
 		"pp:derelict-gl3": "*",
 		"pp:derelict-vulkan": "*"
-	},
-	"preGenerateCommands": [
-		"git submodule update --init --recursive"
-	]
+	}
 }
