@@ -6,13 +6,67 @@
 	"stringImportPaths": [
 		"shaders/"
 	],
+	"subPackages": [
+		{
+			"name": "derelict-util",
+			"description": "Cross-platform shared library loader and a number of utility modules used by the Derelict libraries.",
+			"authors": ["Mike Parker", "Polyplex Developers"],
+			"license": "Boost",
+			"targetPath": "lib",
+			"libs-linux": ["dl"],
+			"sourcePaths": [ "modules/pp-derelict-util/source" ],
+			"importPaths": [ "modules/pp-derelict-util/source" ]
+
+		},
+		{
+			"name": "derelict-sdl2",
+			"description": "Dynamic bindings to SDL2, SDL2_image, SDL2_mixer, SDL2_ttf and SDL2_net.",
+			"authors": ["Mike Parker", "Polyplex Developers"],
+			"license": "Boost",
+			"targetPath": "lib",
+			"dependencies": {
+				"pp:derelict-util": "*"
+			},
+			"sourcePaths": [ "modules/pp-derelict-sdl2/source" ],
+			"importPaths": [ "modules/pp-derelict-sdl2/source" ]
+		},
+		{
+			"name": "derelict-gl3",
+			"description": "A dynamic binding to the OpenGL library.",
+			"authors": ["Mike Parker", "Polyplex Developers"],
+			"license": "Boost",
+			"targetPath": "lib",
+			"dependencies": {
+				"pp:derelict-util": "*"
+			},
+			"sourcePaths": [ "modules/pp-derelict-gl3/source" ],
+			"importPaths": [ "modules/pp-derelict-gl3/source" ]
+		},
+		{
+			"name": "derelict-vulkan",
+			"description": "A dynamic binding to the vulkan api.",
+			"copyright": "Copyright © 2016, Felix Hufnagel",
+			"authors": ["Felix Hufnagel", "Polyplex Developers"],
+			"license": "BSL-1.0",
+			"targetPath": "lib",
+			"targetType": "library",
+			"dependencies": {
+				"pp:derelict-util": "*",
+				"xlib-d": { "version": "~>0.1.1", "optional": true },
+				"xcb-d" : { "version": "~>2.1.0+1.11.1", "optional": true }
+			},
+			"sourcePaths": [ "modules/pp-derelict-vulkan/source" ],
+			"importPaths": [ "modules/pp-derelict-vulkan/source" ]
+		}
+	],
 	"dependencies": {
-		"derelict-util": "~>3.0.0-beta.2",
-		"derelict-sdl2": "~>3.1.0-alpha.3",
-		"derelict-gl3": "~>2.0.0-beta.5",
-		"derelict-vulkan": "~>0.0.13",
 		"colorize": "~>1.0.5",
 		"sharpevents": "~>1.0.0",
-		"ppc": "~master"
+		"ppc": "~master",
+
+		"pp:derelict-util": "*",
+		"pp:derelict-sdl2": "*",
+		"pp:derelict-gl3": "*",
+		"pp:derelict-vulkan": "*"
 	}
 }
