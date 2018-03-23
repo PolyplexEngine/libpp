@@ -1,11 +1,9 @@
 [submodule "modules/pp-derelict-gl3"]
 	path = modules/pp-derelict-gl3
 	url = https://github.com/PolyplexEngine/PPDerelictGL3
-
 [submodule "modules/pp-derelict-sdl2"]
 	path = modules/pp-derelict-sdl2
 	url = https://github.com/PolyplexEngine/PPDerelictSDL2
-	
 [submodule "modules/pp-derelict-util"]
 	path = modules/pp-derelict-util
 	url = https://github.com/PolyplexEngine/PPDerelictUtil

@@ -16,7 +16,6 @@
 			"libs-linux": ["dl"],
 			"sourcePaths": [ "modules/pp-derelict-util/source" ],
 			"importPaths": [ "modules/pp-derelict-util/source" ]
-
 		},
 		{
 			"name": "derelict-sdl2",
@@ -68,5 +67,8 @@
 		"pp:derelict-sdl2": "*",
 		"pp:derelict-gl3": "*",
 		"pp:derelict-vulkan": "*"
-	}
+	},
+	"preGenerateCommands": [
+		"git submodule update --init --recursive"
+	]
 }
