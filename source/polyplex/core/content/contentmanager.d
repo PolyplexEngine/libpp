@@ -78,9 +78,9 @@ public abstract class ContentManager {
 	public abstract Texture2D LoadTexture(string name);
 	public abstract Data LoadText(string name);
 	public abstract Font LoadFont(string name);
-	public abstract Sound LoadSound(string name);
-	public abstract Music LoadMusic(string name);
-	public abstract Audio LoadAudio(string name);
+	//public abstract Sound LoadSound(string name);
+	//public abstract Music LoadMusic(string name);
+	//public abstract Audio LoadAudio(string name);
 }
 
 public class PPCContentManager : ContentManager {
@@ -111,7 +111,7 @@ public class PPCContentManager : ContentManager {
 		throw new Exception("Fonts not implemented in libppc yet!");
 	}
 
-	public override Sound LoadSound(string name) {
+	/*public override Sound LoadSound(string name) {
 		throw new Exception("Audio not implemented in libppc yet!");
 	}
 
@@ -121,7 +121,7 @@ public class PPCContentManager : ContentManager {
 
 	public override Audio LoadAudio(string name) {
 		throw new Exception("Audio not implemented in libppc yet!");
-	}
+	}*/
 }
 
 public class RawContentManager : ContentManager {
@@ -147,7 +147,7 @@ public class RawContentManager : ContentManager {
 		return null;
 	}
 
-	public override Sound LoadSound(string name) {
+	/*public override Sound LoadSound(string name) {
 		return null;
 	}
 
@@ -167,5 +167,5 @@ public class RawContentManager : ContentManager {
 			throw new Exception(Format("{0}", err));
 		}
 		return null;
-	}
+	}*/
 }

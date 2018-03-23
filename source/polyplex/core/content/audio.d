@@ -1,8 +1,8 @@
 module polyplex.core.content.audio;
-import derelict.sdl2.mixer;
+//import derelict.sdl2.mixer;
 import polyplex.math;
 import sev.event;
-
+/*
 private static int ids = 0;
 
 public static void ClearAllSound() {
@@ -121,4 +121,4 @@ public class Audio : Sound {
 		if (repeat) Mix_FadeInChannel(id, sample, -1, fadein);
 		else Mix_FadeInChannel(id, sample, 1, fadein);
 	}
-}
+}*/
