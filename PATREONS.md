@@ -1,2 +1,2 @@
-# THANKS TO THESE PEOPLE FOR SUPPORTING THE DEVELOPMENT ON PATREON!
-The Linux Gamer Community
+# Thanks to the following people for supprting the development on patreon!
+* The Linux Gamer Community
