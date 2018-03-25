@@ -9,6 +9,9 @@ The framework is written to be easy to read and understand for people comming fr
 
 libpp is the base rendering, input handling, content handling, etc. library for the WIP Polyplex engine.
 
+### Top Tier Patrons
+* The Linux Gamer Community
+
 ## Using libpp
 Find libpp on the [dub database](https://code.dlang.org/packages/pp) for instructions on adding libpp as a dependency to your dub project.
 
