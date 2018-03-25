@@ -49,8 +49,8 @@ public class GameTimes {
 }
 
 public abstract class Game {
-    //Private properties
-    private GameWindow window;
+	//Private properties
+	private GameWindow window;
 	private GameEventSystem events;
 	private GameTimes times;
 	private static uint MAX_SAMPLES = 100;
