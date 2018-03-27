@@ -1,0 +1,1 @@
+module polyplex.core.render.vk.objects;

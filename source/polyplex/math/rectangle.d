@@ -1,10 +1,5 @@
 module polyplex.math.rectangle;
-
-private {
-    import polyplex.math.linalg : Vector, vec2i;
-    import polyplex.math : almost_equal;
-}
-
+import polyplex.math;
 
 /// Base template for all AABB-types.
 /// Params:
@@ -52,7 +47,7 @@ class Rectangle {
 	public @property int Right() { return this.x + this.width; }
 	public @property int Top() { return this.y; }
 	public @property int Bottom() { return this.y + this.height; }
-	public @property vec2i Center() { return vec2i(this.x + (this.width/2), this.y + (this.height/2)); }
+	public @property Vector2 Center() { return Vector2(this.x + (this.width/2), this.y + (this.height/2)); }
 
 	public bool Intersects(Rectangle other) {
 		if (other is null) return false;

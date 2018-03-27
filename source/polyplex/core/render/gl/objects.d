@@ -10,6 +10,7 @@ import polyplex.utils.logging;
 import std.stdio;
 import std.conv;
 import std.format;
+import std.traits;
 
 enum DrawType {
 	LineStrip,
@@ -26,6 +27,137 @@ enum BufferMode {
 	Static,
 	Dynamic
 }
+
+//Vertex Array Object contains state information to be sent to the GPU
+class VAO {
+
+	private GLuint id;
+	public @property uint Id() { return cast(uint)id; }
+
+	this() {
+		glGenVertexArrays(1, &id);
+	}
+
+	~this() {
+		glDeleteVertexArrays(1, &id);
+	}
+
+	void Bind() {
+		glBindVertexArray(id);
+	}
+
+	void Unbind() {
+		glBindVertexArray(0);
+	}
+}
+
+alias Buffer = float[];
+
+/**
+	Layout is the way data is layed out in a buffer object.
+*/
+enum Layout {
+	/**
+		A layout where each element is seperated out into multiple buffers.
+		[XXX], [YYY], [ZZZ]
+	*/
+	Layered,
+
+	/**
+		A layout where each element is clustered into larger groups in one buffer.
+		[XXXYYYZZZ]
+	*/
+	Clustered,
+
+	/**
+		A layout where each element is clustered into smaller groups in one buffer.
+		[XYZXYZXYZ]
+	*/
+	Grouped
+}
+
+class BufferObject {
+	private Layout layout;
+	private int type;
+
+	public GLuint[] Id;
+	public Buffer[] Buffers;
+
+	this(int type, Layout layout) {
+		this.type = type;
+		this.layout = layout;
+	}
+
+	/**
+		Generates <amount> buffers.
+	*/
+	public void GenBuffers(int amount) {
+		glGenBuffers(amount, Id.ptr);
+	}
+
+	/**
+		Binds the buffer of index <index>
+	*/
+	public void Bind(int index = 0) {
+		glBindBuffer(type, index);
+	}
+
+	/**
+		Supplies buffer data as a struct or class.
+	*/
+	public void BufferData(T)(T input_structs) {
+		foreach(int iterator, string member; __traits(allMembers, T)) {
+			writeln(iterator, ": ", member);
+		}
+	} 
+
+	public void BufferData(Vector3[] vec) {}
+	public void BufferData(Vector2[] vec) {}
+	public void BufferData(float[] vec) {}
+
+	unittest {
+		struct t {
+			Vector3 tPosition;
+			float tScale;
+		}
+		t tx = t(Vector3(1, 2, 3), 4f);
+
+		BufferObject bo = new BufferObject(GL_ELEMENT_ARRAY_BUFFER, Layout.Layered);
+		bo.BufferData(tx);
+	}
+}
+
+class IBO : BufferObject {
+	this(Layout layout) {
+		super(GL_ELEMENT_ARRAY_BUFFER, layout);
+	}
+}
+
+class VBO : BufferObject {
+	this(Layout layout) {
+		super(GL_ARRAY_BUFFER, layout);
+	}
+}
+
+class IndxVBO : VBO {
+	this(Layout layout) {
+		super(layout);
+	}
+}
+
+class InstVBO : VBO {
+	this(Layout layout) {
+		super(layout);
+	}
+}
+
+class InstIndxVBO : InstVBO {
+	this(Layout layout) {
+		super(layout);
+	}
+}
+
+/*
 
 class RenderObject {
 	private VAO vao;
@@ -115,29 +247,6 @@ class RenderObject {
 		Bind();
 		vbo.Generate();
 		Unbind();
-	}
-}
-
-//Vertex Array Object contains state information to be sent to the GPU
-class VAO {
-
-	private GLuint id;
-	public @property uint Id() { return cast(uint)id; }
-
-	this() {
-		glGenVertexArrays(1, &id);
-	}
-
-	~this() {
-		glDeleteVertexArrays(1, &id);
-	}
-
-	void Bind() {
-		glBindVertexArray(id);
-	}
-
-	void Unbind() {
-		glBindVertexArray(0);
 	}
 }
 
@@ -296,4 +405,4 @@ class VBO {
 		}
 		glDeleteBuffers(cast(int)verts.length, ids.ptr);
 	}
-}
+}*/

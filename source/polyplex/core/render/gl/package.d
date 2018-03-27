@@ -32,9 +32,9 @@ public class GlRenderer : Renderer {
 		if (context == null) throw new Error(to!string(SDL_GetError()));
 		int wd, hd;
 		SDL_GetWindowSize(w, &wd, &hd);
-		GlSpriteBatch.InitializeSpritebatch();
+		//GlSpriteBatch.InitializeSpritebatch();
 		Renderer r = cast(Renderer)this;
-		this.Batch = new GlSpriteBatch(r);
+		//this.Batch = new GlSpriteBatch(r);
 		
 		//Default settings for sprite clamping and wrapping
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);

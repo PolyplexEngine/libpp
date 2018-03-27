@@ -11,6 +11,7 @@ import polyplex.utils;
 import polyplex.math;
 import polyplex.utils.mathutils;
 
+/+ 
 /**
 	OpenGL implementation of a sprite batcher.
 */
@@ -291,4 +292,4 @@ public class GlSpriteBatch : SpriteBatch {
 		has_begun = false;
 		Flush();
 	}
-}
+} +/
