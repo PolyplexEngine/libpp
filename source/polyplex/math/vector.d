@@ -10,12 +10,12 @@ private bool ProperVectorUnaryOperation(string op) {
 }
 
 private auto RSwizzleIndex(char c) {
-	switch ( c ) {
+	switch ( toLower(c) ) {
 		default: assert(false, "Trying to swizzle invalid component '%s'".format(c));
-		case 'R': case 'X': case 'r': case 'x': return 0;
-		case 'G': case 'Y': case 'g': case 'y': return 1;
-		case 'B': case 'Z': case 'b': case 'z': return 2;
-		case 'A': case 'W': case 'a': case 'w': return 3;
+		case 'r': case 'x': return 0;
+		case 'g': case 'y': return 1;
+		case 'b': case 'z': return 2;
+		case 'a': case 'w': return 3;
 	}
 }
 
@@ -178,20 +178,26 @@ private template GenericVectorMixin(T, int _Dim) {
 
 	/// opDispatch for vector swizzling
 	public @property auto opDispatch(string swizzle_list, U = void)() if ( swizzle_list.length <= 4 ) {
-		// Check if returning a single variable, or a vector
+		// Check if returning a single element, or a vector
 		static if ( swizzle_list.length == 1 )
 			return SwizzleOnOneComponent!swizzle_list;
 		else
 			return SwizzleOnMultipleComponents!swizzle_list;
 	}
 
-	/// opDispatch for vector swizzling assignment
 	public @property void opDispatch(string swizzle_list, U)(U x) pure nothrow {
-		Vector!(T, swizzle_list.length) tvec = x; // convert scalar to vector
-		// iterate swizzle list and set values of this vector
-		static foreach ( iter, index; GenerateSwizzleList!swizzle_list )
-			this.data[index] = tvec.data[iter];
+		// Check if setting a single element or a list of elements
+		static if ( swizzle_list.length == 1 ) {
+			// GenerateSwizzleList returns an array, so get first element and set it to x
+			this.data[(GenerateSwizzleList!swizzle_list)[0]] = x;
+		} else {
+			// iterate swizzle list and set values of this vector
+			Vector!(T, swizzle_list.length) tvec = x; // convert scalar to vector
+			static foreach ( iter, index; GenerateSwizzleList!swizzle_list )
+				this.data[index] = tvec.data[iter];
+		}
 	}
+
 
 	/// Returns a pointer to the data container of this vector
 	public inout(T)* ptr() pure inout nothrow { return data.ptr; }
