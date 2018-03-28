@@ -18,6 +18,12 @@ private auto RSwizzleIndex(char c) {
 		case 'a': case 'w': return 3;
 	}
 }
+unittest {
+	assert(RSwizzleIndex('r') == 0);
+	assert(RSwizzleIndex('G') == 1);
+	assert(RSwizzleIndex('z') == 2);
+	assert(RSwizzleIndex('W') == 3);
+}
 
 // Returns a list of indices for the swizzle, intended to be enumerated over
 private auto GenerateSwizzleList(string swizzle_list)() {
@@ -82,7 +88,7 @@ private template GenericVectorOperatorFunctionsMixin(T, int Dim) {
 	}
 
 	/// Casts this vector to another vector type U
-	public U opCast(U)() pure const nothrow if ( U.Dim == Dim ) {
+	public U opCast(U)() pure const nothrow if ( IsVector!U && U.Dim == Dim ) {
 		U temp_vector;
 		// Apply cast to each element of vector
 		static foreach ( i; 0 .. Dim )
@@ -91,9 +97,21 @@ private template GenericVectorOperatorFunctionsMixin(T, int Dim) {
 	}
 
 	/// Operator assignment on a scalar or vector
-	public void opOpAssign(string op, U)(U rhs) if ( __traits(isArithmetic, U) || IsVector!U ) {
+	public void opOpAssign(string op, U)(U rhs) pure nothrow if ( __traits(isArithmetic, U) || IsVector!U ) {
 		mixin(q{ this = this %s rhs; }.format(op));
 	}
+}
+
+// Unittest on operations
+unittest {
+	assert(int3(5) == int3(5));
+	assert(int3(3) != int3(5));
+	assert((int3(6)/int3(2) - int3(1)) + int3(3)*int3(5) == int3(17));
+	assert(int3(6) - 1 == int3(5));
+	assert(1 - int3(6) == int3(-5));
+	assert(-int3(6) == +int3(-6));
+	assert(!__traits(compiles, int3(5)%int3(3)));
+	assert(__traits(compiles, cast(float3)int3(3)));
 }
 
 /**
@@ -136,8 +154,24 @@ private template GenericVectorDefaultFunctionsMixin(T, int Dim) {
 
 	/// Distance between two vectors
 	public T Distance(GVec rhs) pure const nothrow {
-		return cast(T)sqrt(cast(float)(this.Length + rhs.Length));
+		return (this - rhs).Length;
 	}
+
+	/// Returns a normalized vector
+	GVec Normalize() pure const nothrow {
+		return this.opBinary!"/"(this.Length());
+	}
+}
+
+// unittest on generic functions
+unittest {
+	assert(int3(1, 2, 3).Dot(cast(int3)float3(4, 5, 6)) == 32);
+	assert(int3(1, 2, 3).Length == 3);
+	assert(int3(1, 2, 3).Distance(int3(4, 1, 3)) == 3);
+	assert(int3.One.x == 1);
+	assert(!__traits(compiles, int3.Nan));
+	import std.math : abs;
+	assert(abs(float3(0.2f, 0.6f, 0.5f).Normalize.x-0.248069f) <= 0.02f);
 }
 
 /**
@@ -161,13 +195,13 @@ private template GenericVectorMixin(T, int _Dim) {
 	mixin GenericVectorDefaultFunctionsMixin!(Type, Dim);
 
 	/// Swizzles on one single component returning a single value (ei .x, returning a T)
-	private auto SwizzleOnOneComponent(string swizzle_list)() {
+	private auto SwizzleOnOneComponent(string swizzle_list)() pure const nothrow {
 		// Since GenerateSwizzleList returns an array, index the first element
 		return this.data[(GenerateSwizzleList!swizzle_list)[0]];
 	}
 
 	/// Swizzles on multiple components returning a vector (ei .xy, returning Vector2T!T)
-	private auto SwizzleOnMultipleComponents(string swizzle_list)() {
+	private auto SwizzleOnMultipleComponents(string swizzle_list)() pure const nothrow {
 		// create a temporary vector
 		Vector!(T, swizzle_list.length) ret_vec;
 		// iterate the swizzle list and fill vector
@@ -177,7 +211,7 @@ private template GenericVectorMixin(T, int _Dim) {
 	}
 
 	/// opDispatch for vector swizzling
-	public @property auto opDispatch(string swizzle_list, U = void)() if ( swizzle_list.length <= 4 ) {
+	public @property auto opDispatch(string swizzle_list, U = void)() pure const nothrow if ( swizzle_list.length <= 4 ) {
 		// Check if returning a single element, or a vector
 		static if ( swizzle_list.length == 1 )
 			return SwizzleOnOneComponent!swizzle_list;
@@ -185,27 +219,38 @@ private template GenericVectorMixin(T, int _Dim) {
 			return SwizzleOnMultipleComponents!swizzle_list;
 	}
 
-	public @property void opDispatch(string swizzle_list, U)(U x) pure nothrow {
+	/// opDispatch for vector swizzling assignment
+	public @property auto opDispatch(string swizzle_list, U)(U x) pure nothrow {
 		// Check if setting a single element or a list of elements
 		static if ( swizzle_list.length == 1 ) {
 			// GenerateSwizzleList returns an array, so get first element and set it to x
 			this.data[(GenerateSwizzleList!swizzle_list)[0]] = x;
+			return x; // return this scalar ( v.x = v.y = .. )
 		} else {
 			// iterate swizzle list and set values of this vector
 			Vector!(T, swizzle_list.length) tvec = x; // convert scalar to vector
 			static foreach ( iter, index; GenerateSwizzleList!swizzle_list )
 				this.data[index] = tvec.data[iter];
+			return tvec; // return this vector ( v.xy = v.zw = .. )
 		}
 	}
 
 
 	/// Returns a pointer to the data container of this vector
 	public inout(T)* ptr() pure inout nothrow { return data.ptr; }
+}
 
-	// returns a normalized vector
-	GVec Normalize() pure const nothrow {
-		return this.opBinary!"/"(this.Length());
-	}
+// unittest on swizzling
+unittest {
+	int4 x = int4(1, 2, 3, 4);
+	assert(x.xyzw == int4(1, 2, 3, 4));
+	assert(x.xxxx == int4(1));
+	assert(x.wzyx == int4(4, 3, 2, 1));
+	assert(x.xz   == int2(1, 3));
+	assert(x.x    == 1);
+	int2 y = int2(1, 2);
+	assert(y.xyxy == int4(1, 2, 1, 2));
+	assert(y.yyy  == int3(2, 2, 2));
 }
 
 // --- Vector declaration and utility introspection functions
@@ -216,6 +261,11 @@ struct Vector(T, int Dim);
 // T is of any type Vector(U[0], U[1])
 /// Returns if type is a vector
 enum IsVector(T) = is(T : Vector!U, U...);
+
+unittest {
+	assert(!IsVector!float);
+	assert(IsVector!float2);
+}
 
 // --- Vector2T struct
 alias Vector2T(T) = Vector!(T, 2);
@@ -282,7 +332,7 @@ struct Vector(T, int _Dim:3) {
 	public string toString() { return `<%s, %s, %s>`.format(data[0], data[1], data[2]); }
 	public alias ToString = toString;
 
-	public Vector3T!T Cross(Vector3T!T a, Vector3T!T b) pure nothrow {
+	public Vector3T!T Cross(Vector3T!T a, Vector3T!T b) pure const nothrow {
 		return Vector3T!T(
 			a.y*b.z - a.z*b.y,
 			a.z*b.x - a.x * b.z,
