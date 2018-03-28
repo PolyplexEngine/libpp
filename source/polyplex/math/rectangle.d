@@ -5,17 +5,12 @@ import polyplex.math;
 /// Params:
 /// type = all values get stored as this type
 class Rectangle {
-	private int x;
-	private int y;
-	private int width;
-	private int height;
+	private int x = 0;
+	private int y = 0;
+	private int width = 0;
+	private int height = 0;
 
-	this() {
-		this.x = 0;
-		this.y = 0;
-		this.width = 0;
-		this.height = 0;
-	}
+	this() { }
 
 	this(int width, int height) {
 		this.x = 0;
@@ -43,11 +38,11 @@ class Rectangle {
 	public @property int Height() { return this.height; }
 	public @property void Height(int height) { this.height = height; }
 
-	public @property int Left() { return this.x; }
-	public @property int Right() { return this.x + this.width; }
-	public @property int Top() { return this.y; }
-	public @property int Bottom() { return this.y + this.height; }
-	public @property Vector2 Center() { return Vector2(this.x + (this.width/2), this.y + (this.height/2)); }
+	public int Left() { return this.x; }
+	public int Right() { return this.x + this.width; }
+	public int Top() { return this.y; }
+	public int Bottom() { return this.y + this.height; }
+	public Vector2 Center() { return Vector2(this.x + (this.width/2), this.y + (this.height/2)); }
 
 	public bool Intersects(Rectangle other) {
 		if (other is null) return false;

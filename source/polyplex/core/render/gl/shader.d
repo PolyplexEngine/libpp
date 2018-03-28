@@ -5,6 +5,7 @@ import derelict.opengl;
 import polyplex.math;
 import std.stdio;
 import std.string : toStringz;
+import std.conv;
 
 
 class GLShader : Shader {
@@ -78,9 +79,9 @@ class GLShader : Shader {
 	public override void SetUniform(int location, Vector2i value) { glUniform2i(cast(GLint)location, cast(GLint)value.X, cast(GLint)value.Y); }
 	public override void SetUniform(int location, Vector3i value) { glUniform3i(cast(GLint)location, cast(GLint)value.X, cast(GLint)value.Y, cast(GLint)value.Z); }
 	public override void SetUniform(int location, Vector4i value) { glUniform4i(cast(GLint)location, cast(GLint)value.X, cast(GLint)value.Y, cast(GLint)value.Z, cast(GLint)value.W); }
-	public override void SetUniform(int location, Matrix2x2 value) { glUniformMatrix2fv(location, 1, GL_TRUE, value.value_ptr); }
-	public override void SetUniform(int location, Matrix3x3 value) { glUniformMatrix3fv(location, 1, GL_TRUE, value.value_ptr); }
-	public override void SetUniform(int location, Matrix4x4 value) { glUniformMatrix4fv(location, 1, GL_TRUE, value.value_ptr); }
+	public override void SetUniform(int location, Matrix2x2 value) { glUniformMatrix2fv(location, 1, GL_TRUE, value.ptr); }
+	public override void SetUniform(int location, Matrix3x3 value) { glUniformMatrix3fv(location, 1, GL_TRUE, value.ptr); }
+	public override void SetUniform(int location, Matrix4x4 value) { glUniformMatrix4fv(location, 1, GL_TRUE, value.ptr); }
 
 	/**
 		GetUniform gets the position of a uniform.

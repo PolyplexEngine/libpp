@@ -12,10 +12,10 @@ private bool ProperVectorUnaryOperation(string op) {
 private auto RSwizzleIndex(char c) {
 	switch ( c ) {
 		default: assert(false, "Trying to swizzle invalid component '%s'".format(c));
-		case 'r': case 'x': return 0;
-		case 'g': case 'y': return 1;
-		case 'b': case 'z': return 2;
-		case 'a': case 'w': return 3;
+		case 'R': case 'X': case 'r': case 'x': return 0;
+		case 'G': case 'Y': case 'g': case 'y': return 1;
+		case 'B': case 'Z': case 'b': case 'z': return 2;
+		case 'A': case 'W': case 'a': case 'w': return 3;
 	}
 }
 
@@ -104,10 +104,13 @@ private template GenericVectorDefaultFunctionsMixin(T, int Dim) {
 
 	/// Returns a vector of zero elements
 	public static GVec Zero ( ) pure nothrow { return GVec(cast(T)0); }
+
 	/// Returns a vector of one elements
 	public static GVec One  ( ) pure nothrow { return GVec(cast(T)1); }
+
 	/// Returns a vector of NaN elements (floating points only)
-	static if (__traits(isFloating, T)) public static GVec NaN  ( ) pure nothrow {
+	static if (__traits(isFloating, T))
+	public static GVec NaN  ( ) pure nothrow {
 		return GVec(T.nan);
 	}
 
@@ -215,6 +218,7 @@ alias vec2i = Vector2T!int;
 alias float2 = Vector2T!float;
 alias int2 = Vector2T!int;
 alias Vector2 = Vector2T!float;
+alias Vector2i = Vector2T!int;
 
 struct Vector(T, int _Dim:2) {
 	public T[2] data = [0, 0];
@@ -223,10 +227,13 @@ struct Vector(T, int _Dim:2) {
 
 	/// Constructor for scalars
 	public this(U)(U x) { data[] = cast(T)x; }
+
 	/// Constructor for parameter lists
 	public this(U)(U x, U y) { data[] = [x, y]; }
+
 	/// Constructor for vectors of same type
 	public this(Vector2T!T vec) { data[] = vec.data; }
+
 	/// Constructor for explicit lists
 	public this(T[] list) {
 		assert(list.length == 2, "List length mismatch");
@@ -244,6 +251,7 @@ alias vec3i = Vector3T!int;
 alias float3 = Vector3T!float;
 alias int3 = Vector3T!int;
 alias Vector3 = Vector3T!float;
+alias Vector3i = Vector3T!int;
 
 struct Vector(T, int _Dim:3) {
 	public T[3] data = [0, 0, 0];
@@ -252,10 +260,13 @@ struct Vector(T, int _Dim:3) {
 
 	/// Constructor for scalars
 	public this(U)(U x) { data[] = cast(T)x; }
+
 	/// Constructor for parameter lists
 	public this(U)(U x, U y, U z) { data[] = [x, y, z]; }
+
 	/// Constructor for vectors of same type
 	public this(Vector3T!T vec) { data[] = vec.data; }
+
 	/// Constructor for explicit lists
 	public this(T[] list) {
 		assert(list.length == 3, "List length mismatch");
@@ -280,6 +291,7 @@ alias vec4i = Vector4T!int;
 alias float4 = Vector4T!float;
 alias int4 = Vector4T!int;
 alias Vector4 = Vector4T!float;
+alias Vector4i = Vector4T!int;
 
 struct Vector(T, int _Dim:4) {
 	public T[4] data = [0, 0, 0, 0];
@@ -288,10 +300,13 @@ struct Vector(T, int _Dim:4) {
 
 	/// Constructor for scalars
 	public this(U)(U x) { data[] = cast(T)x; }
+
 	/// Constructor for parameter lists
 	public this(U)(U x, U y, U z, U w) { data[] = [x, y, z, w]; }
+
 	/// Constructor for vectors of same type
 	public this(Vector4T!T vec) { data[] = vec.data; }
+
 	/// Constructor for explicit lists
 	public this(T[] list) {
 		assert(list.length == 4, "List length mismatch");

@@ -14,7 +14,7 @@ public class Camera {
 	public abstract void Update();
 	public abstract Matrix4x4 Project(float width, float height);
 }
-
+/+ 
 /**
 	A basic 3D camera, optimized for use in 3D environments.
 */
@@ -74,4 +74,4 @@ public class Camera2D : Camera {
 	public override Matrix4x4 Project(float width, float height) {
 		return Matrix4x4.identity.Matrix4x4.Orthographic(0f, width, height, 0f, znear, zfar);
 	}
-}
+} +/
