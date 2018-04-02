@@ -14,7 +14,7 @@ public class Camera {
 	public abstract void Update();
 	public abstract Matrix4x4 Project(float width, float height);
 }
-/+ 
+
 /**
 	A basic 3D camera, optimized for use in 3D environments.
 */
@@ -25,7 +25,7 @@ public class Camera3D : Camera {
 	public float Zoom;
 
 
-	this(Vector3 position, Quaternion rotation = Quaternion.identity, float zoom = 1f, float near = 0.1f, float far = 100f, float fov = 90f) {
+	this(Vector3 position, Quaternion rotation = Quaternion.Identity, float zoom = 1f, float near = 0.1f, float far = 100f, float fov = 90f) {
 		this.Position = position;
 		this.Rotation = rotation;
 		this.Zoom = zoom;
@@ -37,7 +37,7 @@ public class Camera3D : Camera {
 	}
 
 	public override void Update() {
-		this.matrix = Matrix4x4.identity* Rotation.to_matrix!(4,4)().Translate(Position).Scale(Zoom, Zoom, Zoom);
+		this.matrix = Matrix4x4.Identity * Matrix4x4.FromQuaternion(Rotation).Translate(Position).Scale(Vector3(Zoom, Zoom, Zoom));
 	}
 
 	public override Matrix4x4 Project(float width, float height) {
@@ -46,7 +46,7 @@ public class Camera3D : Camera {
 }
 
 public class Camera2D : Camera {
-	public Vector2 Position;
+	public Vector3 Position;
 	public float Rotation;
 	public float Zoom;
 	public Vector2 Origin;
@@ -59,19 +59,19 @@ public class Camera2D : Camera {
 
 		this.znear = near;
 		this.zfar = far;
-		this.matrix = Matrix4x4.identity;
+		this.matrix = Matrix4x4.Identity;
 		Update();
 	}
 
 	public override void Update() {
-		this.matrix = Matrix4x4.identity
+		this.matrix = Matrix4x4.Identity
 		.Translate(Vector3(-Position.X, -Position.Y, 0))
 		.RotateZ(this.Rotation)
-		.Scale(Zoom, Zoom, Zoom)
+		.Scale(Vector3(Zoom, Zoom, Zoom))
 		.Translate(Vector3(Origin.X, Origin.Y, -1));
 	}
 
 	public override Matrix4x4 Project(float width, float height) {
-		return Matrix4x4.identity.Matrix4x4.Orthographic(0f, width, height, 0f, znear, zfar);
+		return Matrix4x4.Identity * Matrix4x4.Ortho(0f, width, height, 0f, znear, zfar);
 	}
-} +/
+}

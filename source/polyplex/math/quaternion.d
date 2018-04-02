@@ -86,10 +86,12 @@ struct QuaternionT(T) if (__traits(isFloating, T)) {
 
 		return q;
 	}
+
 	/// Constructs a quaternion from euler angle vector
 	public static QuaternionT!T ToQuaternion(Vector3T!T vec) pure nothrow {
 		return ToQuaternion(vec.x, vec.y, vec.z);
 	}
+	
 	unittest {
 		assert(__traits(compiles, ToQuaternion(Vector3T!T(0.2f))));
 		assert(__traits(compiles, ToQuaternion(0.2f, 0.5f, 0.6f)));
