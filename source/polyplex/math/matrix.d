@@ -184,6 +184,31 @@ struct Matrix(int Dimensions) {
 		return this * GMatrix.Scale(scale_vec);
 	}
 
+	static if (Dimensions >= 3)
+	public GMatrix RotateX(float rot) {
+		return this * GMatrix.RotateX(rot);
+	}
+
+	static if (Dimensions >= 3)
+	public GMatrix RotateY(float rot) {
+		return this * GMatrix.RotateY(rot);
+	}
+
+	static if (Dimensions >= 3)
+	public GMatrix RotateZ(float rot) {
+		return this * GMatrix.RotateZ(rot);
+	}
+
+	static if (Dimensions == 2)
+	public GMatrix Rotate(float rot) {
+		return this * GMatrix.Rotate(rot);
+	}
+
+	static if(Dimensions == 4)
+	public GMatrix Rotate(Quaternion rot) {
+		return this * GMatrix.FromQuaternion(rot);
+	} 
+
 	public string ToString() {
 		string dim = "[";
 		foreach( x; 0 .. Dimensions ) {

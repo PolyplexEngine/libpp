@@ -37,7 +37,7 @@ public class Camera3D : Camera {
 	}
 
 	public override void Update() {
-		this.matrix = Matrix4x4.Identity * Matrix4x4.FromQuaternion(Rotation).Translate(Position).Scale(Vector3(Zoom, Zoom, Zoom));
+		this.matrix = Matrix4x4.Identity.Rotate(Rotation).Translate(Position).Scale(Vector3(Zoom, Zoom, Zoom));
 	}
 
 	public override Matrix4x4 Project(float width, float height) {
