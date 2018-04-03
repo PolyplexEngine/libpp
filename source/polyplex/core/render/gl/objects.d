@@ -34,6 +34,8 @@ class VAO {
 	private GLuint id;
 	public @property uint Id() { return cast(uint)id; }
 
+	public BufferObject[] Objects;
+
 	this() {
 		glGenVertexArrays(1, &id);
 	}
@@ -76,7 +78,9 @@ enum Layout {
 	Grouped
 }
 
+
 class BufferObject {
+	private string[] buffer_map;
 	private Layout layout;
 	private int type;
 
@@ -92,6 +96,7 @@ class BufferObject {
 		Generates <amount> buffers.
 	*/
 	public void GenBuffers(int amount) {
+		Buffers.length = amount;
 		glGenBuffers(amount, Id.ptr);
 	}
 
@@ -102,14 +107,55 @@ class BufferObject {
 		glBindBuffer(type, index);
 	}
 
+	public int GetBuffMapId(string name) {
+		foreach( int i, string buff; buffer_map ) {
+			if (buff == name) return i;
+		}
+		return -1;
+	}
+
 	/**
 		Supplies buffer data as a struct or class.
 	*/
-	public void BufferData(T)(T input_structs) {
+	public void BufferData(T)(T[] input_structs) {
+
+		// Make sure valid types are in the struct
+		// TODO: Add type support for ints, and such.
+		enum ValidBufferType(T) = (is(T == float)) || (IsVector!T && is(T.Type == float)) || is(T == Matrix3x3) || is(T == Matrix4x4);
+
 		foreach(int iterator, string member; __traits(allMembers, T)) {
-			writeln(iterator, ": ", member);
+			// Get value at compile time.
+			auto field = __traits(getMember, input_structs[0], member);
+
+			// Run the type test from above.
+			static assert(ValidBufferType!(typeof(field)));
+
+			queue_buffer_data(iterator, member);
+
+			// Use this if/when runtime reflection might be added.
+			// throw new Exception("Invalid buffer data type: " ~ typeid(field).text ~ "!");
 		}
-	} 
+	}
+
+	private void queue_buffer_data(int pos, string name) {
+		if (layout == Layout.Layered) {
+			if (Buffers.length < pos)
+				Buffers.length = pos;
+			if (buffer_map.length < pos+1)
+				buffer_map.length = pos+1;
+			buffer_map[pos] = name;
+		}
+
+		Logger.Debug("Attached {0} to id {1}", name, pos);
+	}
+
+	private void buffer_data(T:float)(string name, T val) {
+		
+	}
+
+	private void buffer_data(T) (string name, T val) if (IsVector!T) {
+
+	}
 
 	public void BufferData(Vector3[] vec) {}
 	public void BufferData(Vector2[] vec) {}
@@ -123,7 +169,7 @@ class BufferObject {
 		t tx = t(Vector3(1, 2, 3), 4f);
 
 		BufferObject bo = new BufferObject(GL_ELEMENT_ARRAY_BUFFER, Layout.Layered);
-		bo.BufferData(tx);
+		bo.BufferData([tx]);
 	}
 }
 
