@@ -24,8 +24,8 @@ enum OptimizeMode {
 }
 
 enum BufferMode {
-	Static,
-	Dynamic
+	Static = GL_STATIC_DRAW,
+	Dynamic = GL_DYNAMIC_DRAW
 }
 
 //Vertex Array Object contains state information to be sent to the GPU
@@ -117,20 +117,25 @@ class BufferObject {
 	/**
 		Supplies buffer data as a struct or class.
 	*/
-	public void BufferData(T)(T[] input_structs) {
+	public void BufferData(T)(T input_structs) {
 
 		// Make sure valid types are in the struct
 		// TODO: Add type support for ints, and such.
-		enum ValidBufferType(T) = (is(T == float)) || (IsVector!T && is(T.Type == float)) || is(T == Matrix3x3) || is(T == Matrix4x4);
+		enum ValidBufferType(T) = (is(T == float)) || (IsVector!T && is(T.Type == float));
 
 		foreach(int iterator, string member; __traits(allMembers, T)) {
 			// Get value at compile time.
-			auto field = __traits(getMember, input_structs[0], member);
+			auto field = __traits(getMember, input_structs, member);
 
 			// Run the type test from above.
-			static assert(ValidBufferType!(typeof(field)));
+			static assert(isArray!(typeof(field)));
+			static assert(ValidBufferType!(typeof(field[0])));
 
 			queue_buffer_data(iterator, member);
+			buffer_data(member, field);
+
+			// TODO: add stride.
+			specify_attrib_pointer(field, iterator, 0);
 
 			// Use this if/when runtime reflection might be added.
 			// throw new Exception("Invalid buffer data type: " ~ typeid(field).text ~ "!");
@@ -139,22 +144,71 @@ class BufferObject {
 
 	private void queue_buffer_data(int pos, string name) {
 		if (layout == Layout.Layered) {
-			if (Buffers.length < pos)
-				Buffers.length = pos;
+			if (Buffers.length < pos) {
+				Buffers.length = pos+1;
+				Buffers[pos] = [];
+			}
 			if (buffer_map.length < pos+1)
 				buffer_map.length = pos+1;
 			buffer_map[pos] = name;
 		}
 
-		Logger.Debug("Attached {0} to id {1}", name, pos);
+		Logger.Debug("[BufferObject] Attached {0} to id {1}", name, pos);
 	}
 
-	private void buffer_data(T:float)(string name, T val) {
+	private void specify_attrib_pointer(T:float)(T[] flt, int index, int stride) {
+		specify_attrib_pointer(index, 1, stride);
+	}
+
+	private void specify_attrib_pointer(T) (T[] vec, int index, int stride) if (IsVector!T) {
+		specify_attrib_pointer(index, vec[0].data.length, stride);
+	}
+
+	private void specify_attrib_pointer(int index, int size, int stride) {
+		glVertexAttribPointer(index, size, GL_FLOAT, GL_FALSE, stride, null);
+		glEnableVertexAttribArray(index);
+	}
+
+	private void buffer_data(T:float[])(string name, T val) {
 		
+		// Layered
+		if (layout == Layout.Layered) {
+			Buffers[GetBuffMapId(name)] ~= val;
+			return;	
+		}
+
+		//Clustered
+		if (layout == Layout.Clustered) {
+
+			return;
+		}
+
+		//Grouped
+
 	}
 
-	private void buffer_data(T) (string name, T val) if (IsVector!T) {
+	private void buffer_data(T) (string name, T[] val) if (IsVector!T) {
+		
+		// Layered
+		if (layout == Layout.Layered) {
+			foreach(T vec; val) {
+				Buffers[GetBuffMapId(name)] ~= vec.data;
+			}
+			return;	
+		}
 
+		//Clustered
+		if (layout == Layout.Clustered) {
+
+			return;
+		}
+
+		//Grouped
+
+	}
+
+	private void submit_data(int index, BufferMode mode = BufferMode.Dynamic) {
+		glBufferData(this.type, Buffers[index].length * GLfloat.sizeof, &Buffers[index], mode);
 	}
 
 	public void BufferData(Vector3[] vec) {}
@@ -163,13 +217,13 @@ class BufferObject {
 
 	unittest {
 		struct t {
-			Vector3 tPosition;
-			float tScale;
+			Vector3[] tPosition;
+			float[] tScale;
 		}
-		t tx = t(Vector3(1, 2, 3), 4f);
+		t tx = t([Vector3(1, 2, 3)], [4f]);
 
 		BufferObject bo = new BufferObject(GL_ELEMENT_ARRAY_BUFFER, Layout.Layered);
-		bo.BufferData([tx]);
+		bo.BufferData(tx);
 	}
 }
 
