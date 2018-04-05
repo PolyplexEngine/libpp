@@ -83,9 +83,10 @@ class BufferObject {
 	private string[] buffer_map;
 	private Layout layout;
 	private int type;
+	private int len;
 
 	public GLuint[] Id;
-	public Buffer[] Buffers;
+	public Buffer[] Buffers = [];
 
 	this(int type, Layout layout) {
 		this.type = type;
@@ -114,6 +115,10 @@ class BufferObject {
 		return -1;
 	}
 
+	public int Count() {
+		return this.len;
+	}
+
 	/**
 		Supplies buffer data as a struct or class.
 	*/
@@ -137,6 +142,9 @@ class BufferObject {
 			// TODO: add stride.
 			specify_attrib_pointer(field, iterator, 0);
 
+			// Specify amount of elements in the buffer object.
+			this.len = cast(int)field.length;
+
 			// Use this if/when runtime reflection might be added.
 			// throw new Exception("Invalid buffer data type: " ~ typeid(field).text ~ "!");
 		}
@@ -144,16 +152,16 @@ class BufferObject {
 
 	private void queue_buffer_data(int pos, string name) {
 		if (layout == Layout.Layered) {
-			if (Buffers.length < pos) {
+			if (Buffers.length <= pos) {
 				Buffers.length = pos+1;
 				Buffers[pos] = [];
 			}
-			if (buffer_map.length < pos+1)
+			if (buffer_map.length <= pos+1)
 				buffer_map.length = pos+1;
 			buffer_map[pos] = name;
 		}
 
-		Logger.Debug("[BufferObject] Attached {0} to id {1}", name, pos);
+		Logger.Debug("[BufferObject] Attached attribute {0} to id {1}", name, pos);
 	}
 
 	private void specify_attrib_pointer(T:float)(T[] flt, int index, int stride) {
@@ -211,25 +219,16 @@ class BufferObject {
 		glBufferData(this.type, Buffers[index].length * GLfloat.sizeof, &Buffers[index], mode);
 	}
 
-	public void BufferData(Vector3[] vec) {}
-	public void BufferData(Vector2[] vec) {}
-	public void BufferData(float[] vec) {}
-
-	unittest {
-		struct t {
-			Vector3[] tPosition;
-			float[] tScale;
-		}
-		t tx = t([Vector3(1, 2, 3)], [4f]);
-
-		BufferObject bo = new BufferObject(GL_ELEMENT_ARRAY_BUFFER, Layout.Layered);
-		bo.BufferData(tx);
-	}
+	public abstract void Draw();
 }
 
 class IBO : BufferObject {
 	this(Layout layout) {
 		super(GL_ELEMENT_ARRAY_BUFFER, layout);
+	}
+
+	public override void Draw() {
+		throw new Exception("You can't draw an IBO, attach the IBO to a VBO instead.");
 	}
 }
 
@@ -237,11 +236,30 @@ class VBO : BufferObject {
 	this(Layout layout) {
 		super(GL_ARRAY_BUFFER, layout);
 	}
+
+	public override void Draw() {
+		glDrawArrays(GL_TRIANGLES, 0, this.Count);
+	}
 }
 
 class IndxVBO : VBO {
+	private IBO index_buffer;
+
 	this(Layout layout) {
 		super(layout);
+		this.index_buffer = new IBO(layout);
+	}
+
+	public void BufferIndices(float[] indices) {
+		struct d {
+			float[] data;
+		}
+		d data = d(indices);
+		this.index_buffer.BufferData(data);
+	}
+
+	public override void Draw() {
+		glDrawElements(GL_TRIANGLES, this.Count, GL_FLOAT, null);
 	}
 }
 
@@ -249,12 +267,34 @@ class InstVBO : VBO {
 	this(Layout layout) {
 		super(layout);
 	}
+
+	public override void Draw() {
+		
+	}
 }
 
 class InstIndxVBO : InstVBO {
+	private IBO index_buffer;
+
 	this(Layout layout) {
 		super(layout);
+		this.index_buffer = new IBO(layout);
 	}
+
+	public override void Draw() {
+		
+	}
+}
+
+unittest {
+	struct t {
+		Vector3[] tPosition;
+		float[] tScale;
+	}
+	t tx = t([Vector3(1, 2, 3)], [4f]);
+
+	BufferObject bo = new VBO(Layout.Layered);
+	//                                                                               xx                                                                                           xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxcxxdbo.BufferData(tx);
 }
 
 /*
