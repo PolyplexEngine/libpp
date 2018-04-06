@@ -24,8 +24,12 @@ public class MouseState {
 	}
 
 	public bool IsButtonPressed(MouseButton button) {
-		if (SDL_BUTTON(button)) return true;
+		if (btn_mask & SDL_BUTTON(button)) return true;
 		return false;
+	}
+
+	public bool IsButtonReleased(MouseButton button) {
+		return !IsButtonPressed(button);
 	}
 }
 
