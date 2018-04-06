@@ -114,6 +114,10 @@ class BufferObject {
 		return -1;
 	}
 
+	public string[] ListAttributes() {
+		return buffer_map;
+	}
+
 	/**
 		Supplies buffer data as a struct or class.
 	*/
@@ -153,6 +157,16 @@ class BufferObject {
 			buffer_map[pos] = name;
 		}
 
+		if (layout == Layout.Grouped) {
+			if (buffer_map.length < pos+1)
+				buffer_map.length = pos+1;
+			buffer_map[pos] = name;
+			if (Buffers.length == 0) {
+				Buffers.length = 1;
+				Buffers[0] = [];
+			}
+		}
+
 		Logger.Debug("[BufferObject] Attached {0} to id {1}", name, pos);
 	}
 
@@ -179,12 +193,12 @@ class BufferObject {
 
 		//Clustered
 		if (layout == Layout.Clustered) {
-
+			//TODO: Add clustered layout.
 			return;
 		}
 
 		//Grouped
-
+		Buffers[0] ~= val;
 	}
 
 	private void buffer_data(T) (string name, T[] val) if (IsVector!T) {
@@ -199,21 +213,25 @@ class BufferObject {
 
 		//Clustered
 		if (layout == Layout.Clustered) {
-
+			//TODO: Add clustered layout.
 			return;
 		}
 
 		//Grouped
-
+		foreach(T vec; val) {
+			Buffers[0] ~= vec.data;
+		}
 	}
 
 	private void submit_data(int index, BufferMode mode = BufferMode.Dynamic) {
 		glBufferData(this.type, Buffers[index].length * GLfloat.sizeof, &Buffers[index], mode);
 	}
 
-	public void BufferData(Vector3[] vec) {}
-	public void BufferData(Vector2[] vec) {}
-	public void BufferData(float[] vec) {}
+	/*
+		public void BufferData(string name, Vector3[] vec) {}
+		public void BufferData(string name, Vector2[] vec) {}
+		public void BufferData(string name, float[] vec) {}
+	*/
 
 	unittest {
 		struct t {

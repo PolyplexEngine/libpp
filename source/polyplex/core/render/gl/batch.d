@@ -11,16 +11,24 @@ import polyplex.utils;
 import polyplex.math;
 import polyplex.utils.mathutils;
 
-/+ 
+
+private struct SprBatchData {
+	Vector3[] ppPosition;
+	Vector2[] ppTexcoord;
+	Vector4[] ppColor;
+}
+
 /**
 	OpenGL implementation of a sprite batcher.
 */
 public class GlSpriteBatch : SpriteBatch {
 	private static string uniform_tex_name = "ppTexture";
 	private static string uniform_prj_name = "ppProjection";
+	/+
+	Old code
 	private static string attrib_color_name = "ppColor";
 	private static string attrib_position_name = "ppPosition";
-	private static string attrib_texcoord_name = "ppTexcoord";
+	private static string attrib_texcoord_name = "ppTexcoord";+/
 	private static string default_vert;
 	private static string default_frag;
 	private static Shader default_shader;
@@ -30,7 +38,8 @@ public class GlSpriteBatch : SpriteBatch {
 	private int size;
 	private int queued;
 
-	private RenderObject render_object;
+	private SprBatchData vector_data;
+	private VBO render_object;
 
 	private Renderer renderer;
 	private SpriteSorting sort_mode; 
@@ -45,6 +54,10 @@ public class GlSpriteBatch : SpriteBatch {
 		this.renderer = renderer;
 		InitializeSpritebatch();
 		this.size = size;
+		render_object = new VBO(Layout.Grouped);
+		/+
+		Old code
+
 		render_object = new RenderObject(OptimizeMode.Mode2D, BufferMode.Dynamic);
 		//TODO: Improve VBO creation to not need to make dummy data.
 		render_object.AddFloats([[0f, 0f, 0f]]);
@@ -52,19 +65,20 @@ public class GlSpriteBatch : SpriteBatch {
 		render_object.AddFloats([[0f, 0f, 0f, 0f]]);
 		render_object.Generate();
 		render_object.Vbo.Flush();
+		+/
 	}
 
 	public static void InitializeSpritebatch() {
-	if (!has_init) has_init = !has_init;
-	else return;
+		if (!has_init) has_init = !has_init;
+		else return;
 
-	default_vert = import("sprite_batch.vsh");
-	default_frag = import("sprite_batch.fsh");
+		default_vert = import("sprite_batch.vsh");
+		default_frag = import("sprite_batch.fsh");
 
-	default_shader = new GLShader(new ShaderCode(default_vert, default_frag, [attrib_position_name, attrib_texcoord_name, attrib_color_name]));
-	default_cam = new Camera2D(Vector2(0, 0));
-	default_cam.Update();
-}
+		default_shader = new GLShader(new ShaderCode(default_vert, default_frag, ["ppPosition", "ppTexcoord", "ppColor"]));
+		default_cam = new Camera2D(Vector2(0, 0));
+		default_cam.Update();
+	}
 
 	private void set_blend_state(Blending state) {
 		if (state == Blending.Additive) {
@@ -161,14 +175,19 @@ public class GlSpriteBatch : SpriteBatch {
 	*/
 	public override void Flush() {
 		render();
-		render_object.Vbo.Flush();
 		queued = 0;
 	}
 
 	private void add_vertex(float x, float y, float z, float r, float g, float b, float a, float u, float v) {
-		render_object.Vbo.Vertices[0].Add([x, y, z]);
-		render_object.Vbo.Vertices[1].Add([u, v]);
-		render_object.Vbo.Vertices[2].Add([r, g, b, a]);
+		vector_data.ppPosition ~= Vector3(x, y, z);
+		vector_data.ppColor ~= Vector4(r, g, b, a);
+		vector_data.ppTexcoord ~= Vector2(u, v);
+		/+
+		Old code
+			render_object.Vbo.Vertices[0].Add([x, y, z]);
+			render_object.Vbo.Vertices[1].Add([u, v]);
+			render_object.Vbo.Vertices[2].Add([r, g, b, a]);
+		+/
 	}
 
 	private void check_flush(Texture2D texture) {
@@ -181,13 +200,18 @@ public class GlSpriteBatch : SpriteBatch {
 	}
 
 	private void render() {
+		// Buffer the data
+		render_object.BufferData(vector_data);
+
+		// Attach textures, set states, uniforms, etc.
 		this.shader.Attach();
 		if (!(current_texture is null)) current_texture.Attach(0, this.shader);
 		set_sampler_state(sample_state);
 		set_blend_state(blend_state);
 		this.shader.SetUniform(this.shader.GetUniform(uniform_prj_name), mult_matrices());
-		render_object.Vbo.Update();
-		render_object.Draw(DrawType.Triangles);
+
+		// Draw.
+		render_object.Draw();
 	}
 
 	/**
@@ -292,4 +316,4 @@ public class GlSpriteBatch : SpriteBatch {
 		has_begun = false;
 		Flush();
 	}
-} +/
+}
