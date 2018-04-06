@@ -72,7 +72,7 @@ class Game1 : Game {
   //Update is run before draw in the game loop.
   public override void Update(GameTimes game_time) {
     // Quit game if Q is pressed.
-    if (Input.IsKeyDown(KeyCode.Q)) this.Quit();
+    if (Keyboard.GetState().IsKeyDown(Keys.Q)) this.Quit();
     
     //FPS counter as window title.
     Window.Title = "FPS: " ~ to!string(AverageFPS);
@@ -82,7 +82,7 @@ class Game1 : Game {
   public override void Draw(GameTimes game_time) {
   
     //Clears color, generally put first in the Draw method.
-    Drawing.ClearColor(Colors.Black);
+    Drawing.ClearColor(Color.Black);
     
     sprite_batch.Begin();
     sprite_batch.Draw(my_texture, new Rectangle(0, 0, 32, 32), new Rectangle(0, 0, my_texture.Width, my_texture.Height), Color.White);
