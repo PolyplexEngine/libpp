@@ -94,9 +94,6 @@ class Game1 : Game {
 You can also check out [example_game](https://github.com/PolyplexEngine/example_game), which is used as a testbed for new libpp features/fixes.
 
 ## Notice
-libpp uses a modified version of [gl3n](https://github.com/Dav1dde/gl3n) made to fit the code-style of libpp. Seen in the `polyplex.math` package.
-
-##### Notice, the library is written in what would be considered non-idiomatic D.
-##### A styleguide will be drafted at some point and the code will be cleaned up once it's in a more functional state.
+##### The library is written in what would be considered non-idiomatic D.
 
 [logo]: https://github.com/PolyplexEngine/ppbranding/blob/master/polyplex3.jpg
