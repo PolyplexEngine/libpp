@@ -31,9 +31,9 @@ struct Matrix(int Dimensions) {
 
 	static if(Dimensions >= 3)
 	public static GMatrix Scale(Vector!(float, Dimensions-1) scale_vec) {
-		float[Dimensions][Dimensions] dims = fill_data();
-		for (int x = 0; x < Dimensions; x++) {
-			for (int y = 0; y < Dimensions; y++) {
+		float[Dimensions][Dimensions] dims = GMatrix.Identity.data;
+		foreach( x; 0 .. Dimensions-1 ) {
+			foreach( y; 0 .. Dimensions-1 ) {
 				if (x == y) dims[x][y] = scale_vec.data[y];
 				else dims[x][y] = 0;
 			}
