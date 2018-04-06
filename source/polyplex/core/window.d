@@ -115,10 +115,6 @@ public class GameWindow {
             Logger.Fatal("Initialization of SDL2 failed!...\n{0}", SDL_GetError());
         }
 
-		if (!IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF | IMG_INIT_WEBP) < 0 ) {
-			Logger.Fatal("Initialization of image formats failed!...\n{0}", IMG_GetError());
-		}
-
 		//Set info.
         this.start_bounds = bounds;
 		this.start_title = name;

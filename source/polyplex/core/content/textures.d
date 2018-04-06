@@ -1,5 +1,4 @@
 module polyplex.core.content.textures;
-import derelict.sdl2.image;
 import derelict.sdl2.sdl;
 import polyplex.core.color;
 import polyplex.utils.logging;

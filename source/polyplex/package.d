@@ -93,16 +93,10 @@ public void InitLibraries() {
 			std.process.environment["PATH"] = path_begin ~ "libs" ~ sys_sep ~ get_arch() ~ path_sep ~ path;
 			Logger.Debug("Updated PATH to {0}", std.process.environment["PATH"]);
 			DerelictSDL2.load(get_system_lib("SDL2"));
-			DerelictSDL2Image.load(get_system_lib("SDL2_image"));
-			DerelictSDL2Mixer.load(get_system_lib("SDL2_mixer"));
-			DerelictSDL2ttf.load(get_system_lib("SDL2_ttf"));
 		} else {
 			// Load system libraries
 			Logger.Info("Binding to system libraries....");
 			DerelictSDL2.load();
-			DerelictSDL2Image.load();
-			DerelictSDL2Mixer.load();
-			DerelictSDL2ttf.load();
 		}
 		SDL_version linked;
 		SDL_version compiled;
