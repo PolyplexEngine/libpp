@@ -16,7 +16,6 @@ public class GameEventSystem {
 	public Event OnExitRequested = new Event();
 
 	this() {
-		Input.Init();
 	}
 
 	public void Update() {
@@ -33,8 +32,6 @@ public class GameEventSystem {
 					OnWindowSizeChanged(cast(void*)this, args);
 				}
 			}
-
-			Input.Update(ev);
 
 			//Update last handled.
 			lastHandled = false;

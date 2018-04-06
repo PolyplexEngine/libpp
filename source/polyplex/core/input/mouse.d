@@ -1,30 +1,48 @@
 module polyplex.core.input.mouse;
 import derelict.sdl2.sdl;
+import polyplex.math;
 
 enum MouseButton {
-	//No buttons.
-	Idle = 0,
 
 	//Left Mouse Button
-	Left = 1,
+	Left = SDL_BUTTON_LEFT,
 
 	//Middle Mouse Button
-	Middle = 2,
+	Middle = SDL_BUTTON_MIDDLE,
 
 	//Right Mouse Button
-	Right = 3
+	Right = SDL_BUTTON_RIGHT
+}
+
+public class MouseState {
+	private Vector2 pos;
+	private int btn_mask;
+
+	this(int x, int y, int btn_mask) {
+		this.pos = Vector2(x, y);
+		this.btn_mask = btn_mask;
+	}
+
+	public bool IsButtonPressed(MouseButton button) {
+		if (SDL_BUTTON(button)) return true;
+		return false;
+	}
 }
 
 public class Mouse {
-	private int x;
-	private int y;
-	private MouseButton Pressed;
-
-	public void Update() {
-
+	public static MouseState GetState() {
+		SDL_PumpEvents();
+		int x;
+		int y;
+		int mask = SDL_GetMouseState(&x, &y);
+		return new MouseState(x, y, mask);
 	}
 
-	public void Refresh() {
-		
+	public static Vector2 Position() {
+		SDL_PumpEvents();
+		int x;
+		int y;
+		SDL_GetMouseState(&x, &y);
+		return Vector2(x, y);
 	}
 }
