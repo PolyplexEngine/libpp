@@ -43,14 +43,10 @@ void main(string[] args) {
   // Show info logs.
   LogLevel |= LogType.Info;
   
-  // Select Open GL as a graphics backend.
-  // Changing the property and rerunning InitLibraries will:
-  // 1. unload the previous graphics backend library from memory
-  // 2. bind the new prefered graphics backend.
-  ChosenBackend = GraphicsBackend.OpenGL;
-  InitLibraries();
-  Game my_game = new Game1();
-  my_game.Run();
+  // libpp now has a simple game launcher
+  // It will automatically choose the graphics API most suitable.
+  BasicGameLauncher.InitSDL();
+  BasicGameLauncher.LaunchGame(new Game1(), args);
 }
 
 class Game1 : Game {
