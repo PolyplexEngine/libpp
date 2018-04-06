@@ -3,8 +3,7 @@ import polyplex.core.render;
 import derelict.sdl2.sdl;
 import derelict.opengl;
 import polyplex.math;
-import std.stdio;
-import std.string : toStringz;
+import polyplex.utils.logging;
 import std.conv;
 
 
@@ -147,6 +146,7 @@ class GLShader : Shader {
 		for (int i = 0; i < attribs.length; i++) {
 			//TODO: Add logging
 			//writeln("Binding attribute ", i, " named ", to!string(attribs[i]));
+			Logger.Debug("Binding attribute {0} named {1}...", i, attribs[i]);
 			glBindAttribLocation(shaderprogram, i, attribs[i]);
 		}
 	}

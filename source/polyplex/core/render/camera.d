@@ -37,7 +37,11 @@ public class Camera3D : Camera {
 	}
 
 	public override void Update() {
-		this.matrix = Matrix4x4.Identity.Rotate(Rotation).Translate(Position).Scale(Vector3(Zoom, Zoom, Zoom));
+		this.matrix = Matrix4x4.Identity;
+		this.matrix
+		.Rotate(Rotation)
+		.Translate(Position)
+		.Scale(Vector3(Zoom, Zoom, Zoom));
 	}
 
 	public override Matrix4x4 Project(float width, float height) {
@@ -51,7 +55,7 @@ public class Camera2D : Camera {
 	public float Zoom;
 	public Vector2 Origin;
 
-	this(Vector2 position, float rotation = 0, float zoom = 1f, float near = 0.1f, float far = 100f) {
+	this(Vector2 position, float rotation = 0f, float zoom = 1f, float near = 0.1f, float far = 100f) {
 		this.Position = Vector3(position.X, position.Y, -1);
 		this.Rotation = rotation; 
 		this.Zoom = zoom;
@@ -72,6 +76,6 @@ public class Camera2D : Camera {
 	}
 
 	public override Matrix4x4 Project(float width, float height) {
-		return Matrix4x4.Identity * Matrix4x4.Ortho(0f, width, height, 0f, znear, zfar);
+		return Matrix4x4.Identity.Orthographic(0f, width, height, 0f, znear, zfar);
 	}
 }

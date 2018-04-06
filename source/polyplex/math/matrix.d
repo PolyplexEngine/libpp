@@ -11,30 +11,39 @@ struct Matrix(int Dimensions) {
 		this.data = d;
 	}
 
-	private static float[Dimensions][Dimensions] fill_data() {
+	private static float[Dimensions][Dimensions] clear(float val) {
 		float[Dimensions][Dimensions] dat;
 		foreach ( x; 0 .. Dimensions ) {
 			foreach ( y; 0 .. Dimensions ) {
-				dat[x][y] = 0;
+				dat[x][y] = val;
 			}
 		}
 		return dat;
 	}
 
 	public static GMatrix Identity() {
-		float[Dimensions][Dimensions] data = fill_data();
+		float[Dimensions][Dimensions] data = clear(0);
 		foreach ( i; 0 .. Dimensions ) {
 			data[i][i] = 1f;
 		}
 		return GMatrix(data);
 	}
 
-	static if(Dimensions >= 3)
-	public static GMatrix Scale(Vector!(float, Dimensions-1) scale_vec) {
+	static if (Dimensions == 4)
+	public static GMatrix Scaling(Vector3 scale_vec) {
+		GMatrix i = GMatrix.Identity;
+		i.data[0][0] = scale_vec.X;
+		i.data[1][1] = scale_vec.Y;
+		i.data[2][2] = scale_vec.Z;
+		return i;
+	}
+
+	static if(Dimensions == 3)
+	public static GMatrix Scaling(Vector!(float, Dimensions-1) scale_vec) {
 		float[Dimensions][Dimensions] dims = GMatrix.Identity.data;
 		foreach( x; 0 .. Dimensions-1 ) {
 			foreach( y; 0 .. Dimensions-1 ) {
-				if (x == y) dims[x][y] = scale_vec.data[y];
+				if (x == y) dims[x][y] = scale_vec.data[x];
 				else dims[x][y] = 0;
 			}
 		}
@@ -43,37 +52,37 @@ struct Matrix(int Dimensions) {
 	}
 
 	static if(Dimensions >= 3)
-	public static GMatrix RotateX(float x_rot) {
+	public static GMatrix RotationX(float x_rot) {
 		float[Dimensions][Dimensions] dims = GMatrix.Identity.data;
 		dims[1][1] = Mathf.Cos(x_rot);
-		dims[1][2] = -Mathf.Sin(x_rot);
-		dims[2][1] = Mathf.Sin(x_rot);
+		dims[1][2] = Mathf.Sin(x_rot);
+		dims[2][1] = -Mathf.Sin(x_rot);
 		dims[2][2] = Mathf.Cos(x_rot);
 		return GMatrix(dims);
 	}
 
 	static if(Dimensions >= 3)
-	public static GMatrix RotateY(float y_rot) {
+	public static GMatrix RotationY(float y_rot) {
 		float[Dimensions][Dimensions] dims = GMatrix.Identity.data;
 		dims[0][0] = Mathf.Cos(y_rot);
+		dims[0][2] = -Mathf.Sin(y_rot);
 		dims[2][0] = Mathf.Sin(y_rot);
-		dims[2][0] = -Mathf.Sin(y_rot);
 		dims[2][2] = Mathf.Cos(y_rot);
 		return GMatrix(dims);
 	}
 
-	static if(Dimensions == 4)
-	public static GMatrix RotateZ(float z_rot) {
+	static if(Dimensions >= 3)
+	public static GMatrix RotationZ(float z_rot) {
 		float[Dimensions][Dimensions] dims = GMatrix.Identity.data;
 		dims[0][0] = Mathf.Cos(z_rot);
-		dims[1][0] = -Mathf.Sin(z_rot);
-		dims[0][1] = Mathf.Sin(z_rot);
+		dims[1][0] = Mathf.Sin(z_rot);
+		dims[0][1] = -Mathf.Sin(z_rot);
 		dims[1][1] = Mathf.Cos(z_rot);
 		return GMatrix(dims);
 	}
 
 	static if (Dimensions == 2)
-	public static GMatrix Rotate(float rot) {
+	public static GMatrix Rotation(float rot) {
 		return GMatrix([
 			[Mathf.Cos(rot), -Mathf.Sin(rot)],
 			[Mathf.Sin(rot), Mathf.Cos(rot)]
@@ -98,50 +107,51 @@ struct Matrix(int Dimensions) {
 			[0f, 0f, 0f, 1f]
 		]);
 	}
-	
-	public static GMatrix Translate(Vector!(float, Dimensions) trans_vec) {
-		GMatrix out_matrix = GMatrix.Identity();
-		for (int x = 0; x < Dimensions; x++) {
-			out_matrix.data[x][x] = 1;
-		}
-		for (int x = 0; x < Dimensions; x++) {
-			out_matrix.data[Dimensions-1][x] = trans_vec.data[x];
-		}
-		return out_matrix;
+
+	static if(Dimensions == 2)
+	public static GMatrix Translation(Vector!(float, Dimensions) trans_vec) {
+		return GMatrix([
+			[1f, trans_vec.X],
+			[0f, trans_vec.Y]
+		]);
 	}
 
-	public GMatrix opBinary(string op: "*")(GMatrix other) pure nothrow {
-		float[Dimensions][Dimensions] dim = fill_data();
-		foreach ( row; 0 .. Dimensions ) {
-			foreach ( column; 0 .. Dimensions ) {
-				foreach ( i; 0 .. Dimensions ) {
-					dim[row][column] += this.data[row][i] * other.data[i][column];
-				}
-			}
-		}
-		return GMatrix(dim);
-	}
-
-	static if(Dimensions >= 3)
-	public static GMatrix Translate(Vector!(float, Dimensions-1) trans_vec) {
-		GMatrix out_matrix = GMatrix.Identity();
-		for (int x = 0; x < Dimensions; x++) {
-			if (Dimensions == 4 && x == 3) {
-				out_matrix.data[Dimensions-1][x] = 1;
-			} else {
-				out_matrix.data[Dimensions-1][x] = trans_vec.data[x];
-			}
-		}
-		return out_matrix;
+	static if(Dimensions == 3)
+	public static GMatrix Translation(Vector!(float, Dimensions) trans_vec) {
+		return GMatrix([
+			[1f, 0f, trans_vec.X],
+			[0f, 1f, trans_vec.Y],
+			[0f, 0f, trans_vec.Z]
+		]);
 	}
 
 	static if(Dimensions == 4)
-	public static GMatrix Ortho(float left, float right, float top, float bottom, float znear, float zfar) {
+	public static GMatrix Translation(Vector!(float, Dimensions-1) trans_vec) {		
 		return GMatrix([
-			[2.0f/(right-left), 0, 0, 0],
-			[0, 2.0f/(top-bottom), 0, 0],
-			[0, 0, 2.0f/(zfar-znear), 0],
-			[-(right+left)/(right-left), -(top+bottom)/(top-bottom), -(zfar+znear)/(zfar-znear), 1f]
+			[1f, 0f, 0f, trans_vec.X],
+			[0f, 1f, 0f, trans_vec.Y],
+			[0f, 0f, 1f, trans_vec.Z],
+			[0f, 0f, 0f, 1f]
+		]);
+	}
+
+	static if(Dimensions == 4)
+	public static GMatrix Orthographic(float left, float right, float bottom, float top, float znear, float zfar) {
+		return GMatrix([
+			[2/(right-left), 0f, 0f, -(right+left)/(right-left)],
+			[0f, 2/(top-bottom), 0f, -(top+bottom)/(top-bottom)],
+			[0f, 0f, -2/(zfar-znear), -(zfar+znear)/(zfar-znear)],
+			[0f, 0f, 0f, 1f]
+		]);
+	}
+
+	static if(Dimensions == 4)
+	public static GMatrix OrthographicInverse(float left, float right, float bottom, float top, float znear, float zfar) {
+		return GMatrix([
+			[(right-left)/2f, 0, 0, 0],
+			[0, (top-bottom)/2f, 0, 0],
+			[0, 0, (zfar-znear)/-2f, 0],
+			[(right+left)/2f, (top+bottom)/2f, (zfar+znear)/2f, 1f]
 		]);
 	}
 
@@ -170,6 +180,18 @@ struct Matrix(int Dimensions) {
 		]);
 	}
 
+	public GMatrix opBinary(string op: "*")(GMatrix other) {
+		float[Dimensions][Dimensions] dim = clear(0);
+		foreach ( row; 0 .. Dimensions ) {
+			foreach ( column; 0 .. Dimensions ) {
+				foreach ( i; 0 .. Dimensions ) {
+					dim[row][column] += this.data[row][i] * other.data[i][column];
+				}
+			}
+		}
+		return GMatrix(dim);
+	}
+
 	public GMatrix Transpose() pure const nothrow {
 		GMatrix temp = this;
 		static foreach( x; 0 .. Dimensions ) {
@@ -180,33 +202,42 @@ struct Matrix(int Dimensions) {
 		return temp;
 	}
 
-	public GMatrix Scale(Vector!(float, Dimensions) scale_vec) {
-		return this * GMatrix.Scale(scale_vec);
+	static if (Dimensions == 4)
+	public GMatrix Translate (Vector!(float, Dimensions-1) trans_vec) {
+		this = GMatrix.Translation(trans_vec) * this;
+		return this;
+	}
+
+	static if (Dimensions >= 3)
+	public GMatrix Scale(Vector!(float, Dimensions-1) scale_vec) {
+		this = GMatrix.Scaling(scale_vec) * this;
+		return this;
 	}
 
 	static if (Dimensions >= 3)
 	public GMatrix RotateX(float rot) {
-		return this * GMatrix.RotateX(rot);
+		this = GMatrix.RotationX(rot) * this;
+		return this;
 	}
 
 	static if (Dimensions >= 3)
 	public GMatrix RotateY(float rot) {
-		return this * GMatrix.RotateY(rot);
+		return GMatrix.RotationY(rot) * this;
 	}
 
 	static if (Dimensions >= 3)
 	public GMatrix RotateZ(float rot) {
-		return this * GMatrix.RotateZ(rot);
+		return GMatrix.RotationZ(rot) * this;
 	}
 
 	static if (Dimensions == 2)
 	public GMatrix Rotate(float rot) {
-		return this * GMatrix.Rotate(rot);
+		return GMatrix.Rotation(rot) * this;
 	}
 
 	static if(Dimensions == 4)
 	public GMatrix Rotate(Quaternion rot) {
-		return this * GMatrix.FromQuaternion(rot);
+		return GMatrix.FromQuaternion(rot) * this;
 	} 
 
 	public string ToString() {
@@ -243,8 +274,11 @@ unittest {
 		[0, 0, 1, 3],
 		[0, 0, 0, 1]
 	]);
-	assert((mt4*mt4_o) == mt4_o, "Matrix multiplication error! should be " ~ mt4_o.ToString);
 
+	writeln((mt4_o.Translate(Vector3(1, 1, 1))).ToString);
+	writeln((mt4_o.Translate(Vector3(1, 1, 1))).Transpose.ToString);
+	assert((mt4*mt4_o) == mt4_o, "Matrix multiplication error! should be " ~ mt4_o.ToString);
+	
 	Matrix3x3 mt3 = Matrix3x3.Identity;
 	Matrix3x3 mt3_o = Matrix3x3([
 		[1, 0, 3],
@@ -259,4 +293,13 @@ unittest {
 		[0, 1],
 	]);
 	assert((mt2*mt2_o) == mt2_o, "Matrix multiplication error! should be " ~ mt3_o.ToString);
+	
+	Matrix4x4 orth_mat = Matrix4x4.Orthographic(-1f, 1f, -1f, 1f, -1f, 1f);
+	Matrix4x4 comp_orth = Matrix4x4([
+		[1f, 0f, 0f, -0f],
+		[0f, 1f, 0f, -0f],
+		[0f, 0f, -1f, -0f],
+		[0f, 0f, 0f, 1f]
+	]);
+	assert(orth_mat == comp_orth, "orth_mat != comp_orth \n" ~ orth_mat.ToString ~ ",\n" ~ comp_orth.ToString);
 }

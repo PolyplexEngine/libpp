@@ -11,6 +11,8 @@ import polyplex.utils;
 import polyplex.math;
 import polyplex.utils.mathutils;
 
+import std.stdio;
+
 
 private struct SprBatchData {
 	Vector3[] ppPosition;
@@ -24,11 +26,6 @@ private struct SprBatchData {
 public class GlSpriteBatch : SpriteBatch {
 	private static string uniform_tex_name = "ppTexture";
 	private static string uniform_prj_name = "ppProjection";
-	/+
-	Old code
-	private static string attrib_color_name = "ppColor";
-	private static string attrib_position_name = "ppPosition";
-	private static string attrib_texcoord_name = "ppTexcoord";+/
 	private static string default_vert;
 	private static string default_frag;
 	private static Shader default_shader;
@@ -54,18 +51,7 @@ public class GlSpriteBatch : SpriteBatch {
 		this.renderer = renderer;
 		InitializeSpritebatch();
 		this.size = size;
-		render_object = new VBO(Layout.Grouped);
-		/+
-		Old code
-
-		render_object = new RenderObject(OptimizeMode.Mode2D, BufferMode.Dynamic);
-		//TODO: Improve VBO creation to not need to make dummy data.
-		render_object.AddFloats([[0f, 0f, 0f]]);
-		render_object.AddFloats([[0f, 0f]]);
-		render_object.AddFloats([[0f, 0f, 0f, 0f]]);
-		render_object.Generate();
-		render_object.Vbo.Flush();
-		+/
+		render_object = new VBO(Layout.Layered);
 	}
 
 	public static void InitializeSpritebatch() {
@@ -175,6 +161,7 @@ public class GlSpriteBatch : SpriteBatch {
 	*/
 	public override void Flush() {
 		render();
+		vector_data = SprBatchData([], [], []);
 		queued = 0;
 	}
 
@@ -201,7 +188,7 @@ public class GlSpriteBatch : SpriteBatch {
 
 	private void render() {
 		// Buffer the data
-		render_object.BufferData(vector_data);
+		render_object.BufferStruct(vector_data);
 
 		// Attach textures, set states, uniforms, etc.
 		this.shader.Attach();
