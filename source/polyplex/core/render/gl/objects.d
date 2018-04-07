@@ -148,7 +148,7 @@ class BufferObject {
 			DisableAttribute(attrib.VBOIndex);
 		}
 		Buffers = [];
-		glDeleteBuffers(Id.length, Id.ptr);
+		glDeleteBuffers(cast(int)Id.length, Id.ptr);
 	}
 
 	public int Count() {
@@ -330,7 +330,7 @@ class IBO : BufferObject {
 		super(GL_ELEMENT_ARRAY_BUFFER, layout, null);
 	}
 
-	public override void Draw() {
+	public override void Draw(int amount = 0) {
 		throw new Exception("You can't draw an IBO, attach the IBO to a VBO instead.");
 	}
 }
