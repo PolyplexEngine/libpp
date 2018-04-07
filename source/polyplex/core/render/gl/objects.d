@@ -140,12 +140,27 @@ class BufferObject {
 		return buffer_map;
 	}
 
+	/**
+		Clears buffer of data.
+	*/
+	public void Clear() {
+		foreach(BufferInfo attrib; ListAttributes()) {
+			DisableAttribute(attrib.VBOIndex);
+		}
+		Buffers = [];
+		glDeleteBuffers(Id.length, Id.ptr);
+	}
+
 	public int Count() {
 		return this.len;
 	}
 
 	public void EnableAttribute(int index) {
 		glEnableVertexAttribArray(index);
+	}
+
+	public void DisableAttribute(int index) {
+		glDisableVertexAttribArray(index);
 	}
 
 	public void SetAttributePointer(int index, int size, int stride = 0, int offset = 0) {

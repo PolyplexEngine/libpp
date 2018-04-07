@@ -188,6 +188,7 @@ public class GlSpriteBatch : SpriteBatch {
 
 	private void render() {
 		// Buffer the data
+		render_object.Clear();
 		render_object.BufferStruct(vector_data);
 
 		// Attach textures, set states, uniforms, etc.
