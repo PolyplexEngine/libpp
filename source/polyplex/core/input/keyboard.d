@@ -163,12 +163,13 @@ enum KeyState {
 }
 
 public class KeyboardState {
-	private ubyte* key_states;
-	private int key_state_len;
+	private ubyte[] key_states;
 
 	this(ubyte* key_states, int size) {
-		this.key_states = key_states;
-		this.key_state_len = size;
+		foreach(i; 0 .. size) {
+			this.key_states.length++;
+			this.key_states[i] = key_states[i];
+		}
 	}
 
 	public bool IsKeyDown(Keys key) {
