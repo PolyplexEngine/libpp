@@ -166,6 +166,7 @@ public class KeyboardState {
 	private ubyte[] key_states;
 
 	this(ubyte* key_states, int size) {
+		// SDL wants to override the values, so we manually copy them in to another array.
 		foreach(i; 0 .. size) {
 			this.key_states.length++;
 			this.key_states[i] = key_states[i];
