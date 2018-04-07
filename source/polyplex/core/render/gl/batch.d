@@ -198,7 +198,7 @@ public class GlSpriteBatch : SpriteBatch {
 		this.shader.SetUniform(this.shader.GetUniform(uniform_prj_name), mult_matrices());
 
 		// Draw.
-		render_object.Draw();
+		render_object.Draw(queued*6);
 	}
 
 	/**

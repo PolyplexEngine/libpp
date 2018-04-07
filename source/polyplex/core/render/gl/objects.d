@@ -307,7 +307,7 @@ class BufferObject {
 		return data;
 	}
 
-	public abstract void Draw();
+	public abstract void Draw(int amount = 0);
 }
 
 class IBO : BufferObject {
@@ -325,9 +325,10 @@ class VBO : BufferObject {
 		super(GL_ARRAY_BUFFER, layout, new VAO());
 	}
 
-	public override void Draw() {
+	public override void Draw(int amount = 0) {
 		VertexArray.Bind();
-		glDrawArrays(GL_TRIANGLES, 0, this.Count);
+		if (amount == 0) glDrawArrays(GL_TRIANGLES, 0, this.Count);
+		else glDrawArrays(GL_TRIANGLES, 0, amount);
 		VertexArray.Unbind();
 	}
 }
@@ -348,7 +349,7 @@ class IndxVBO : VBO {
 		this.index_buffer.BufferData(0, data.data);
 	}
 
-	public override void Draw() {
+	public override void Draw(int amount = 0) {
 		glDrawElements(GL_TRIANGLES, this.Count, GL_FLOAT, null);
 	}
 }
@@ -358,7 +359,7 @@ class InstVBO : VBO {
 		super(layout);
 	}
 
-	public override void Draw() {
+	public override void Draw(int amount = 0) {
 		
 	}
 }
@@ -371,7 +372,7 @@ class InstIndxVBO : InstVBO {
 		this.index_buffer = new IBO(layout);
 	}
 
-	public override void Draw() {
+	public override void Draw(int amount = 0) {
 		
 	}
 }
