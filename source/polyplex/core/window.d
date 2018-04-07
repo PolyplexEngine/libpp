@@ -59,7 +59,7 @@ public class GameWindow {
 
 	//Title
 	public @property string Title() { return to!string(SDL_GetWindowTitle(this.window)); }
-	public @property void Title(string t) { return SDL_SetWindowTitle(this.window, t.dup.toStringz); }
+	public @property void Title(string t) { return SDL_SetWindowTitle(this.window, t.toStringz); }
 
 	//Brightness
 	public @property float Brightness() { return SDL_GetWindowBrightness(this.window); }
@@ -169,7 +169,7 @@ public class GameWindow {
     void Show() {
 		Logger.Debug("Spawning window...");
 		if (polyplex.ChosenBackend == polyplex.GraphicsBackend.Vulkan) this.window = SDL_CreateWindow(this.start_title.dup.ptr, this.start_bounds.X, this.start_bounds.Y, this.start_bounds.Width, this.start_bounds.Height, SDL_WINDOW_VULKAN);
-		else this.window = SDL_CreateWindow(this.start_title.dup.toStringz, this.start_bounds.X, this.start_bounds.Y, this.start_bounds.Width, this.start_bounds.Height, SDL_WINDOW_OPENGL);
+		else this.window = SDL_CreateWindow(this.start_title.toStringz, this.start_bounds.X, this.start_bounds.Y, this.start_bounds.Width, this.start_bounds.Height, SDL_WINDOW_OPENGL);
 		this.renderer = CreateBackendRenderer(this);
 		this.renderer.Init(this.window);
 		if (this.window == null) {
