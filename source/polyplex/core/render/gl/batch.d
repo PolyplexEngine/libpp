@@ -134,8 +134,10 @@ public class GlSpriteBatch : SpriteBatch {
 		Begin also attaches a custom shader (if chosen) and sets the camera/view matrix.
 	*/
 	public override void Begin(SpriteSorting sort_mode, Blending blend_state, Sampling sample_State, Shader s, Camera camera) {
-		camera.Update();
-		Begin(sort_mode, blend_state, sample_state, s, camera.Matrix);
+		Camera cam = camera;
+		if (cam is null) cam = default_cam;
+		cam.Update();
+		Begin(sort_mode, blend_state, sample_state, s, cam.Matrix);
 	}
 
 	/**
