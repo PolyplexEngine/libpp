@@ -32,6 +32,26 @@ public class GameTime {
 	public @property double Minutes() { return Seconds/60; }
 	public @property double Hours() { return Minutes/60; }
 
+	public static GameTime FromSeconds(ulong seconds) {
+		return new GameTime(seconds*60);
+	}
+
+	public static GameTime FromMinutes(ulong minutes) {
+		return FromSeconds(minutes*60);
+	}
+
+	public static GameTime FromHours(ulong hours) {
+		return FromMinutes(hours*60);
+	}
+
+	public GameTime opBinary(string op:"+")(GameTime other) {
+		return new GameTime(this.ticks+other.ticks);
+	}
+
+	public GameTime opBinary(string op:"-")(GameTime other) {
+		return new GameTime(this.ticks-other.ticks);
+	}
+
 	this(ulong ticks) {
 		this.ticks = ticks;
 	}
