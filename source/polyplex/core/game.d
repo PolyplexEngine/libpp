@@ -8,6 +8,8 @@ import polyplex.core.events;
 import polyplex.core.content;
 import polyplex.utils.logging;
 
+import polyplex.utils.strutils;
+
 import derelict.sdl2.sdl;
 import sev.event;
 
@@ -67,6 +69,10 @@ public class GameTime {
 
 	public string ToString() {
 		return LHours.text ~ ":" ~ (LMinutes%60).text ~ ":" ~ (LSeconds%60).text ~ "." ~ (LMilliseconds%60).text;
+	}
+
+	public string FormatTime(string formatstring) {
+		return Format(formatstring, LHours, LMinutes%60, LSeconds%60, LMilliseconds%60);
 	}
 
 	this(ulong ticks) {
