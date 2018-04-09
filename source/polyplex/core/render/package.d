@@ -14,6 +14,12 @@ import polyplex.math;
 import polyplex;
 import std.stdio;
 
+public enum VSyncState {
+	LateTearing = -1,
+	Immidiate = 0,
+	VSync = 1
+}
+
 public class Renderer {
 	public SpriteBatch Batch;
 	public GameWindow Window;
@@ -31,7 +37,7 @@ public class Renderer {
 	public abstract void AdjustViewport();
 
 	public abstract @property bool VSync();
-	public abstract @property void VSync(bool state);
+	public abstract @property void VSync(VSyncState state);
 }
 
 public enum Blending {

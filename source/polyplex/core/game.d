@@ -11,10 +11,11 @@ import polyplex.utils.logging;
 import derelict.sdl2.sdl;
 import sev.event;
 
-import  std.math,
-        std.random,
-        std.typecons;
+import std.math;
+import std.random;
+import std.typecons;
 import std.stdio;
+import std.conv;
 
 public class GameTime {
 	private ulong ticks;
@@ -60,12 +61,12 @@ public class GameTime {
 		return new GameTime(this.ticks*other.ticks);
 	}
 
-	public float Divide(GameTime other) {
+	public float PercentageOf(GameTime other) {
 		return cast(float)this.ticks/cast(float)other.ticks;
 	}
 
-	public float Mult(GameTime other) {
-		return cast(float)this.ticks*cast(float)other.ticks;
+	public string ToString() {
+		return LHours.text ~ ":" ~ (LMinutes%60).text ~ ":" ~ (LSeconds%60).text ~ "." ~ (LMilliseconds%60).text;
 	}
 
 	this(ulong ticks) {

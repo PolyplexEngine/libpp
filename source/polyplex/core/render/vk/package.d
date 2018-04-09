@@ -41,7 +41,7 @@ public class VkRenderer : Renderer {
 		return false;
 	}
 
-	public override @property void VSync(bool state) {
+	public override @property void VSync(VSyncState state) {
 	}
 
 	public override Shader CreateShader(ShaderCode code) {

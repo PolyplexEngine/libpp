@@ -56,9 +56,8 @@ public class GlRenderer : Renderer {
 		return false;
 	}
 
-	public override @property void VSync(bool state) {
-		if (state) SDL_GL_SetSwapInterval(1);
-		else SDL_GL_SetSwapInterval(0);
+	public override @property void VSync(VSyncState state) {
+		SDL_GL_SetSwapInterval(state);
 	}
 
 	public override void AdjustViewport() {

@@ -1,6 +1,6 @@
 module polyplex.core.window;
 import polyplex.utils.sdlbool;
-import polyplex.core.render;
+public import polyplex.core.render;
 static import polyplex;
 
 import derelict.sdl2.sdl;
@@ -46,7 +46,7 @@ public class GameWindow {
 	public @property bool VSync() {
 		return renderer.VSync;
 	}
-	public @property void VSync(bool allow) {renderer.VSync = allow; }
+	public @property void VSync(VSyncState allow) { renderer.VSync = allow; }
 
 
 	//Borderless
@@ -119,6 +119,9 @@ public class GameWindow {
 		//Set info.
         this.start_bounds = bounds;
 		this.start_title = name;
+
+		// Enable VSync by default.
+		VSync = VSyncState.VSync;
 
 		//Cap info.
 		if (this.start_bounds is null) this.start_bounds = new Rectangle(WindowPosition.Undefined, WindowPosition.Undefined, 640, 480);
