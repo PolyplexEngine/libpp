@@ -52,6 +52,22 @@ public class GameTime {
 		return new GameTime(this.ticks-other.ticks);
 	}
 
+	public GameTime opBinary(string op:"/")(GameTime other) {
+		return new GameTime(this.ticks/other.ticks);
+	}
+
+	public GameTime opBinary(string op:"*")(GameTime other) {
+		return new GameTime(this.ticks*other.ticks);
+	}
+
+	public float opBinary(string op:"/")(GameTime other) {
+		return cast(float)this.ticks/cast(float)other.ticks;
+	}
+
+	public float opBinary(string op:"*")(GameTime other) {
+		return cast(float)this.ticks*cast(float)other.ticks;
+	}
+
 	this(ulong ticks) {
 		this.ticks = ticks;
 	}
