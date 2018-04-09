@@ -50,10 +50,8 @@ public class GlRenderer : Renderer {
 		Logger.Log("OpenGL initialized...");
 	}
 	
-	public override @property bool VSync() {
-		int i = SDL_GL_GetSwapInterval();
-		if (i == 1) return true;
-		return false;
+	public override @property VSyncState VSync() {
+		return cast(VSyncState)SDL_GL_GetSwapInterval();
 	}
 
 	public override @property void VSync(VSyncState state) {

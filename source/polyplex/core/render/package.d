@@ -36,7 +36,7 @@ public class Renderer {
 
 	public abstract void AdjustViewport();
 
-	public abstract @property bool VSync();
+	public abstract @property VSyncState VSync();
 	public abstract @property void VSync(VSyncState state);
 }
 

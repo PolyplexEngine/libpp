@@ -43,7 +43,7 @@ public class GameWindow {
 	public @property void AllowResizing(bool allow) { SDL_SetWindowResizable(this.window, ToSDL(allow)); }
 
 	//Vertical Syncronization
-	public @property bool VSync() {
+	public @property VSyncState VSync() {
 		return renderer.VSync;
 	}
 	public @property void VSync(VSyncState allow) { renderer.VSync = allow; }

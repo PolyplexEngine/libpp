@@ -37,8 +37,8 @@ public class VkRenderer : Renderer {
 		
 	}
 		
-	public override @property bool VSync() {
-		return false;
+	public override @property VSyncState VSync() {
+		return VSyncState.VSync;
 	}
 
 	public override @property void VSync(VSyncState state) {
