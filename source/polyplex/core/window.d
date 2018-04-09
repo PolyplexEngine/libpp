@@ -120,9 +120,6 @@ public class GameWindow {
         this.start_bounds = bounds;
 		this.start_title = name;
 
-		// Enable VSync by default.
-		VSync = VSyncState.VSync;
-
 		//Cap info.
 		if (this.start_bounds is null) this.start_bounds = new Rectangle(WindowPosition.Undefined, WindowPosition.Undefined, 640, 480);
 		if (this.start_bounds.X == WindowPosition.Center) this.start_bounds.X = SDL_WINDOWPOS_CENTERED;
@@ -179,7 +176,9 @@ public class GameWindow {
 			destroy(this.window);
 			Logger.Fatal("Window creation error: {0}", SDL_GetError());
 		}
-
+		// Enable VSync by default.
+		VSync = VSyncState.VSync;
+		// Focus window
 		this.Focus();
     }
 }
