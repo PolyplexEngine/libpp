@@ -68,6 +68,14 @@ public class GameTime {
 		return cast(float)this.ticks*cast(float)other.ticks;
 	}
 
+	public double opBinary(string op:"/")(GameTime other) {
+		return cast(double)this.ticks/cast(double)other.ticks;
+	}
+
+	public double opBinary(string op:"*")(GameTime other) {
+		return cast(double)this.ticks*cast(double)other.ticks;
+	}
+
 	this(ulong ticks) {
 		this.ticks = ticks;
 	}
