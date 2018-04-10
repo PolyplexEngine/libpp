@@ -30,46 +30,9 @@ public abstract class ContentManager {
 	this() {
 		if (!content_init) {
 			Logger.Debug("ContentManagerWarmup: Starting warmup...");
-			DerelictSDL2Mixer.load();
-			SDL_Init(SDL_INIT_AUDIO);
-
-			if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 1024) == -1) {
-				const(char)* err = Mix_GetError();
-				throw new Exception(Format("{0}", err));
-			}
-
-			int inited=Mix_Init(MIX_INIT_FLAC);
-			if ((inited&MIX_INIT_FLAC) > 0) {
-				supported_audio |= inited;
-				Logger.Debug("ContentManagerWarmup: FLAC support initiated successfully.");
-			} else {
-				const(char)* err = Mix_GetError();
-				Logger.Warn(Format("ContentManagerWarmup: FLAC support initiated failed. {0}", err));
-			}
-			inited=Mix_Init(MIX_INIT_MOD);
-			if ((inited&MIX_INIT_MOD) > 0) {
-				supported_audio |= inited;
-				Logger.Debug("ContentManagerWarmup: MOD support initiated successfully.");
-			} else {
-				const(char)* err = Mix_GetError();
-				Logger.Warn(Format("ContentManagerWarmup: MOD support initiated failed. {0}", err));
-			}
-			inited=Mix_Init(MIX_INIT_MP3);
-			if ((inited&MIX_INIT_MP3) > 0) {
-				supported_audio |= inited;
-				Logger.Debug("ContentManagerWarmup: MP3 support initiated successfully.");
-			} else {
-				const(char)* err = Mix_GetError();
-				Logger.Warn(Format("ContentManagerWarmup: MP3 support initiated failed. {0}", err));
-			}
-			inited=Mix_Init(MIX_INIT_OGG);
-			if ((inited&MIX_INIT_OGG) > 0) {
-				supported_audio |= inited;
-				Logger.Debug("ContentManagerWarmup: OGG support initiated successfully.");
-			} else {
-				const(char)* err = Mix_GetError();
-				Logger.Warn(Format("ContentManagerWarmup: OGG support initiated failed. {0}", err));
-			}
+			
+			// TODO: Configure OpenAL
+			
 			content_init = true;
 			Logger.Debug("ContentManager initialized...");
 		}
