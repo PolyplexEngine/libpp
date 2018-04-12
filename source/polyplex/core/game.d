@@ -26,17 +26,17 @@ public class GameTime {
 	public @property void BaseValue(ulong ticks) { this.ticks = ticks; }
 
 	public @property ulong LMilliseconds() { return ticks; }
-	public @property ulong LSeconds() { return LMilliseconds/60; }
+	public @property ulong LSeconds() { return LMilliseconds/1000; }
 	public @property ulong LMinutes() { return LSeconds/60; }
 	public @property ulong LHours() { return LMinutes/60; }
 
 	public @property double Milliseconds() { return cast(double)ticks; }
-	public @property double Seconds() { return Milliseconds/60; }
+	public @property double Seconds() { return Milliseconds/1000; }
 	public @property double Minutes() { return Seconds/60; }
 	public @property double Hours() { return Minutes/60; }
 
 	public static GameTime FromSeconds(ulong seconds) {
-		return new GameTime(seconds*60);
+		return new GameTime(seconds*1000);
 	}
 
 	public static GameTime FromMinutes(ulong minutes) {
