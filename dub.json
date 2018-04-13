@@ -56,6 +56,34 @@
 			},
 			"sourcePaths": [ "modules/pp-derelict-vulkan/source" ],
 			"importPaths": [ "modules/pp-derelict-vulkan/source" ]
+		},
+		{
+			"name": "derelict-al",
+			"description": "A dynamic binding to the OpenAL api.",
+			"copyright": "Copyright © 2016, Mike Parker",
+			"authors": ["Mike Parker", "Polyplex Developers"],
+			"license": "BSL-1.0",
+			"targetPath": "lib",
+			"targetType": "library",
+			"dependencies": {
+				"pp:derelict-util": "*"
+			},
+			"sourcePaths": [ "modules/pp-derelict-al/source" ],
+			"importPaths": [ "modules/pp-derelict-al/source" ]
+		},
+		{
+			"name": "derelict-ogg",
+			"description": "A dynamic binding to the Ogg Vorbis api.",
+			"copyright": "Copyright © 2016, Mike Parker",
+			"authors": ["Mike Parker", "Polyplex Developers"],
+			"license": "BSL-1.0",
+			"targetPath": "lib",
+			"targetType": "library",
+			"dependencies": {
+				"pp:derelict-util": "*"
+			},
+			"sourcePaths": [ "modules/pp-derelict-ogg/source" ],
+			"importPaths": [ "modules/pp-derelict-ogg/source" ]
 		}
 	],
 	"dependencies": {
@@ -66,6 +94,8 @@
 		"pp:derelict-util": "*",
 		"pp:derelict-sdl2": "*",
 		"pp:derelict-gl3": "*",
+		"pp:derelict-al": "*",
+		"pp:derelict-ogg": "*",
 		"pp:derelict-vulkan": "*"
 	}
 }

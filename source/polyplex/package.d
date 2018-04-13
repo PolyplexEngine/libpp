@@ -5,6 +5,8 @@ import derelict.sdl2.mixer;
 import derelict.sdl2.ttf;
 import derelict.vulkan.vulkan;
 import derelict.opengl;
+import derelict.openal;
+import derelict.ogg;
 import polyplex.utils.logging;
 import std.stdio;
 import std.conv;
@@ -12,7 +14,7 @@ static import std.file;
 static import std.process;
 
 public static GraphicsBackend ChosenBackend = GraphicsBackend.NoneChosen;
-private static bool sdl_init = false;
+private static bool core_init = false;
 private static bool vk_init = false;
 private static bool gl_init = false;
 
@@ -77,7 +79,7 @@ private string trimexe(string input) {
 	InitLibraries loads the Derelict libraries for Vulkan, SDL and OpenGL
 */
 public void InitLibraries() {
-	if (!sdl_init) {
+	if (!core_init) {
 		if (std.file.exists("libs/")) {
 			// Load bundled libraries.
 			Logger.Info("Binding to runtime libraries...");
@@ -98,13 +100,15 @@ public void InitLibraries() {
 			Logger.Info("Binding to system libraries....");
 			DerelictSDL2.load();
 		}
+		DerelictOgg.load();
+		DerelictAL.load();
 		SDL_version linked;
 		SDL_version compiled;
 		SDL_GetVersion(&linked);
 		SDL_VERSION(&compiled);
 		Logger.Log("SDL (compiled against): {0}.{1}.{2}", to!string(compiled.major), to!string(compiled.minor), to!string(compiled.patch), LogType.Info);
 		Logger.Log("SDL (linked): {0}.{1}.{2}", to!string(linked.major), to!string(linked.minor), to!string(linked.patch), LogType.Info);
-		sdl_init = true;
+		core_init = true;
 	}
 	if (ChosenBackend == GraphicsBackend.NoneChosen) return;
 
