@@ -4718,6 +4718,10 @@ public class Color {
 	/// Color named MonoGame Orange, with hex: #E73C000
 	public static @property Color MonoGameOrange() { return new Color(0xE73C00FF); }
 
+
+	/// Color named Transparent, with hex: A68B5B
+	public static @property Color Transparent() { return new Color(0x00000000); }
+
 	private Vector4i coldata;
 	public @property Vector4i GLColor() { return coldata; };
 
