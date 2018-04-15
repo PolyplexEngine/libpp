@@ -42,6 +42,32 @@
 			"importPaths": [ "modules/pp-derelict-gl3/source" ]
 		},
 		{
+			"name": "derelict-al",
+			"description": "A dynamic binding to the OpenAL api.",
+			"copyright": "Copyright © 2016, Mike Parker",
+			"authors": ["Mike Parker", "Polyplex Developers"],
+			"license": "BSL-1.0",
+			"targetPath": "lib",
+			"dependencies": {
+				"pp:derelict-util": "*"
+			},
+			"sourcePaths": [ "modules/pp-derelict-al/source" ],
+			"importPaths": [ "modules/pp-derelict-al/source" ]
+		},
+		{
+			"name": "derelict-ogg",
+			"description": "A dynamic binding to the Ogg Vorbis api.",
+			"copyright": "Copyright © 2016, Mike Parker",
+			"authors": ["Mike Parker", "Polyplex Developers"],
+			"license": "BSL-1.0",
+			"targetPath": "lib",
+			"dependencies": {
+				"pp:derelict-util": "*"
+			},
+			"sourcePaths": [ "modules/pp-derelict-ogg/source" ],
+			"importPaths": [ "modules/pp-derelict-ogg/source" ]
+		},
+		{
 			"name": "derelict-vulkan",
 			"description": "A dynamic binding to the vulkan api.",
 			"copyright": "Copyright © 2016, Felix Hufnagel",
@@ -56,34 +82,6 @@
 			},
 			"sourcePaths": [ "modules/pp-derelict-vulkan/source" ],
 			"importPaths": [ "modules/pp-derelict-vulkan/source" ]
-		},
-		{
-			"name": "derelict-al",
-			"description": "A dynamic binding to the OpenAL api.",
-			"copyright": "Copyright © 2016, Mike Parker",
-			"authors": ["Mike Parker", "Polyplex Developers"],
-			"license": "BSL-1.0",
-			"targetPath": "lib",
-			"targetType": "library",
-			"dependencies": {
-				"pp:derelict-util": "*"
-			},
-			"sourcePaths": [ "modules/pp-derelict-al/source" ],
-			"importPaths": [ "modules/pp-derelict-al/source" ]
-		},
-		{
-			"name": "derelict-ogg",
-			"description": "A dynamic binding to the Ogg Vorbis api.",
-			"copyright": "Copyright © 2016, Mike Parker",
-			"authors": ["Mike Parker", "Polyplex Developers"],
-			"license": "BSL-1.0",
-			"targetPath": "lib",
-			"targetType": "library",
-			"dependencies": {
-				"pp:derelict-util": "*"
-			},
-			"sourcePaths": [ "modules/pp-derelict-ogg/source" ],
-			"importPaths": [ "modules/pp-derelict-ogg/source" ]
 		}
 	],
 	"dependencies": {

@@ -50,6 +50,11 @@ class Rectangle {
 		return !v;
 	}
 
+	public bool Intersects(Vector2 other) {
+		bool v = (other.X > this.Right || other.X < this.Left || other.Y > this.Bottom || other.Y < this.Top);
+		return !v;
+	}
+
 	public Rectangle Displace(int x, int y) {
 		return new Rectangle(this.X+x, this.Y+y, this.width, this.height);
 	}
