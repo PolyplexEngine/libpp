@@ -186,7 +186,6 @@ public class KeyboardState {
 public class Keyboard {
 	public static KeyboardState GetState() {
 		int elements;
-		SDL_PumpEvents();
 		ubyte* arr = SDL_GetKeyboardState(&elements);
 		return new KeyboardState(arr, elements);
 	}

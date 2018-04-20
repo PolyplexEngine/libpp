@@ -35,7 +35,6 @@ public class MouseState {
 
 public class Mouse {
 	public static MouseState GetState() {
-		SDL_PumpEvents();
 		int x;
 		int y;
 		int mask = SDL_GetMouseState(&x, &y);
@@ -43,7 +42,6 @@ public class Mouse {
 	}
 
 	public static Vector2 Position() {
-		SDL_PumpEvents();
 		int x;
 		int y;
 		SDL_GetMouseState(&x, &y);

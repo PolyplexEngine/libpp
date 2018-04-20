@@ -1,4 +1,5 @@
 module polyplex.core.game;
+public import polyplex.core.input.inputdev;
 
 import polyplex.math;
 import polyplex.core.window;
@@ -189,6 +190,9 @@ public abstract class Game {
 			//FPS begin counting.
 			start_frames = SDL_GetTicks();
 			times.TotalTime.BaseValue = start_frames;
+
+			//Update events.
+			InputDevice.UpdateSDLEvents();
 
 			//Do actual updating and drawing.
 			events.Update();
