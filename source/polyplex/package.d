@@ -139,3 +139,7 @@ public void InitLibraries() {
 		Logger.Info("Initialized OpenGL...");
 	}
 }
+
+unittest {
+	
+}

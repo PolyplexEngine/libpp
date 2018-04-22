@@ -1,4 +1,5 @@
 module polyplex.core.input.inputdev;
+import derelict.sdl2.sdl;
 
 /**
 	Contains static functions for backend use.

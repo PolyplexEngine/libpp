@@ -1,7 +1,9 @@
 module polyplex.core.input.touch;
+import polyplex.math;
 import derelict.sdl2.sdl;
 
-public class FingerState {
+
+public struct FingerState {
 	/**
 		The SDL id for the finger.
 	*/
@@ -47,15 +49,15 @@ public class Touch {
 			foreach(touch_dev; 0 .. touch_devices) {
 				int fingers = SDL_GetNumTouchFingers(touch_dev);
 				foreach(finger; 0 .. fingers) {
-					SDL_Finger f = SDL_GetTouchFinger(touch_dev, finger);
+					SDL_Finger* f = SDL_GetTouchFinger(touch_dev, finger);
 					st.Fingers ~= FingerState(f.id, touch_dev, Vector3(f.x, f.y, f.pressure));
 				}
 			}
 		} else {
 			int fingers = SDL_GetNumTouchFingers(touch_id);
 			foreach(finger; 0 .. fingers) {
-				SDL_Finger f = SDL_GetTouchFinger(touch_dev, finger);
-				st.Fingers ~= FingerState(f.id, touch_dev, Vector3(f.x, f.y, f.pressure));
+				SDL_Finger* f = SDL_GetTouchFinger(touch_id, finger);
+				st.Fingers ~= FingerState(f.id, touch_id, Vector3(f.x, f.y, f.pressure));
 			}
 		}
 		return st;
