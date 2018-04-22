@@ -55,12 +55,13 @@ enum Layout {
 }
 
 //Vertex Array Object contains state information to be sent to the GPU
-class VAO {
+class VAO(T, Layout layout) {
 
 	private GLuint id;
 	public @property uint Id() { return cast(uint)id; }
 
-	public BufferObject[] Objects;
+	public VBO!(T, layout) ChildVBO;
+	public IBO ChildIBO;
 
 	this() {
 		glGenVertexArrays(1, &id);
@@ -78,253 +79,90 @@ class VAO {
 		glBindVertexArray(0);
 	}
 }
+// Make sure valid types are in the struct
+// TODO: Add type support for ints, and such.
+enum ValidBufferType(T) = (is(T == float)) || (IsVector!T && is(T.Type == float));
 
-class BufferInfo {
-	string Name;
-	int VBOIndex;
-	int Dimensions;
-	int Offset;
-	int Size;
+struct VBO(T, Layout layout) {
+	private GLuint[] gl_buffers;
+	public T[] Data;
 
-	this(string name, int index, int dimensions, int offset, int size) {
-		this.Name = name;
-		this.VBOIndex = index,
-		this.Dimensions = dimensions;
-		this.Offset = offset;
-		this.Size = size;
-	}
-}
-
-class BufferObject {
-	private BufferInfo[string] buffer_map;
-	private Layout layout;
-	private int type;
-	private int len;
-
-	public GLuint[] Id;
-	public Buffer[] Buffers = [];
-	public VAO VertexArray;
-
-	this(int type, Layout layout, VAO vao) {
-		this.type = type;
-		this.layout = layout;
-		this.VertexArray = vao;
+	this(T input) {
+		this([input]);
 	}
 
-	/**
-		Generates <amount> buffers.
-	*/
-	public void GenBuffers(int amount) {
-		if (Buffers.length == amount) return;
+	this(T[] input) {
+		this.Data = input;
 
-		Buffers.length = amount;
-		Id.length = amount;
-		glGenBuffers(amount, Id.ptr);
-	}
-
-	/**
-		Binds the buffer of index <index>
-	*/
-	public void Bind(int index = 0) {
-		glBindBuffer(this.type, Id[index]);
-	}
-
-	public int GetBuffMapId(string name) {
-		foreach( BufferInfo inf; buffer_map ) {
-			if (name == inf.Name) return inf.VBOIndex;
-		}
-		return -1;
-	}
-
-	public BufferInfo[string] ListAttributes() {
-		return buffer_map;
-	}
-
-	/**
-		Clears buffer of data.
-	*/
-	public void Clear() {
-		foreach(BufferInfo attrib; ListAttributes()) {
-			DisableAttribute(attrib.VBOIndex);
-		}
-		Buffers = [];
-		glDeleteBuffers(cast(int)Id.length, Id.ptr);
-	}
-
-	public int Count() {
-		return this.len;
-	}
-
-	public void EnableAttribute(int index) {
-		glEnableVertexAttribArray(index);
-	}
-
-	public void DisableAttribute(int index) {
-		glDisableVertexAttribArray(index);
-	}
-
-	public void SetAttributePointer(int index, int size, int stride = 0, int offset = 0) {
-		if (offset == 0) glVertexAttribPointer(index, size, GL_FLOAT, GL_FALSE, stride, null);
-		else glVertexAttribPointer(index, size, GL_FLOAT, GL_FALSE, stride, cast(void*)offset);
-	}
-
-	public void BufferData(int index, float[] data, BufferMode mode = BufferMode.Dynamic) {
-		Buffers[index] = data;
-		BufferData(index, cast(int)data.length, mode);
-	}
-
-	public void BufferData(int index, int size, BufferMode mode = BufferMode.Dynamic) {
-		glBufferData(this.type, size * GLfloat.sizeof, Buffers[index].ptr, mode);
-	}
-
-	public void BufferSubData(int index, int offset, float[] data) {
-		foreach( int i; 0 .. cast(int)data.length) {
-			Buffers[index][offset+i] = data[i]; 
-		}
-		BufferSubdata(index, offset, cast(int)data.length);
-	}
-
-	public void BufferSubdata(int index, int offset, int size) {
-		glBufferSubData(this.type, offset, size * GLfloat.sizeof, Buffers[index].ptr);
-	}
-
-	/**
-		Supplies buffer data as a struct or class.
-	*/
-	public void BufferStruct(T)(T input_structs) {
-
-		// Make sure valid types are in the struct
-		// TODO: Add type support for ints, and such.
-		enum ValidBufferType(T) = (is(T == float)) || (IsVector!T && is(T.Type == float));
-
-		VertexArray.Bind();
-		// Generate buffers if needed.
-		int struct_member_count = cast(int)__traits(allMembers, T).length;	
-		if (layout == Layout.Layered) {
-			if (Buffers.length < struct_member_count) {
-				GenBuffers(struct_member_count);
-			}
+		// Generate GL buffers.
+		static if(layout == Layout.Grouped) {
+			int struct_member_count = cast(int)__traits(allMembers, T).length;
+			gl_buffers.length = struct_member_count;
+			glGenBuffers(struct_member_count, gl_buffers.ptr);
 		} else {
-			if (Buffers.length == 0) {
-				GenBuffers(1);
-			}
+			gl_buffers.length = 1;
+			glGenBuffers(1, gl_buffers.ptr);
 		}
+		set_attribute_pointers();
+	}
 
-		Buffer[] pbfs = [];
-		pbfs.length = struct_member_count;
+	~this() {
+		foreach(int iterator, string member; __traits(allMembers, T)) {
+			glDisableVertexAttribArray(iterator);
+		}
+		glDeleteBuffers(cast(GLsizei)gl_buffers.length, gl_buffers.ptr);
+	}
+
+	private void set_attribute_pointers() {
 		foreach(int iterator, string member; __traits(allMembers, T)) {
 			// Get value at compile time.
-			auto field = __traits(getMember, input_structs, member);
+			auto field = __traits(getMember, Data[0], member);
 
-			// Run the type test froIbom above.
-			static assert(isArray!(typeof(field)));
-			static assert(ValidBufferType!(typeof(field[0])));
-			
-			// Add data to the buffer
-			float[] buff = buffer_data(member, iterator, field);
+			// Use a mixin to get the offset value.
+			mixin("int field_offset = T."~member~".offsetof;");
+
+			// Run the type test from above.
+			static assert(ValidBufferType!(typeof(field)));
 
 			if (layout == Layout.Grouped) {
-				pbfs[iterator] ~= buff;
-			}
-
-			// Specify amount of elements in the buffer object.
-			this.len = cast(int)field.length;
-
-			// Use this if/when runtime reflection might be added.
-			// throw new Exception("Invalid buffer data type: " ~ typeid(field).text ~ "!");
-		}
-		/*if (layout != Layout.Layered) {
-			if (layout == Layout.Grouped) {
-				// TODO: Finish grouped rendering.
-			}
-			BufferData(0);
-			EnableAttribute(0);
-		}*/
-		VertexArray.Unbind();
-	}
-	
-	private float[] buffer_data(T)(string name, int index, T[] vec, BufferMode mode = BufferMode.Dynamic) if (IsVector!T) {
-		float[] data = [];
-		foreach(T v; vec) {
-			data ~= v.data;
-		}
-
-		// Supply buffer mapping info.
-		if (!(name in buffer_map) || mode == BufferMode.Dynamic) {
-			BufferInfo inf;
-			if (layout == Layout.Layered) {
-				inf = new BufferInfo(name, index, vec[0].data.length, 0, 0);
-			} else if (layout == Layout.Clustered) {
-				inf = new BufferInfo(name, 0, cast(int)vec[0].data.length, cast(int)(Buffers[0].length * GLfloat.sizeof), 0);
+				Bind(iterator);
+				glEnableVertexAttribArray(iterator);
+				glVertexAttribPointer(iterator, field.sizeof, GL_FLOAT, GL_FALSE, 0, null);
 			} else {
-				inf = new BufferInfo(name, 0, cast(int)vec[0].data.length, cast(int)(Buffers[0].length * GLfloat.sizeof), cast(int)vec[0].data.length * GLfloat.sizeof);
+				Bind();
+				glEnableVertexAttribArray(iterator);
+				glVertexAttribPointer(iterator, field.sizeof, GL_FLOAT, GL_FALSE, field_offset, null);
 			}
-			buffer_map[name] = inf;
 		}
-
-		if (layout == Layout.Layered) {
-			Bind(index);
-			if (data.length <= Buffers[index].length) BufferSubData(index, 0, data);
-			else BufferData(index, data, mode);
-			SetAttributePointer(index, buffer_map[name].Dimensions, buffer_map[name].Size, buffer_map[name].Offset);
-		}
-
-		if (layout == Layout.Clustered) {
-			Bind(0);
-			SetAttributePointer(index, buffer_map[name].Dimensions, buffer_map[name].Size, buffer_map[name].Offset);
-			Buffers[0] ~= data;
-		}
-
-		if (layout == Layout.Grouped) {
-			Bind(0);
-			SetAttributePointer(index, buffer_map[name].Dimensions, buffer_map[name].Size, buffer_map[name].Offset);
-		}
-
-		if (layout == Layout.Layered) EnableAttribute(index);
-		return data;
 	}
 
-	private float[] buffer_data(T:float[])(string name, int index, T flt, BufferMode mode = BufferMode.Dynamic) {
-		float[] data = flt;
-
-		// Supply buffer mapping info, if needed.
-		if (!(name in buffer_map) || mode == BufferMode.Dynamic) {
-			BufferInfo inf;
-			if (layout == Layout.Layered) {
-				inf = new BufferInfo(name, index, vec[0].data.length, 0, 0);
-			} else if (layout == Layout.Clustered) {
-				inf = new BufferInfo(name, 0, cast(int)vec[0].data.length, cast(int)(Buffers[0].length * GLfloat.sizeof), 0);
-			} else {
-				inf = new BufferInfo(name, 0, cast(int)vec[0].data.length, cast(int)(Buffers[0].length * GLfloat.sizeof), cast(int)vec[0].data.length * GLfloat.sizeof);
-			}
-			buffer_map[name] = inf;
-		}
-
-		if (layout == Layout.Layered) {
-			Bind(index);
-			if (data.length <= Buffers[index].length) BufferSubData(index, 0, data);
-			else BufferData(index, data, mode);
-			SetAttributePointer(index, buffer_map[name].Dimensions, buffer_map[name].Size, buffer_map[name].Offset);
-		}
-
-		if (layout == Layout.Clustered) {
-			Bind(0);
-			SetAttributePointer(index, buffer_map[name].Dimensions, buffer_map[name].Size, buffer_map[name].Offset);
-			Buffers[0] ~= data;
-		}
-
-		if (layout == Layout.Grouped) {
-			Bind(0);
-			SetAttributePointer(index, buffer_map[name].Dimensions, buffer_map[name].Size, buffer_map[name].Offset);
-		}
-
-		if (layout == Layout.Layered) EnableAttribute(index);
-		return data;
+	public void Bind(int index = 0) {
+		glBindBuffer(GL_ARRAY_BUFFER, gl_buffers[index]);
 	}
 
-	public abstract void Draw(int amount = 0);
+	public void Unbind() {
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
+
+	public void UpdateBuffer(int index = 0, BufferMode mode = BufferMode.Dynamic) {
+		glBufferData(GL_ARRAY_BUFFER, Data.sizeof, Data.ptr, mode);
+	}
+
+	public void UpdateSubData(GLintptr offset, GLsizeiptr size) {
+		glBufferSubData(GL_ARRAY_BUFFER, offset, size, cast(void*)Data);
+	}
+
+	public void Draw(int amount = 0) {
+		if (amount == 0) glDrawArrays(GL_TRIANGLES, 0, cast(GLuint)this.Data.length);
+		else glDrawArrays(GL_TRIANGLES, 0, amount);
+	}
 }
 
+struct IBO {
+
+}
+
+/*
 class IBO : BufferObject {
 	this(Layout layout) {
 		super(GL_ELEMENT_ARRAY_BUFFER, layout, null);
@@ -333,65 +171,4 @@ class IBO : BufferObject {
 	public override void Draw(int amount = 0) {
 		throw new Exception("You can't draw an IBO, attach the IBO to a VBO instead.");
 	}
-}
-
-class VBO : BufferObject {
-	this(Layout layout) {
-		super(GL_ARRAY_BUFFER, layout, new VAO());
-	}
-
-	public override void Draw(int amount = 0) {
-		VertexArray.Bind();
-		if (amount == 0) glDrawArrays(GL_TRIANGLES, 0, this.Count);
-		else glDrawArrays(GL_TRIANGLES, 0, amount);
-		VertexArray.Unbind();
-	}
-}
-
-class IndxVBO : VBO {
-	private IBO index_buffer;
-
-	this(Layout layout) {
-		super(layout);
-		this.index_buffer = new IBO(layout);
-	}
-
-	public void BufferIndices(float[] indices) {
-		struct d {
-			float[] data;
-		}
-		d data = d(indices);
-		this.index_buffer.BufferData(0, data.data);
-	}
-
-	public override void Draw(int amount = 0) {
-		glDrawElements(GL_TRIANGLES, this.Count, GL_FLOAT, null);
-	}
-}
-
-class InstVBO : VBO {
-	this(Layout layout) {
-		super(layout);
-	}
-
-	public override void Draw(int amount = 0) {
-		
-	}
-}
-
-class InstIndxVBO : InstVBO {
-	private IBO index_buffer;
-
-	this(Layout layout) {
-		super(layout);
-		this.index_buffer = new IBO(layout);
-	}
-
-	public override void Draw(int amount = 0) {
-		
-	}
-}
-
-/*
-
-*/
+}*/

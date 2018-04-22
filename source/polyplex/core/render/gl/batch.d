@@ -15,10 +15,12 @@ import std.stdio;
 
 
 private struct SprBatchData {
-	Vector3[] ppPosition;
-	Vector2[] ppTexcoord;
-	Vector4[] ppColor;
+	Vector3 ppPosition;
+	Vector2 ppTexcoord;
+	Vector4 ppColor;
 }
+
+private alias SBatchVBO = VBO!(SprBatchData, Layout.Layered);
 
 /**
 	OpenGL implementation of a sprite batcher.
@@ -36,7 +38,7 @@ public class GlSpriteBatch : SpriteBatch {
 	private int queued;
 
 	private SprBatchData vector_data;
-	private VBO render_object;
+	private VAO!(SprBatchData, Layout.Layered) render_object;
 
 	private Renderer renderer;
 	private SpriteSorting sort_mode; 
@@ -51,7 +53,7 @@ public class GlSpriteBatch : SpriteBatch {
 		this.renderer = renderer;
 		InitializeSpritebatch();
 		this.size = size;
-		render_object = new VBO(Layout.Layered);
+		render_object = new VAO!(SprBatchData, Layout.Layered)();
 	}
 
 	public static void InitializeSpritebatch() {
@@ -163,14 +165,14 @@ public class GlSpriteBatch : SpriteBatch {
 	*/
 	public override void Flush() {
 		render();
-		vector_data = SprBatchData([], [], []);
 		queued = 0;
 	}
 
 	private void add_vertex(float x, float y, float z, float r, float g, float b, float a, float u, float v) {
-		vector_data.ppPosition ~= Vector3(x, y, z);
-		vector_data.ppColor ~= Vector4(r, g, b, a);
-		vector_data.ppTexcoord ~= Vector2(u, v);
+		vector_data.ppPosition = Vector3(x, y, z);
+		vector_data.ppColor = Vector4(r, g, b, a);
+		vector_data.ppTexcoord = Vector2(u, v);
+		this.render_object.ChildVBO.Data ~= vector_data;
 		/+
 		Old code
 			render_object.Vbo.Vertices[0].Add([x, y, z]);
@@ -190,8 +192,7 @@ public class GlSpriteBatch : SpriteBatch {
 
 	private void render() {
 		// Buffer the data
-		render_object.Clear();
-		render_object.BufferStruct(vector_data);
+		render_object.ChildVBO.UpdateBuffer();
 
 		// Attach textures, set states, uniforms, etc.
 		this.shader.Attach();
@@ -201,7 +202,7 @@ public class GlSpriteBatch : SpriteBatch {
 		this.shader.SetUniform(this.shader.GetUniform(uniform_prj_name), mult_matrices());
 
 		// Draw.
-		render_object.Draw(queued*6);
+		render_object.ChildVBO.Draw(queued*6);
 	}
 
 	/**
