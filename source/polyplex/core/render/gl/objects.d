@@ -115,28 +115,30 @@ struct VBO(T, Layout layout) {
 
 	private void set_attribute_pointers() {
 		foreach(int iterator, string member; __traits(allMembers, T)) {
-			// Get value at compile time.
-			auto field = __traits(getMember, Data[0], member);
-
-			// Use a mixin to get the offset value.
+			// Use a mixin to get the offset values.
 			mixin("int field_offset = T."~member~".offsetof;");
+			mixin("int stride_size = T.sizeof;");
+			mixin("int field_size = T."~member~".sizeof/4;");
 
 			// Run the type test from above.
-			static assert(ValidBufferType!(typeof(field)));
+			mixin("static assert(ValidBufferType!(typeof(T."~member~")), \"Invalid buffer value <"~member~">, may only contain: float, vector2, vector3 and vector4s!\");");
 
 			if (layout == Layout.Grouped) {
 				Bind(iterator);
+				glVertexAttribPointer(iterator, field_size, GL_FLOAT, GL_FALSE, 0, null);
 				glEnableVertexAttribArray(iterator);
-				glVertexAttribPointer(iterator, field.sizeof, GL_FLOAT, GL_FALSE, 0, null);
 			} else {
 				Bind();
+				Logger.Debug("glVertexAttribPointer({0}, {1}, GL_FLOAT, GL_FALSE, {2}, {3})", iterator, field_size, stride_size, field_offset);
+				glVertexAttribPointer(iterator, field_size, GL_FLOAT, GL_FALSE, stride_size, cast(GLvoid*)field_offset);
+				Logger.Debug("glEnableVertexAttribArray({0})", iterator);
 				glEnableVertexAttribArray(iterator);
-				glVertexAttribPointer(iterator, field.sizeof, GL_FLOAT, GL_FALSE, field_offset, null);
 			}
 		}
 	}
 
 	public void Bind(int index = 0) {
+		//Logger.Debug("glBindBuffer(GL_ARRAY_BUFFER, gl_buffers[{0}]) <ptr {1}>", index, gl_buffers[index]);
 		glBindBuffer(GL_ARRAY_BUFFER, gl_buffers[index]);
 	}
 
@@ -149,7 +151,7 @@ struct VBO(T, Layout layout) {
 	}
 
 	public void UpdateSubData(GLintptr offset, GLsizeiptr size) {
-		glBufferSubData(GL_ARRAY_BUFFER, offset, size, cast(void*)Data);
+		glBufferSubData(GL_ARRAY_BUFFER, offset, size, cast(void*)Data.ptr);
 	}
 
 	public void Draw(int amount = 0) {

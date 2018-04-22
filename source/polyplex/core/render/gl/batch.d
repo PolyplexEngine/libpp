@@ -54,6 +54,9 @@ public class GlSpriteBatch : SpriteBatch {
 		InitializeSpritebatch();
 		this.size = size;
 		render_object = new VAO!(SprBatchData, Layout.Layered)();
+		this.render_object.Bind();
+		this.render_object.ChildVBO = SBatchVBO([]);
+		this.render_object.Unbind();
 	}
 
 	public static void InitializeSpritebatch() {
@@ -165,6 +168,7 @@ public class GlSpriteBatch : SpriteBatch {
 	*/
 	public override void Flush() {
 		render();
+		this.render_object.ChildVBO.Data = [];
 		queued = 0;
 	}
 
@@ -173,12 +177,6 @@ public class GlSpriteBatch : SpriteBatch {
 		vector_data.ppColor = Vector4(r, g, b, a);
 		vector_data.ppTexcoord = Vector2(u, v);
 		this.render_object.ChildVBO.Data ~= vector_data;
-		/+
-		Old code
-			render_object.Vbo.Vertices[0].Add([x, y, z]);
-			render_object.Vbo.Vertices[1].Add([u, v]);
-			render_object.Vbo.Vertices[2].Add([r, g, b, a]);
-		+/
 	}
 
 	private void check_flush(Texture2D texture) {
@@ -191,6 +189,7 @@ public class GlSpriteBatch : SpriteBatch {
 	}
 
 	private void render() {
+		this.render_object.Bind();
 		// Buffer the data
 		render_object.ChildVBO.UpdateBuffer();
 
@@ -203,6 +202,7 @@ public class GlSpriteBatch : SpriteBatch {
 
 		// Draw.
 		render_object.ChildVBO.Draw(queued*6);
+		this.render_object.Unbind();
 	}
 
 	/**
@@ -293,6 +293,7 @@ public class GlSpriteBatch : SpriteBatch {
 			v2 = vx;
 		}
 
+		this.render_object.Bind();
 		add_vertex(x1, y1, zlayer, color.Rf(), color.Gf(), color.Bf(), color.Af(), u, v); // TOP LEFT
 		add_vertex(x2, y2, zlayer, color.Rf(), color.Gf(), color.Bf(), color.Af(), u2, v), // TOP RIGHT
 		add_vertex(x4, y4, zlayer, color.Rf(), color.Gf(), color.Bf(), color.Af(), u, v2); // BOTTOM LEFT
@@ -300,6 +301,7 @@ public class GlSpriteBatch : SpriteBatch {
 		add_vertex(x3, y3, zlayer, color.Rf(), color.Gf(), color.Bf(), color.Af(), u2, v2); // BOTTOM RIGHT
 		add_vertex(x4, y4, zlayer, color.Rf(), color.Gf(), color.Bf(), color.Af(), u, v2); // BOTTOM LEFT
 		queued++;
+		this.render_object.Unbind();
 	}
 
 	/**
