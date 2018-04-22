@@ -103,7 +103,6 @@ struct VBO(T, Layout layout) {
 			gl_buffers.length = 1;
 			glGenBuffers(1, gl_buffers.ptr);
 		}
-		set_attribute_pointers();
 	}
 
 	~this() {
@@ -113,24 +112,24 @@ struct VBO(T, Layout layout) {
 		glDeleteBuffers(cast(GLsizei)gl_buffers.length, gl_buffers.ptr);
 	}
 
-	private void set_attribute_pointers() {
+	public void UpdateAttribPointers() {
+		if (Data.length == 0) return;
 		foreach(int iterator, string member; __traits(allMembers, T)) {
 			// Use a mixin to get the offset values.
-			mixin("int field_offset = T."~member~".offsetof;");
-			mixin("int stride_size = T.sizeof;");
-			mixin("int field_size = T."~member~".sizeof/4;");
+			mixin(q{int field_size = T.%s.sizeof/4;}.format(member));
+			mixin(q{void* field_t = cast(void*)&Data[0].%s;}.format(member));
 
 			// Run the type test from above.
 			mixin("static assert(ValidBufferType!(typeof(T."~member~")), \"Invalid buffer value <"~member~">, may only contain: float, vector2, vector3 and vector4s!\");");
 
 			if (layout == Layout.Grouped) {
-				Bind(iterator);
+				Bind(iterator+1);
 				glVertexAttribPointer(iterator, field_size, GL_FLOAT, GL_FALSE, 0, null);
 				glEnableVertexAttribArray(iterator);
 			} else {
 				Bind();
-				Logger.Debug("glVertexAttribPointer({0}, {1}, GL_FLOAT, GL_FALSE, {2}, {3})", iterator, field_size, stride_size, field_offset);
-				glVertexAttribPointer(iterator, field_size, GL_FLOAT, GL_FALSE, stride_size, cast(GLvoid*)field_offset);
+				Logger.Debug("glVertexAttribPointer({0}, {1}, GL_FLOAT, GL_FALSE, {2}, {3})", iterator, field_size, T.sizeof, field_t);
+				glVertexAttribPointer(iterator, field_size, GL_FLOAT, GL_FALSE, T.sizeof, field_t);
 				Logger.Debug("glEnableVertexAttribArray({0})", iterator);
 				glEnableVertexAttribArray(iterator);
 			}
@@ -147,11 +146,15 @@ struct VBO(T, Layout layout) {
 	}
 
 	public void UpdateBuffer(int index = 0, BufferMode mode = BufferMode.Dynamic) {
+		Bind(index);
 		glBufferData(GL_ARRAY_BUFFER, Data.sizeof, Data.ptr, mode);
+		UpdateAttribPointers();
 	}
 
-	public void UpdateSubData(GLintptr offset, GLsizeiptr size) {
+	public void UpdateSubData(int index = 0, GLintptr offset = 0, GLsizeiptr size = 0) {
+		Bind(index);
 		glBufferSubData(GL_ARRAY_BUFFER, offset, size, cast(void*)Data.ptr);
+		UpdateAttribPointers();
 	}
 
 	public void Draw(int amount = 0) {

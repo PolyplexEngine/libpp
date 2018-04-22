@@ -172,11 +172,12 @@ public class GlSpriteBatch : SpriteBatch {
 		queued = 0;
 	}
 
-	private void add_vertex(float x, float y, float z, float r, float g, float b, float a, float u, float v) {
-		vector_data.ppPosition = Vector3(x, y, z);
-		vector_data.ppColor = Vector4(r, g, b, a);
-		vector_data.ppTexcoord = Vector2(u, v);
-		this.render_object.ChildVBO.Data ~= vector_data;
+	private void add_vertex(int offset, float x, float y, float z, float r, float g, float b, float a, float u, float v) {
+		if (queued+offset >= this.render_object.ChildVBO.Data.length)
+			this.render_object.ChildVBO.Data.length++;
+		this.render_object.ChildVBO.Data[queued+offset].ppPosition = Vector3(x, y, z);
+		this.render_object.ChildVBO.Data[queued+offset].ppColor = Vector4(r, g, b, a);
+		this.render_object.ChildVBO.Data[queued+offset].ppTexcoord = Vector2(u, v);
 	}
 
 	private void check_flush(Texture2D texture) {
@@ -293,15 +294,13 @@ public class GlSpriteBatch : SpriteBatch {
 			v2 = vx;
 		}
 
-		this.render_object.Bind();
-		add_vertex(x1, y1, zlayer, color.Rf(), color.Gf(), color.Bf(), color.Af(), u, v); // TOP LEFT
-		add_vertex(x2, y2, zlayer, color.Rf(), color.Gf(), color.Bf(), color.Af(), u2, v), // TOP RIGHT
-		add_vertex(x4, y4, zlayer, color.Rf(), color.Gf(), color.Bf(), color.Af(), u, v2); // BOTTOM LEFT
-		add_vertex(x2, y2, zlayer, color.Rf(), color.Gf(), color.Bf(), color.Af(), u2, v), // TOP RIGHT
-		add_vertex(x3, y3, zlayer, color.Rf(), color.Gf(), color.Bf(), color.Af(), u2, v2); // BOTTOM RIGHT
-		add_vertex(x4, y4, zlayer, color.Rf(), color.Gf(), color.Bf(), color.Af(), u, v2); // BOTTOM LEFT
+		add_vertex(0, x1, y1, zlayer, color.Rf(), color.Gf(), color.Bf(), color.Af(), u, v); // TOP LEFT
+		add_vertex(1, x2, y2, zlayer, color.Rf(), color.Gf(), color.Bf(), color.Af(), u2, v), // TOP RIGHT
+		add_vertex(2, x4, y4, zlayer, color.Rf(), color.Gf(), color.Bf(), color.Af(), u, v2); // BOTTOM LEFT
+		add_vertex(3, x2, y2, zlayer, color.Rf(), color.Gf(), color.Bf(), color.Af(), u2, v), // TOP RIGHT
+		add_vertex(4, x3, y3, zlayer, color.Rf(), color.Gf(), color.Bf(), color.Af(), u2, v2); // BOTTOM RIGHT
+		add_vertex(5, x4, y4, zlayer, color.Rf(), color.Gf(), color.Bf(), color.Af(), u, v2); // BOTTOM LEFT
 		queued++;
-		this.render_object.Unbind();
 	}
 
 	/**
