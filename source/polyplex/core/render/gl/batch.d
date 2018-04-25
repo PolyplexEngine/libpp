@@ -275,7 +275,7 @@ public class GlSpriteBatch : SpriteBatch {
 			x4 = pos.X;
 			y4 = pos.Y+pos.Height;
 		}
-		float pxx = 0.2f/cast(float)texture.Height;
+		float pxx = 0.2f/cast(float)texture.Width;
 		float pxy = 0.2f/cast(float)texture.Height;
 
 		float u = ((cutout.X)/cast(float)texture.Width)+pxx;
