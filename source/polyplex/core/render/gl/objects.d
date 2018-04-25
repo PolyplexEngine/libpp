@@ -113,11 +113,6 @@ struct VBO(T, Layout layout) {
 		glDeleteBuffers(cast(GLsizei)gl_buffers.length, gl_buffers.ptr);
 	}
 
-	private void assert_buffer_validity(string member) {
-		mixin(q{ alias M = %s.%s; }.format(fullyQualifiedName!T, member));
-		static assert(ValidBufferType!(typeof(M)), "Invalid buffer value <{0}>, may only contain: float, vector2, vector3 and vector4s!").Format(member));
-	}
-
 	public void UpdateAttribPointers() {
 		if (Data.length == 0) return;
 		foreach(int iterator, string member; __traits(allMembers, T)) {
@@ -126,7 +121,9 @@ struct VBO(T, Layout layout) {
 			mixin(q{void* field_t = cast(void*)&Data[0].%s;}.format(member));
 
 			// Check if it's a valid type for the VBO buffer.
-			assert_buffer_validity(member);
+			mixin(q{ alias M = %s.%s; }.format(fullyQualifiedName!T, member));
+			static assert(ValidBufferType!(typeof(M)), "Invalid buffer value <{0}>, may only contain: float, vector2, vector3 and vector4s!".Format(member));
+
 
 			if (layout == Layout.Grouped) {
 				Bind(iterator+1);
