@@ -121,16 +121,18 @@ struct VBO(T, Layout layout) {
 			mixin(q{void* field_t = cast(void*)&Data[0].%s;}.format(member));
 
 			// Check if it's a valid type for the VBO buffer.
-			mixin(q{ alias M = %s.%s; }.format(fullyQualifiedName!T, member));
+			mixin(q{ alias M = %s.%s; }.format("T", member));
 			static assert(ValidBufferType!(typeof(M)), "Invalid buffer value <{0}>, may only contain: float, vector2, vector3 and vector4s!".Format(member));
 
 
 			if (layout == Layout.Grouped) {
 				Bind(iterator+1);
+				UpdateBuffer(iterator+1);
 				glVertexAttribPointer(iterator, field_size, GL_FLOAT, GL_FALSE, 0, null);
 				glEnableVertexAttribArray(iterator);
 			} else {
 				Bind();
+				UpdateBuffer();
 				Logger.Debug("glVertexAttribPointer({0}, {1}, GL_FLOAT, GL_FALSE, {2}, {3})", iterator, field_size, T.sizeof, field_t);
 				glVertexAttribPointer(iterator, field_size, GL_FLOAT, GL_FALSE, T.sizeof, field_t);
 				Logger.Debug("glEnableVertexAttribArray({0})", iterator);
