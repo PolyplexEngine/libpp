@@ -29,9 +29,3 @@ Only the Polyplex Discord server strictly follows these principles, but followin
 
 ## This applies to
 All projects in the [PolyplexEngine](https://github.com/PolyplexEngine) organization.
-
-
-
-
-#### Footnotes
-We allow virtual hugs. c:
