@@ -1,5 +1,6 @@
 module polyplex.core.render.gl;
 import polyplex.core.render.gl.batch;
+import polyplex.core.render.gl.debug2d;
 import polyplex.core.render;
 import polyplex.core.window;
 import polyplex.core.color;
@@ -37,6 +38,7 @@ public class GlRenderer : Renderer {
 		GlSpriteBatch.InitializeSpritebatch();
 		Renderer r = cast(Renderer)this;
 		this.Batch = new GlSpriteBatch(r);
+		GlDebugging2D.PrepDebugging(r);
 		
 		//Default settings for sprite clamping and wrapping
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);

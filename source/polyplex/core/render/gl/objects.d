@@ -14,9 +14,12 @@ import std.format;
 import std.traits;
 
 enum DrawType {
-	LineStrip,
-	TriangleStrip,
-	Triangles
+	LineStrip = GL_LINE_STRIP,
+	TriangleStrip = GL_TRIANGLE_STRIP,
+	Triangles = GL_TRIANGLES,
+	Points = GL_POINTS,
+	LineLoop = GL_LINE_LOOP,
+	Lines = GL_LINES,
 }
 
 enum OptimizeMode {
@@ -170,10 +173,10 @@ struct VertexBuffer(T, Layout layout) {
 		UpdateAttribPointers();
 	}
 
-	public void Draw(int amount = 0) {
+	public void Draw(int amount = 0, DrawType dt = DrawType.Triangles) {
 		vao.Bind();
-		if (amount == 0) glDrawArrays(GL_TRIANGLES, 0, cast(GLuint)this.Data.length);
-		else glDrawArrays(GL_TRIANGLES, 0, amount);
+		if (amount == 0) glDrawArrays(dt, 0, cast(GLuint)this.Data.length);
+		else glDrawArrays(dt, 0, amount);
 		uint err = glGetError();
 		if (err != GL_NO_ERROR) {
 			Logger.Debug("{0}", err);
