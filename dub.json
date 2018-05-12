@@ -1,6 +1,6 @@
 {
 	"name": "pp",
-	"license": "MIT",
+	"license": "Boost",
 	"targetType": "dynamicLibrary",
 	"description": "The base library of the polyplex engine. (Heavily WIP, non-idiomatic)",
 	"stringImportPaths": [
