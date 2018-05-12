@@ -87,6 +87,7 @@ struct VertexBuffer(T, Layout layout) {
 	private GLuint[] gl_buffers;
 	public T[] Data;
 
+
 	this(T input) {
 		this([input]);
 	}
@@ -165,7 +166,7 @@ struct VertexBuffer(T, Layout layout) {
 
 	public void UpdateSubData(int index = 0, GLintptr offset = 0, GLsizeiptr size = 0) {
 		Bind(index);
-		glBufferSubData(GL_ARRAY_BUFFER, offset, size, cast(void*)Data.ptr);
+		glBufferSubData(GL_ARRAY_BUFFER, offset, T.sizeof*size, cast(void*)Data.ptr);
 		UpdateAttribPointers();
 	}
 

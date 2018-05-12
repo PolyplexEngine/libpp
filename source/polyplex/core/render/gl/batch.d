@@ -36,6 +36,7 @@ public class GlSpriteBatch : SpriteBatch {
 
 	private int size;
 	private int queued;
+	private int last_queued;
 
 	private SprBatchData vector_data;
 	private VertexBuffer!(SprBatchData, Layout.Interleaved) render_object;
@@ -170,6 +171,7 @@ public class GlSpriteBatch : SpriteBatch {
 	public override void Flush() {
 		render();
 		this.render_object.Data = [];
+		last_queued = queued;
 		queued = 0;
 	}
 
@@ -194,7 +196,8 @@ public class GlSpriteBatch : SpriteBatch {
 	private void render() {
 		// Buffer the data
 		this.render_object.Bind();
-		render_object.UpdateBuffer();
+		if ((queued*6) < last_queued) render_object.UpdateSubData(0, 0, (queued*6));
+		else render_object.UpdateBuffer();
 
 		// Draw current
 		this.render_object.Bind();
