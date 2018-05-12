@@ -19,7 +19,6 @@ private struct DebugVertexLayout {
 
 public class GlDebugging2D {
 	private static GLShader shader;
-	private static Matrix4x4 matrix;
 	private static Camera2D cm;
 	private static Renderer renderer;
 
@@ -61,15 +60,19 @@ public class GlDebugging2D {
 		}
 	}
 
+	public static void ResetMatrix() {
+		cm = new Camera2D(Vector2(0, 0));
+	}
+
 	public static void SetMatrix(Matrix4x4 camMatrix) {
-		matrix = camMatrix;
+		cm.Matrix = camMatrix;
 	}
 
 	public static void DrawDots(Vector2[] dot_points, Color color) {
 		create_buffer_points(dot_points, color);
 		buff.UpdateBuffer();
 		shader.Attach();
-		shader.SetUniform(matr_indx, cm.Project(renderer.Window.Width, renderer.Window.Height) * matrix);
+		shader.SetUniform(matr_indx, cm.Project(renderer.Window.Width, renderer.Window.Height) * cm.Matrix);
 		buff.Draw(0, DrawType.Points);
 		buff.Unbind();
 		shader.Detach();
@@ -83,7 +86,7 @@ public class GlDebugging2D {
 		create_buffer_line(line_points, color);
 		buff.UpdateBuffer();
 		shader.Attach();
-		shader.SetUniform(matr_indx, cm.Project(renderer.Window.Width, renderer.Window.Height) * matrix);
+		shader.SetUniform(matr_indx, cm.Project(renderer.Window.Width, renderer.Window.Height) * cm.Matrix);
 		buff.Draw(0, DrawType.Lines);
 		buff.Unbind();
 		shader.Detach();
@@ -93,7 +96,7 @@ public class GlDebugging2D {
 		create_buffer(rect, color);
 		buff.UpdateBuffer();
 		shader.Attach();
-		shader.SetUniform(matr_indx, cm.Project(renderer.Window.Width, renderer.Window.Height) * matrix);
+		shader.SetUniform(matr_indx, cm.Project(renderer.Window.Width, renderer.Window.Height) * cm.Matrix);
 		buff.Draw(0, DrawType.LineStrip);
 		buff.Unbind();
 		shader.Detach();
@@ -103,7 +106,7 @@ public class GlDebugging2D {
 		create_buffer(rect, color);
 		buff.UpdateBuffer();
 		shader.Attach();
-		shader.SetUniform(matr_indx, cm.Project(renderer.Window.Width, renderer.Window.Height) * matrix);
+		shader.SetUniform(matr_indx, cm.Project(renderer.Window.Width, renderer.Window.Height) * cm.Matrix);
 		buff.Draw();
 		shader.Detach();
 		buff.Unbind();

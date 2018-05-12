@@ -11,6 +11,7 @@ public class Camera {
 	protected float zfar;
 
 	public @property Matrix4x4 Matrix() { Update(); return this.matrix; }
+	public @property void Matrix(Matrix4x4 value) { this.matrix = value; Update(); }
 	public abstract void Update();
 	public abstract Matrix4x4 Project(float width, float height);
 }
