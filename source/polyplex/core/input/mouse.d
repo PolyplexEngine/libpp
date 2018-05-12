@@ -2,6 +2,8 @@ module polyplex.core.input.mouse;
 import derelict.sdl2.sdl;
 import polyplex.math;
 
+import std.stdio;
+
 enum MouseButton {
 
 	//Left Mouse Button
@@ -15,11 +17,12 @@ enum MouseButton {
 }
 
 public class MouseState {
-	private Vector2 pos;
+	private Vector3 pos;
+	private float scroll;
 	private int btn_mask;
 
-	this(int x, int y, int btn_mask) {
-		this.pos = Vector2(x, y);
+	this(int x, int y, int btn_mask, float scrolled) {
+		this.pos = Vector3(x, y, scrolled);
 		this.btn_mask = btn_mask;
 	}
 
@@ -31,6 +34,10 @@ public class MouseState {
 	public bool IsButtonReleased(MouseButton button) {
 		return !IsButtonPressed(button);
 	}
+
+	public Vector3 Position() {
+		return pos;
+	}
 }
 
 public class Mouse {
@@ -38,7 +45,8 @@ public class Mouse {
 		int x;
 		int y;
 		int mask = SDL_GetMouseState(&x, &y);
-		return new MouseState(x, y, mask);
+		float scroll = 0;
+		return new MouseState(x, y, mask, scroll);
 	}
 
 	public static Vector2 Position() {
