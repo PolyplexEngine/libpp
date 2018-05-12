@@ -15,7 +15,6 @@ import std.stdio;
 
 
 private struct SprBatchData {
-	align(4):
 	Vector3 ppPosition;
 	Vector2 ppTexcoord;
 	Vector4 ppColor;
