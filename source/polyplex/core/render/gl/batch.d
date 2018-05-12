@@ -20,7 +20,7 @@ private struct SprBatchData {
 	Vector4 ppColor;
 }
 
-private alias SBatchVBO = VBO!(SprBatchData, Layout.Interleaved);
+private alias SBatchVBO = VertexBuffer!(SprBatchData, Layout.Interleaved);
 
 /**
 	OpenGL implementation of a sprite batcher.
@@ -38,8 +38,8 @@ public class GlSpriteBatch : SpriteBatch {
 	private int queued;
 
 	private SprBatchData vector_data;
-	private VBO!(SprBatchData, Layout.Interleaved) render_object;
-	private VBO!(SprBatchData, Layout.Interleaved) render_object_2;
+	private VertexBuffer!(SprBatchData, Layout.Interleaved) render_object;
+	private VertexBuffer!(SprBatchData, Layout.Interleaved) render_object_2;
 
 	private Renderer renderer;
 	private SpriteSorting sort_mode; 
@@ -56,8 +56,8 @@ public class GlSpriteBatch : SpriteBatch {
 		this.renderer = renderer;
 		InitializeSpritebatch();
 		this.size = size;
-		render_object = VBO!(SprBatchData, Layout.Interleaved)([]);
-		render_object_2 = VBO!(SprBatchData, Layout.Interleaved)([]);
+		render_object = VertexBuffer!(SprBatchData, Layout.Interleaved)([]);
+		render_object_2 = VertexBuffer!(SprBatchData, Layout.Interleaved)([]);
 	}
 
 	public static void InitializeSpritebatch() {

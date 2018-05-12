@@ -56,7 +56,7 @@ enum Layout {
 }
 
 //Vertex Array Object contains state information to be sent to the GPU
-class VAO(T, Layout layout) {
+class VertexArray(T, Layout layout) {
 
 	private GLuint id;
 	public @property uint Id() { return cast(uint)id; }
@@ -77,12 +77,13 @@ class VAO(T, Layout layout) {
 		glBindVertexArray(0);
 	}
 }
+
 // Make sure valid types are in the struct
 // TODO: Add type support for ints, and such.
 enum ValidBufferType(T) = (is(T == float)) || (IsVector!T && is(T.Type == float));
 
-struct VBO(T, Layout layout) {
-	VAO!(T, layout) vao;
+struct VertexBuffer(T, Layout layout) {
+	VertexArray!(T, layout) vao;
 	private GLuint[] gl_buffers;
 	public T[] Data;
 
@@ -91,7 +92,7 @@ struct VBO(T, Layout layout) {
 	}
 
 	this(T[] input) {
-		vao = new VAO!(T, layout)();
+		vao = new VertexArray!(T, layout)();
 		this.Data = input;
 
 		vao.Bind();
@@ -179,8 +180,35 @@ struct VBO(T, Layout layout) {
 	}
 }
 
-struct IBO {
+struct IndexBuffer {
+	public GLuint[] Indices;
+	public GLuint Id;
 
+	this(GLuint[] indices) {
+		glGenBuffers(1, &Id);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Id);
+		this.Indices = indices;
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.sizeof, indices.ptr, GL_DYNAMIC_DRAW);
+	}
+
+	public void Bind() {
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Id);
+	}
+
+	public void Unbind() {
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	}
+
+	public void UpdateBuffer(int index = 0, BufferMode mode = BufferMode.Dynamic) {
+		Bind();
+		Logger.VerboseDebug("glBufferData(GL_ARRAY_BUFFER, {0}, {1}, {2})", Indices.sizeof, Indices.ptr, mode);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, Indices.sizeof, Indices.ptr, mode);
+	}
+
+	public void UpdateSubData(int index = 0, GLintptr offset = 0, GLsizeiptr size = 0) {
+		Bind();
+		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, offset, size, cast(void*)Indices.ptr);
+	}
 }
 
 /*
