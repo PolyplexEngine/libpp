@@ -27,6 +27,8 @@ public class GlRenderer : Renderer {
 
 	public override void Init(SDL_Window* w) {
 		win = w;
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
 		context = SDL_GL_CreateContext(w);
 		auto glver = DerelictGL3.reload();
 		if (context == null) throw new Error(to!string(SDL_GetError()));

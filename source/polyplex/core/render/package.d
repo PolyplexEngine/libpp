@@ -83,6 +83,7 @@ public abstract class SpriteBatch {
 	public abstract void Draw(Texture2D texture, Rectangle pos, Rectangle cutout, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f);
 	public abstract void Draw(Texture2D texture, Rectangle pos, Rectangle cutout, float rotation, Vector2 Origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f);
 	public abstract void Flush();
+	public abstract void SwapChain();
 	public abstract void End();
 }
 

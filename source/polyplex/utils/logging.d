@@ -13,7 +13,8 @@ public enum LogType {
 	Error = 	0x08,
 	Fatal = 	0x10,
 	Recover = 	0x20,
-	Debug = 	0x40
+	Debug = 	0x40,
+	VerboseDebug = 	0x80
 }
 
 public static LogType LogLevel = LogType.Warning | LogType.Error | LogType.Fatal;
@@ -22,6 +23,10 @@ public class Logger {
 	/* Basic impl */
 	public static void Log(string message, LogType type = LogType.Info)  {
 		Log(message, null, type);
+	}
+
+	public static void VerboseDebug (string message) {
+		Logger.VerboseDebug(message, null);
 	}
 
 	public static void Debug (string message) {
@@ -53,6 +58,9 @@ public class Logger {
 	}
 
 	/*T... impl.*/
+	public static void VerboseDebug(T...) (string message, T args) {
+		Logger.Log(message, args, LogType.VerboseDebug);
+	}
 
 	public static void Debug(T...) (string message, T args) {
 		Logger.Log(message, args, LogType.Debug);
@@ -89,6 +97,7 @@ public class Logger {
 		if ((LogLevel != LogType.Off && (LogLevel & type)) || (type == LogType.Fatal || type == LogType.Recover)) {
 			import colorize : fg, color, cwriteln;
 			string stxt = to!string(type);
+			if (type == LogType.VerboseDebug) stxt = stxt.color(fg.cyan);
 			if (type == LogType.Debug) stxt = stxt.color(fg.blue);
 			if (type == LogType.Info) stxt = stxt.color(fg.light_black);
 			if (type == LogType.Success) stxt = stxt.color(fg.light_green);

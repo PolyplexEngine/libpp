@@ -15,12 +15,13 @@ import std.stdio;
 
 
 private struct SprBatchData {
+	align(4):
 	Vector3 ppPosition;
 	Vector2 ppTexcoord;
 	Vector4 ppColor;
 }
 
-private alias SBatchVBO = VBO!(SprBatchData, Layout.Layered);
+private alias SBatchVBO = VBO!(SprBatchData, Layout.Interleaved);
 
 /**
 	OpenGL implementation of a sprite batcher.
@@ -38,7 +39,8 @@ public class GlSpriteBatch : SpriteBatch {
 	private int queued;
 
 	private SprBatchData vector_data;
-	private VAO!(SprBatchData, Layout.Layered) render_object;
+	private VBO!(SprBatchData, Layout.Interleaved) render_object;
+	private VBO!(SprBatchData, Layout.Interleaved) render_object_2;
 
 	private Renderer renderer;
 	private SpriteSorting sort_mode; 
@@ -47,16 +49,16 @@ public class GlSpriteBatch : SpriteBatch {
 	private Shader shader;
 	private Matrix4x4 view_project;
 	private Texture2D current_texture;
+	private Texture2D current_texture_2;
 	private bool has_begun = false;
+	private bool swap = false;
 
 	this(Renderer renderer, int size = 1000) {
 		this.renderer = renderer;
 		InitializeSpritebatch();
 		this.size = size;
-		render_object = new VAO!(SprBatchData, Layout.Layered)();
-		this.render_object.Bind();
-		this.render_object.ChildVBO = SBatchVBO([]);
-		this.render_object.Unbind();
+		render_object = VBO!(SprBatchData, Layout.Interleaved)([]);
+		render_object_2 = VBO!(SprBatchData, Layout.Interleaved)([]);
 	}
 
 	public static void InitializeSpritebatch() {
@@ -168,16 +170,17 @@ public class GlSpriteBatch : SpriteBatch {
 	*/
 	public override void Flush() {
 		render();
-		this.render_object.ChildVBO.Data = [];
+		this.render_object.Data = [];
 		queued = 0;
 	}
 
 	private void add_vertex(int offset, float x, float y, float z, float r, float g, float b, float a, float u, float v) {
-		if (queued+offset >= this.render_object.ChildVBO.Data.length)
-			this.render_object.ChildVBO.Data.length++;
-		this.render_object.ChildVBO.Data[queued+offset].ppPosition = Vector3(x, y, z);
-		this.render_object.ChildVBO.Data[queued+offset].ppColor = Vector4(r, g, b, a);
-		this.render_object.ChildVBO.Data[queued+offset].ppTexcoord = Vector2(u, v);
+		//Logger.VerboseDebug("{0}, {1} == {2}", offset, (queued*6), (queued*6)+offset);
+		if ((queued*6)+offset >= this.render_object.Data.length)
+			this.render_object.Data.length++;
+		this.render_object.Data[(queued*6)+offset].ppPosition = Vector3(x, y, z);
+		this.render_object.Data[(queued*6)+offset].ppColor = Vector4(r, g, b, a);
+		this.render_object.Data[(queued*6)+offset].ppTexcoord = Vector2(u, v);
 	}
 
 	private void check_flush(Texture2D texture) {
@@ -190,9 +193,12 @@ public class GlSpriteBatch : SpriteBatch {
 	}
 
 	private void render() {
-		this.render_object.Bind();
 		// Buffer the data
-		render_object.ChildVBO.UpdateBuffer();
+		this.render_object.Bind();
+		render_object.UpdateBuffer();
+
+		// Draw current
+		this.render_object.Bind();
 
 		// Attach textures, set states, uniforms, etc.
 		this.shader.Attach();
@@ -200,10 +206,20 @@ public class GlSpriteBatch : SpriteBatch {
 		set_sampler_state(sample_state);
 		set_blend_state(blend_state);
 		this.shader.SetUniform(this.shader.GetUniform(uniform_prj_name), mult_matrices());
-
+		
 		// Draw.
-		render_object.ChildVBO.Draw(queued*6);
+		render_object.Draw(queued*6);
+		
 		this.render_object.Unbind();
+	}
+
+	/**
+		Swaps the draw chain (double buffering)
+
+		TODO: Add double buffering here.
+	*/
+	public override void SwapChain() {
+		swap = !swap;
 	}
 
 	/**

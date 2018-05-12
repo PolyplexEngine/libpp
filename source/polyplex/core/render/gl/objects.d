@@ -40,19 +40,19 @@ enum Layout {
 		A layout where each element is seperated out into multiple buffers.
 		[XXX], [YYY], [ZZZ]
 	*/
-	Layered,
+	Seperated,
 
 	/**
 		A layout where each element is clustered into larger groups in one buffer.
 		[XXXYYYZZZ]
 	*/
-	Clustered,
+	Batched,
 
 	/**
 		A layout where each element is clustered into smaller groups in one buffer.
 		[XYZXYZXYZ]
 	*/
-	Grouped
+	Interleaved
 }
 
 //Vertex Array Object contains state information to be sent to the GPU
@@ -60,9 +60,6 @@ class VAO(T, Layout layout) {
 
 	private GLuint id;
 	public @property uint Id() { return cast(uint)id; }
-
-	public VBO!(T, layout) ChildVBO;
-	public IBO ChildIBO;
 
 	this() {
 		glGenVertexArrays(1, &id);
@@ -85,6 +82,7 @@ class VAO(T, Layout layout) {
 enum ValidBufferType(T) = (is(T == float)) || (IsVector!T && is(T.Type == float));
 
 struct VBO(T, Layout layout) {
+	VAO!(T, layout) vao;
 	private GLuint[] gl_buffers;
 	public T[] Data;
 
@@ -93,16 +91,20 @@ struct VBO(T, Layout layout) {
 	}
 
 	this(T[] input) {
+		vao = new VAO!(T, layout)();
 		this.Data = input;
 
+		vao.Bind();
+
 		// Generate GL buffers.
-		static if(layout == Layout.Grouped) {
+		static if(layout == Layout.Seperated) {
 			int struct_member_count = cast(int)__traits(allMembers, T).length;
 			gl_buffers.length = struct_member_count;
 			glGenBuffers(struct_member_count, gl_buffers.ptr);
 		} else {
 			gl_buffers.length = 1;
 			glGenBuffers(1, gl_buffers.ptr);
+			UpdateBuffer();
 		}
 	}
 
@@ -111,48 +113,52 @@ struct VBO(T, Layout layout) {
 			glDisableVertexAttribArray(iterator);
 		}
 		glDeleteBuffers(cast(GLsizei)gl_buffers.length, gl_buffers.ptr);
+		destroy(vao);
 	}
 
 	public void UpdateAttribPointers() {
 		if (Data.length == 0) return;
 		foreach(int iterator, string member; __traits(allMembers, T)) {
 			// Use a mixin to get the offset values.
-			mixin(q{int field_size = T.%s.sizeof/4;}.format(member));
-			mixin(q{void* field_t = cast(void*)&Data[0].%s;}.format(member));
+			mixin(q{int field_size = T.{0}.sizeof/4;}.Format(member));
+			mixin(q{void* field_t = cast(void*)T.{0}.offsetof;}.Format(member));
+
+			Logger.VerboseDebug("{0}", T.sizeof);
 
 			// Check if it's a valid type for the VBO buffer.
-			mixin(q{ alias M = %s.%s; }.format("T", member));
+			mixin(q{ alias M = T.{0}; }.Format(member));
 			static assert(ValidBufferType!(typeof(M)), "Invalid buffer value <{0}>, may only contain: float, vector2, vector3 and vector4s!".Format(member));
 
-
-			if (layout == Layout.Grouped) {
+			if (layout == Layout.Seperated) {
 				Bind(iterator+1);
 				UpdateBuffer(iterator+1);
 				glVertexAttribPointer(iterator, field_size, GL_FLOAT, GL_FALSE, 0, null);
 				glEnableVertexAttribArray(iterator);
 			} else {
 				Bind();
-				UpdateBuffer();
-				Logger.Debug("glVertexAttribPointer({0}, {1}, GL_FLOAT, GL_FALSE, {2}, {3})", iterator, field_size, T.sizeof, field_t);
-				glVertexAttribPointer(iterator, field_size, GL_FLOAT, GL_FALSE, T.sizeof, field_t);
-				Logger.Debug("glEnableVertexAttribArray({0})", iterator);
+				Logger.VerboseDebug("glVertexAttribPointer({0}, {1}, GL_FLOAT, GL_FALSE, {2}, {3})", iterator, field_size, T.sizeof, field_t);
+				glVertexAttribPointer(cast(GLuint)iterator, field_size, GL_FLOAT, GL_FALSE, T.sizeof, field_t);
+				Logger.VerboseDebug("glEnableVertexAttribArray({0})", iterator);
 				glEnableVertexAttribArray(iterator);
 			}
 		}
 	}
 
 	public void Bind(int index = 0) {
-		//Logger.Debug("glBindBuffer(GL_ARRAY_BUFFER, gl_buffers[{0}]) <ptr {1}>", index, gl_buffers[index]);
+		Logger.VerboseDebug("glBindBuffer(GL_ARRAY_BUFFER, gl_buffers[{0}]) <ptr {1}>", index, gl_buffers[index]);
+		vao.Bind();
 		glBindBuffer(GL_ARRAY_BUFFER, gl_buffers[index]);
 	}
 
 	public void Unbind() {
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		vao.Unbind();
 	}
 
 	public void UpdateBuffer(int index = 0, BufferMode mode = BufferMode.Dynamic) {
 		Bind(index);
-		glBufferData(GL_ARRAY_BUFFER, Data.sizeof, Data.ptr, mode);
+		Logger.VerboseDebug("glBufferData(GL_ARRAY_BUFFER, {0}, {1}, {2})", Data.sizeof, Data.ptr, mode);
+		glBufferData(GL_ARRAY_BUFFER, Data.length * T.sizeof, Data.ptr, mode);
 		UpdateAttribPointers();
 	}
 
@@ -163,8 +169,13 @@ struct VBO(T, Layout layout) {
 	}
 
 	public void Draw(int amount = 0) {
+		vao.Bind();
 		if (amount == 0) glDrawArrays(GL_TRIANGLES, 0, cast(GLuint)this.Data.length);
 		else glDrawArrays(GL_TRIANGLES, 0, amount);
+		uint err = glGetError();
+		if (err != GL_NO_ERROR) {
+			Logger.Debug("{0}", err);
+		}
 	}
 }
 
