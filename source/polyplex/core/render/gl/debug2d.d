@@ -25,6 +25,9 @@ public class GlDebugging2D {
 	private static VertexBuffer!(DebugVertexLayout, Layout.Interleaved) buff;
 	private static int matr_indx;
 
+	/**
+		Prepares GlDebugging2D for rendering (backend, you don't need to run this yourself.)
+	*/
 	public static void PrepDebugging(Renderer rend) {
 		renderer = rend;
 		buff = VertexBuffer!(DebugVertexLayout, Layout.Interleaved)([]);
@@ -60,14 +63,23 @@ public class GlDebugging2D {
 		}
 	}
 
+	/**
+		Resets the matrix for the debugging primitives.
+	*/
 	public static void ResetMatrix() {
 		cm = new Camera2D(Vector2(0, 0));
 	}
 
+	/**
+		Sets the matrix for the debugging primitives.
+	*/
 	public static void SetMatrix(Matrix4x4 camMatrix) {
 		cm.Matrix = camMatrix;
 	}
 
+	/**
+		Draws dots based on specified points and color.
+	*/
 	public static void DrawDots(Vector2[] dot_points, Color color) {
 		create_buffer_points(dot_points, color);
 		buff.UpdateBuffer();
@@ -78,6 +90,9 @@ public class GlDebugging2D {
 		shader.Detach();
 	}
 
+	/**
+		Draws lines based on specified points and color.
+	*/
 	public static void DrawLines(Vector2[] line_points, Color color) {
 		if (line_points.length == 1) {
 			DrawDots(line_points, color);
@@ -92,6 +107,9 @@ public class GlDebugging2D {
 		shader.Detach();
 	}
 
+	/**
+		Draws a line rectangle (2 triangles), with the specified color.
+	*/
 	public static void DrawRectangle(Rectangle rect, Color color = Color.White) {
 		create_buffer(rect, color);
 		buff.UpdateBuffer();
@@ -102,6 +120,9 @@ public class GlDebugging2D {
 		shader.Detach();
 	}
 
+	/**
+		Draws a filled rectangle, with the specified color.
+	*/
 	public static void DrawRectangleFilled(Rectangle rect, Color color = Color.White) {
 		create_buffer(rect, color);
 		buff.UpdateBuffer();

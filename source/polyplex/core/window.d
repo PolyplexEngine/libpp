@@ -102,11 +102,17 @@ public class GameWindow {
 		return new Rectangle(x, y, width, height);
 	}
 
+	/**
+		Returns the position of the window.
+	*/
 	public @property Vector2 Position() {
 		Rectangle r = Placement();
 		return Vector2(r.X, r.Y);
 	}
 
+	/**
+		Allows you to set the position of the window.
+	*/
 	public @property void Position(Vector2 pos) {
 		SDL_SetWindowPosition(this.window, cast(int)pos.X, cast(int)pos.Y);
 	}
@@ -143,10 +149,16 @@ public class GameWindow {
         SDL_Quit();
     }
 
+	/**
+		Triggers an window info update.
+	*/
 	void UpdateInfo() {
 		SDL_GetWindowSize(this.window, &this.width, &this.height);
 	}
 
+	/**
+		Closes the window.
+	*/
 	void Close() {
 		SDL_DestroyWindow(this.window);
 		IMG_Quit();
@@ -154,18 +166,31 @@ public class GameWindow {
 		destroy(this.window);
 	}
 
+	/**
+		Puts the window in focus (ONLY WORKS ON SOME PLATFORMS!)
+	*/
 	void Focus() {
 		SDL_RaiseWindow(this.window);
 	}
 
+	/**
+		TODO
+		Sets the icon for the window.
+	*/
 	void SetIcon() {
 		//TODO: When rendering is there, set icon.
 	}
 
+	/**
+		Swaps the rendering buffer.
+	*/
 	void SwapBuffers() {
 		this.renderer.SwapBuffers();
 	}
 
+	/**
+		Shows the window.
+	*/
     void Show() {
 		Logger.Debug("Spawning window...");
 		if (polyplex.ChosenBackend == polyplex.GraphicsBackend.Vulkan) this.window = SDL_CreateWindow(this.start_title.dup.ptr, this.start_bounds.X, this.start_bounds.Y, this.start_bounds.Width, this.start_bounds.Height, SDL_WINDOW_VULKAN);

@@ -30,6 +30,9 @@ public class GameEventSystem {
 	this() {
 	}
 
+	/**
+		<BACKEND> Update essential things like handling game exit and resizing.
+	*/
 	public void Update() {
 
 		foreach(SDL_Event ev; PPEvents.Events) {

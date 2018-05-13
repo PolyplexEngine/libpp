@@ -4,6 +4,10 @@ import std.array;
 import std.stdio;
 import core.vararg;
 
+/**
+	C# style text formatting.
+	Add {(id)} in text to specify replacement points, specified arguments (after sequential id) will replace the text with a to!string variant.
+*/
 public static string Format(T...)(string format, T args) {
 	string result = format;
 	static foreach(i; 0 .. args.length) {

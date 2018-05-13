@@ -20,72 +20,121 @@ public enum LogType {
 public static LogType LogLevel = LogType.Warning | LogType.Error | LogType.Fatal;
 public class Logger {
 
-	/* Basic impl */
+	/**
+		Allows you to put a log of LogType type with an simple string message.
+	*/
 	public static void Log(string message, LogType type = LogType.Info)  {
 		Log(message, null, type);
 	}
 
+	/**
+		Log a verbose debug message. <No extra parameters>
+	*/
 	public static void VerboseDebug (string message) {
 		Logger.VerboseDebug(message, null);
 	}
 
+	/**
+		Log a debug message. <No extra parameters>
+	*/
 	public static void Debug (string message) {
 		Logger.Debug(message, null);
 	}
 
+	/**
+		Log a success message. <No extra parameters>
+	*/
 	public static void Success (string message) {
 		Logger.Success(message, null);
 	}
 
+	/**
+		Log an info message. <No extra parameters>
+	*/
 	public static void Info (string message) {
 		Logger.Info(message, null);
 	}
 
+	/**
+		Log a warning message. <No extra parameters>
+	*/
 	public static void Warn (string message) {
 		Logger.Warn(message, null);
 	}
 
+	/**
+		Log a Error message. <No extra parameters>
+	*/
 	public static void Err (string message) {
 		Logger.Err(message, null);
 	}
 
+	/**
+		Log a Fatal Error message. <No extra parameters>
+	*/
 	public static void Fatal (string message) {
 		Logger.Fatal(message, null);
 	}
 
+	/**
+		Log an Error Recovery message. <No extra parameters>
+	*/
 	public static void Recover (string message) {
 		Logger.Recover(message, null);
 	}
 
-	/*T... impl.*/
+	/**
+		Log a verbose debug message.
+	*/
 	public static void VerboseDebug(T...) (string message, T args) {
 		Logger.Log(message, args, LogType.VerboseDebug);
 	}
 
+	/**
+		Log a debug message.
+	*/
 	public static void Debug(T...) (string message, T args) {
 		Logger.Log(message, args, LogType.Debug);
 	}
 
+	/**
+		Log an info message.
+	*/
 	public static void Info(T...) (string message, T args) {
 		Logger.Log(message, args, LogType.Info);
 	}
 
+	/**
+		Log a success message.
+	*/
 	public static void Success(T...) (string message, T args) {
 		Logger.Log(message, args, LogType.Success);
 	}
 
+	/**
+		Log a warning message.
+	*/
 	public static void Warn(T...) (string message, T args) {
 		Logger.Log(message, args, LogType.Warning);
 	}
 
+	/**
+		Log an Error message.
+	*/
 	public static void Err(T...) (string message, T args) {
 		Logger.Log(message, args, LogType.Error);
 	}
 
+	/**
+		Log a Fatal Error message.
+	*/
 	public static void Fatal(T...) (string message, T args) {
 		Logger.Log(message, args, LogType.Fatal);
 	}
 
+	/**
+		Log a Error Recovery message.
+	*/
 	public static void Recover(T...) (string message, T args) {
 		Logger.Log(message, args, LogType.Recover);
 	}

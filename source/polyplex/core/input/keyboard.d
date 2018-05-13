@@ -173,17 +173,44 @@ public class KeyboardState {
 		}
 	}
 
+	/**
+		Returns true if the specified key is down (pressed).
+	*/
 	public bool IsKeyDown(Keys key) {
 		if (key_states[key] == 1) return true;
 		return false;
 	}
 
+	/**
+		Returns true if all of the specified keys are down (pressed).
+	*/
+	public bool AreKeysDown(Keys[] kees) {
+		foreach(Keys k; kees) {
+			if (IsKeyUp(k)) return false;
+		}
+		return true;
+	}
+
+	/**
+		Returns true if the specified key is up (not pressed).
+	*/
 	public bool IsKeyUp(Keys key) {
 		return !IsKeyDown(key);
+	}
+
+	/**
+		Returns true if all of the specified keys are up (not pressed).
+	*/
+	public bool AreKeysUp(Keys[] kees) {
+		return !AreKeysDown(kees);
 	}
 }
 
 public class Keyboard {
+
+	/**
+		Returns the current state of the keyboard.
+	*/
 	public static KeyboardState GetState() {
 		int elements;
 		ubyte* arr = SDL_GetKeyboardState(&elements);

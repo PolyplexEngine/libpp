@@ -27,21 +27,35 @@ public class MouseState {
 		this.btn_mask = btn_mask;
 	}
 
+	/**
+		Returns true if the specified MouseButton is pressed.
+	*/
 	public bool IsButtonPressed(MouseButton button) {
 		if (btn_mask & SDL_BUTTON(button)) return true;
 		return false;
 	}
 
+	/**
+		Returns true if the specified MouseButton is released (not pressed).
+	*/
 	public bool IsButtonReleased(MouseButton button) {
 		return !IsButtonPressed(button);
 	}
 
+	/**
+		Returns the position and scroll for the mouse.
+		Z = Scrollwheel
+	*/
 	public Vector3 Position() {
 		return pos;
 	}
 }
 
 public class Mouse {
+
+	/**
+		Returns the current state of the mouse.
+	*/
 	public static MouseState GetState() {
 		int x;
 		int y;
@@ -55,6 +69,9 @@ public class Mouse {
 		return new MouseState(x, y, mask, scroll);
 	}
 
+	/**
+		Gets the current state of the mouse.
+	*/
 	public static Vector2 Position() {
 		int x;
 		int y;

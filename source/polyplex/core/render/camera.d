@@ -12,8 +12,30 @@ public class Camera {
 
 	public @property Matrix4x4 Matrix() { Update(); return this.matrix; }
 	public @property void Matrix(Matrix4x4 value) { this.matrix = value; Update(); }
+
+	/**
+		Update the camera rotation, scale and translation.
+	*/
 	public abstract void Update();
+
+	/**
+		Creates a dimension dependant projection. (Recommended)
+	*/
 	public abstract Matrix4x4 Project(float width, float height);
+
+	/**
+		Creates an perspective projection with the specified width and height.
+	*/
+	public Matrix4x4 ProjectPerspective(float width, float height) {
+		return Matrix4x4.Perspective(width, height, this.fov, znear, zfar);
+	}
+
+	/**
+		Creates an othrographic projection with the specified width and height.
+	*/
+	public Matrix4x4 ProjectOrthographic(float width, float height) {
+		return Matrix4x4.Identity.Orthographic(0f, width, height, 0f, znear, zfar);
+	}
 }
 
 /**
@@ -37,6 +59,9 @@ public class Camera3D : Camera {
 		Update();
 	}
 
+	/**
+		Update the camera rotation, scale and translation.
+	*/
 	public override void Update() {
 		this.matrix = Matrix4x4.Identity;
 		this.matrix
@@ -45,8 +70,11 @@ public class Camera3D : Camera {
 		.Scale(Vector3(Zoom, Zoom, Zoom));
 	}
 
+	/**
+		Creates an perspective projection with the specified width and height.
+	*/
 	public override Matrix4x4 Project(float width, float height) {
-		return Matrix4x4.Perspective(width, height, this.fov, znear, zfar);
+		return ProjectPerspective(width, height);
 	}
 }
 
@@ -68,6 +96,9 @@ public class Camera2D : Camera {
 		Update();
 	}
 
+	/**
+		Update the camera rotation, scale and translation.
+	*/
 	public override void Update() {
 		this.matrix = Matrix4x4.Identity
 		.Translate(Vector3(-Position.X, -Position.Y, 0))
@@ -76,7 +107,10 @@ public class Camera2D : Camera {
 		.Translate(Vector3(Origin.X, Origin.Y, -1));
 	}
 
+	/**
+		Creates an othrographic projection with the specified width and height.
+	*/
 	public override Matrix4x4 Project(float width, float height) {
-		return Matrix4x4.Identity.Orthographic(0f, width, height, 0f, znear, zfar);
+		return ProjectOrthographic(width, height);
 	}
 }
