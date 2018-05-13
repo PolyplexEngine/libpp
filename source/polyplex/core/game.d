@@ -192,7 +192,7 @@ public abstract class Game {
 			times.TotalTime.BaseValue = start_frames;
 
 			//Update events.
-			InputDevice.UpdateSDLEvents();
+			PPEvents.PumpEvents();
 
 			//Do actual updating and drawing.
 			events.Update();

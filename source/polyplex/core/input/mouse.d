@@ -1,4 +1,5 @@
 module polyplex.core.input.mouse;
+import polyplex.core.events;
 import derelict.sdl2.sdl;
 import polyplex.math;
 
@@ -46,6 +47,11 @@ public class Mouse {
 		int y;
 		int mask = SDL_GetMouseState(&x, &y);
 		float scroll = 0;
+		foreach(SDL_Event ev; PPEvents.Events) {
+			if (ev.type == SDL_MOUSEWHEEL) {
+				scroll = ev.wheel.y;
+			}
+		}
 		return new MouseState(x, y, mask, scroll);
 	}
 

@@ -8,9 +8,21 @@ public class GameResizeEventArgs : EventArgs {
 	public void* SDLEvent;
 }
 
+public class PPEvents {
+	public static SDL_Event[] Events;
+
+	public static PumpEvents() {
+		// Then poll everything and push it to our own event queue
+		Events.length = 0;
+		SDL_Event ev;
+		while(SDL_PollEvent(&ev)) {
+			Events ~= ev;
+		}
+	}
+}
+
 public class GameEventSystem {
 	private bool lastHandled;
-	private SDL_Event ev;
 
 	public Event OnWindowSizeChanged = new Event();
 	public Event OnExitRequested = new Event();
@@ -19,12 +31,12 @@ public class GameEventSystem {
 	}
 
 	public void Update() {
-		while (SDL_PollEvent(&ev)) {
+
+		foreach(SDL_Event ev; PPEvents.Events) {
 			lastHandled = true;
 			if (ev.type == SDL_QUIT) {
 				OnExitRequested(cast(void*)this);
 			}
-			
 			if (ev.type == SDL_WINDOWEVENT) {
 				if (ev.window.event == SDL_WINDOWEVENT_SIZE_CHANGED || ev.window.event == SDL_WINDOWEVENT_RESIZED) {
 					GameResizeEventArgs args = new GameResizeEventArgs();
@@ -36,5 +48,6 @@ public class GameEventSystem {
 			//Update last handled.
 			lastHandled = false;
 		}
+		writeln("END");
 	}
 }
