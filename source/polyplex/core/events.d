@@ -48,6 +48,5 @@ public class GameEventSystem {
 			//Update last handled.
 			lastHandled = false;
 		}
-		writeln("END");
 	}
 }
