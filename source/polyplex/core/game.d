@@ -1,5 +1,4 @@
 module polyplex.core.game;
-public import polyplex.core.input.inputdev;
 
 import polyplex.math;
 import polyplex.core.window;

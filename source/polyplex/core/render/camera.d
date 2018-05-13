@@ -26,8 +26,8 @@ public class Camera {
 	/**
 		Creates an perspective projection with the specified width and height.
 	*/
-	public Matrix4x4 ProjectPerspective(float width, float height) {
-		return Matrix4x4.Perspective(width, height, this.fov, znear, zfar);
+	public Matrix4x4 ProjectPerspective(float width, float fov, float height) {
+		return Matrix4x4.Perspective(width, height, fov, znear, zfar);
 	}
 
 	/**
@@ -74,7 +74,7 @@ public class Camera3D : Camera {
 		Creates an perspective projection with the specified width and height.
 	*/
 	public override Matrix4x4 Project(float width, float height) {
-		return ProjectPerspective(width, height);
+		return ProjectPerspective(width, this.fov, height);
 	}
 }
 
