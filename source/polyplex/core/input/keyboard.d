@@ -202,7 +202,10 @@ public class KeyboardState {
 		Returns true if all of the specified keys are up (not pressed).
 	*/
 	public bool AreKeysUp(Keys[] kees) {
-		return !AreKeysDown(kees);
+		foreach(Keys k; kees) {
+			if (IsKeyDown(k)) return false;
+		}
+		return true;
 	}
 }
 
