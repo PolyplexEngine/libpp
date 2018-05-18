@@ -6,6 +6,7 @@ import polyplex.utils.strutils;
 import polyplex.core.content.gl;
 import polyplex.core.render;
 import polyplex.core.color;
+import polyplex.math;
 
 public class TextureImg {
 	private int width;
@@ -215,6 +216,28 @@ public class Texture2DEffectors {
 	public static Texture2D Superimpose(string T = "Gl")(Texture2D from, Texture2D to, int x, int y) {
 		mixin(q{return new {0}Texture2D(Superimpose(from.Pixels, to.Pixels, x, y));}.Format(T));
 	}
+
+	/**
+		Superimposes <from> to texture <to> and returns the result.
+		T = the backend to return for.
+		Currently supported:
+		- Gl (default)
+		- Vk
+	*/
+	public static Texture2D Superimpose(string T = "Gl")(Color[][] from, Texture2D to, int x, int y) {
+		mixin(q{return new {0}Texture2D(Superimpose(from, to.Pixels, x, y));}.Format(T));
+	}
+
+	/**
+		Superimposes <from> to texture <to> and returns the result.
+		T = the backend to return for.
+		Currently supported:
+		- Gl (default)
+		- Vk
+	*/
+	public static Texture2D Superimpose(string T = "Gl")(Texture2D from, Color[][] to, int x, int y) {
+		mixin(q{return new {0}Texture2D(Superimpose(from.Pixels, to, x, y));}.Format(T));
+	}
 }
 
 public abstract class Texture2D {
@@ -273,6 +296,10 @@ public abstract class Texture2D {
 	}
 
 	this() { }
+
+	public Rectangle Size() {
+		return new Rectangle(0, 0, Width, Height);
+	}
 
 	/**
 		Binds the texture.	
