@@ -51,12 +51,18 @@ public class Texture2DEffectors {
 		return oc;
 	}
 
-	public static Texture2D GetSubImage(string T = "Gl")(Texture2D from, int x, int y, int width, int height) {
-		Color[][] from_pixels = from.Pixels;
+	/**
+		Returns a sub-image from the image starting at the coordinates extenting to the width and height.
+	*/
+	public static Color[][] GetSubImage(string T = "Gl")(Color[][] from, int x, int y, int width, int height) {
+		Color[][] from_pixels = from;
 		Color[][] to_pixels = [];
 
-		int from_width = from.Width;
-		int from_height = from.Height;
+		int from_height = cast(int)from.length;
+		if (from_height == 0) throw new Exception("Invalid height of 0");
+
+		int from_width = cast(int)from[0].length;
+		if (from_width == 0) throw new Exception("Invalid width of 0");
 
 		// Set height.
 		to_pixels.length = height;
@@ -81,21 +87,27 @@ public class Texture2DEffectors {
 				to_pixels[py][px] = from_pixels[y+py][x+px];
 			}
 		}
-		mixin(q{return new {0}Texture2D(to_pixels);}.Format(T));
+		return to_pixels;
 	}
 
 	/**
 		Superimposes <from> to texture <to> and returns the result.
 	*/
-	public static Texture2D Superimpose(string T = "Gl")(Texture2D from, Texture2D to, int x, int y) {
-		Color[][] from_pixels = from.Pixels;
-		Color[][] to_pixels = to.Pixels;
+	public static Color[][] Superimpose(string T = "Gl")(Color[][] from, Color[][] to, int x, int y) {
+		Color[][] from_pixels = from;
+		Color[][] to_pixels = to;
 
-		int from_width = from.Width;
-		int from_height = from.Height;
+		int from_height = cast(int)from.length;
+		if (from_height == 0) throw new Exception("Invalid height of 0");
 
-		int width = to.Width;
-		int height = to.Height;
+		int from_width = cast(int)from[0].length;
+		if (from_width == 0) throw new Exception("Invalid width of 0");
+
+		int height = cast(int)to.length;
+		if (height == 0) throw new Exception("Invalid height of 0");
+
+		int width = cast(int)to[0].length;
+		if (width == 0) throw new Exception("Invalid width of 0");
 
 		for (int py = 0; py < from_height; py++) {
 
@@ -114,7 +126,21 @@ public class Texture2DEffectors {
 				to_pixels[y+py][x+px] = to_pixels[y+py][x+px].PreMultAlphaBlend(from_pixels[py][px]);
 			}
 		}
-		mixin(q{return new {0}Texture2D(to_pixels);}.Format(T));
+		return to_pixels;
+	}
+
+	/**
+		Returns a sub-image from the image starting at the coordinates extenting to the width and height.
+	*/
+	public static Texture2D GetSubImage(string T = "Gl")(Texture2D from, int x, int y, int width, int height) {
+		mixin(q{return new {0}Texture2D(GetSubImage(from.Pixels, x, y, width, height));}.Format(T));
+	}
+
+	/**
+		Superimposes <from> to texture <to> and returns the result.
+	*/
+	public static Texture2D Superimpose(string T = "Gl")(Texture2D from, Texture2D to, int x, int y) {
+		mixin(q{return new {0}Texture2D(Superimpose(from.Pixels, to.Pixels, x, y));}.Format(T));
 	}
 }
 
