@@ -5,6 +5,7 @@ import derelict.opengl.gl;
 import polyplex.utils.logging;
 import polyplex.core.render;
 import polyplex.core.render.gl.shader;
+import polyplex.core.color;
 import std.stdio;
 
 
@@ -15,29 +16,20 @@ public class GlTexture2D : Texture2D {
 
 	this(TextureImg img) {
 		super(img);
+	}
 
-		int mode = GL_RGBA;
-
-		// Reallow GL_RGB again in the future?
-		/*if (img.Surface.format.BytesPerPixel == 3) {
-			mode = GL_RGB;
-		}*/
-		glGenTextures(1, &id);
-		Attach();
-		glTexImage2D(GL_TEXTURE_2D, 0, mode, img.Width, img.Height, 0, mode, GL_UNSIGNED_BYTE, img.Pixels.ptr);
-		Detach();
-
-		if (MAX_TEX_UNITS == -1) {
-			glGetIntegerv(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, &MAX_TEX_UNITS);
-			Logger.Info("Set max texture units to: {0}", MAX_TEX_UNITS);
-		}
+	this(Color[][] colors) {
+		super(colors);
 	}
 
 	~this() {
 		glDeleteTextures(1, &id);
 	}
 
-	public override void Attach(int attach_pos = 0, Shader s = null) {
+	/**
+		Binds the texture.	
+	*/
+	public override void Bind(int attach_pos = 0, Shader s = null) {
 		if (s is null) {
 			glBindTexture(GL_TEXTURE_2D, id);
 			return;
@@ -51,7 +43,34 @@ public class GlTexture2D : Texture2D {
 		glBindTexture(GL_TEXTURE_2D, id);
 	}
 
-	public override void Detach() {
+	/**
+		Unbinds the texture.
+	*/
+	public override void Unbind() {
 		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+
+	protected override void rebuffer() {
+		int mode = GL_RGBA;
+
+		// Delete the current version of the texture in memory, if any.
+		if (id != 0) glDeleteTextures(1, &id);
+
+		// Reallow GL_RGB again in the future?
+		/*if (img.Surface.format.BytesPerPixel == 3) {
+			mode = GL_RGB;
+		}*/
+
+		// Generate a new texture over the old one, if any. Else just generate a new one and assign id.
+		glGenTextures(1, &id);
+		Bind();
+		glTexImage2D(GL_TEXTURE_2D, 0, mode, image.Width, image.Height, 0, mode, GL_UNSIGNED_BYTE, image.Pixels.ptr);
+		Unbind();
+
+		// Set max texture units.
+		if (MAX_TEX_UNITS == -1) {
+			glGetIntegerv(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, &MAX_TEX_UNITS);
+			Logger.Info("Set max texture units to: {0}", MAX_TEX_UNITS);
+		}
 	}
 }

@@ -4743,6 +4743,20 @@ public class Color {
 	public @property float Af() { return cast(float)coldata.W/255; }
 
 	public @property Vector4 GLfColor() { return Vector4(Rf(), Gf(), Bf(), Af()); }
+	
+	public @property ubyte[] ColorBytes() { return [cast(ubyte)R, cast(ubyte)G, cast(ubyte)B, cast(ubyte)Alpha]; }
+
+	/**
+		Premultiplied alpha blending.
+	*/
+	public Color PreMultAlphaBlend(Color other) {
+		Color o = new Color(R, G, B, Alpha);
+		o.R = cast(int)(((other.Rf * other.Af) + (o.Rf * (1f - other.Af)))*255);
+		o.G = cast(int)(((other.Gf * other.Af) + (o.Gf * (1f - other.Af)))*255);
+		o.B = cast(int)(((other.Bf * other.Af) + (o.Bf * (1f - other.Af)))*255);
+		o.Alpha = 255;
+		return o;
+	}
 
 	this(int r, int g, int b, int a) {
 		int tr = r;

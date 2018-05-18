@@ -204,7 +204,7 @@ public class GlSpriteBatch : SpriteBatch {
 
 		// Attach textures, set states, uniforms, etc.
 		this.shader.Attach();
-		if (!(current_texture is null)) current_texture.Attach(0, this.shader);
+		if (!(current_texture is null)) current_texture.Bind(0, this.shader);
 		set_sampler_state(sample_state);
 		set_blend_state(blend_state);
 		this.shader.SetUniform(this.shader.GetUniform(uniform_prj_name), mult_matrices());
