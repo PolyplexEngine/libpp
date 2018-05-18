@@ -52,9 +52,52 @@ public class Texture2DEffectors {
 	}
 
 	/**
+		Resizes the canvas that the texture is on.
+	*/
+	public static Color[][] ResizeCanvas(Color[][] from, uint width, uint height) {
+		Color[][] from_pixels = from;
+		Color[][] to_pixels = [];
+
+		int from_height = cast(int)from.length;
+		if (from_height == 0) throw new Exception("Invalid height of 0");
+
+		int from_width = cast(int)from[0].length;
+		if (from_width == 0) throw new Exception("Invalid width of 0");
+
+		// Set height.
+		to_pixels.length = height;
+
+		for (int py = 0; py < height; py++) {
+
+			// Make sure that we don't add pixels not supposed to be there.
+			if (py < 0) continue;
+
+			// Set width.
+			to_pixels[py].length = width;
+
+			for (int px = 0; px < width; px++) {
+
+				// Make sure that we don't add pixels not supposed to be there.
+				if (px < 0) continue;
+
+				// Replace out-of-bounds stuff with transparent pixels.
+				if (py >= from_height || px >= from_width) {
+					to_pixels[py][px] = new Color(0, 0, 0, 0);
+					continue;
+				}
+
+				// superimpose the pixels from (start x + current x) and (start y + current y).
+				// (reverse cause arrays are reversed like that.)
+				to_pixels[py][px] = from_pixels[py][px];
+			}
+		}
+		return to_pixels;
+	}
+
+	/**
 		Returns a sub-image from the image starting at the coordinates extenting to the width and height.
 	*/
-	public static Color[][] GetSubImage(string T = "Gl")(Color[][] from, int x, int y, int width, int height) {
+	public static Color[][] GetSubImage(Color[][] from, int x, int y, int width, int height) {
 		Color[][] from_pixels = from;
 		Color[][] to_pixels = [];
 
@@ -93,7 +136,7 @@ public class Texture2DEffectors {
 	/**
 		Superimposes <from> to texture <to> and returns the result.
 	*/
-	public static Color[][] Superimpose(string T = "Gl")(Color[][] from, Color[][] to, int x, int y) {
+	public static Color[][] Superimpose(Color[][] from, Color[][] to, int x, int y) {
 		Color[][] from_pixels = from;
 		Color[][] to_pixels = to;
 
@@ -127,6 +170,28 @@ public class Texture2DEffectors {
 			}
 		}
 		return to_pixels;
+	}
+
+	/**
+		Very simple upscaler, width and height gets scaled * <scale> parameter.
+		T = the backend to return for.
+		Currently supported:
+		- Gl (default)
+		- Vk
+	*/
+	public static Texture2D SimpleUpscale(string T = "Gl")(Texture2D input, uint scale) {
+		mixin(q{return new {0}Texture2D(SimpleUpscale(input.Pixels, scale));}.Format(T));
+	}
+
+	/**
+		Resizes the canvas that the texture is on.
+		T = the backend to return for.
+		Currently supported:
+		- Gl (default)
+		- Vk
+	*/
+	public static Texture2D ResizeCanvas(string T = "Gl")(Texture2D input, uint width, uint height) {
+		mixin(q{return new {0}Texture2D(ResizeCanvas(input.Pixels, width, height));}.Format(T));
 	}
 
 	/**
