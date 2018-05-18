@@ -131,6 +131,10 @@ public class Texture2DEffectors {
 
 	/**
 		Returns a sub-image from the image starting at the coordinates extenting to the width and height.
+		T = the backend to return for.
+		Currently supported:
+		- Gl (default)
+		- Vk
 	*/
 	public static Texture2D GetSubImage(string T = "Gl")(Texture2D from, int x, int y, int width, int height) {
 		mixin(q{return new {0}Texture2D(GetSubImage(from.Pixels, x, y, width, height));}.Format(T));
@@ -138,6 +142,10 @@ public class Texture2DEffectors {
 
 	/**
 		Superimposes <from> to texture <to> and returns the result.
+		T = the backend to return for.
+		Currently supported:
+		- Gl (default)
+		- Vk
 	*/
 	public static Texture2D Superimpose(string T = "Gl")(Texture2D from, Texture2D to, int x, int y) {
 		mixin(q{return new {0}Texture2D(Superimpose(from.Pixels, to.Pixels, x, y));}.Format(T));
