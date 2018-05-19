@@ -65,8 +65,10 @@ public class Camera3D : Camera {
 	public override void Update() {
 		this.matrix = Matrix4x4.Identity;
 		this.matrix
-		.Rotate(Rotation)
 		.Translate(Position)
+		.RotateX(this.Rotation.X)
+		.RotateY(this.Rotation.Y)
+		.RotateZ(this.Rotation.Z)
 		.Scale(Vector3(Zoom, Zoom, Zoom));
 	}
 
@@ -81,14 +83,18 @@ public class Camera3D : Camera {
 public class Camera2D : Camera {
 	public Vector3 Position;
 	public float Rotation;
+	public float RotationY;
+	public float RotationX;
 	public float Zoom;
-	public Vector2 Origin;
+	public Vector3 Origin;
 
-	this(Vector2 position, float rotation = 0f, float zoom = 1f, float near = 0.1f, float far = 100f) {
-		this.Position = Vector3(position.X, position.Y, -1);
-		this.Rotation = rotation; 
+	this(Vector2 position, float rotation = 0f, float zoom = 1f, float near = 0.01f, float far = 100f) {
+		this.Position = Vector3(position.X, position.Y, -5);
+		this.Rotation = rotation;
+		this.RotationX = 0;
+		this.RotationY = 0;
 		this.Zoom = zoom;
-		this.Origin = Vector2(0, 0);
+		this.Origin = Vector3(0, 0, -5);
 
 		this.znear = near;
 		this.zfar = far;
@@ -102,9 +108,11 @@ public class Camera2D : Camera {
 	public override void Update() {
 		this.matrix = Matrix4x4.Identity
 		.Translate(Vector3(-Position.X, -Position.Y, 0))
+		.RotateX(this.RotationX)
+		.RotateY(this.RotationY)
 		.RotateZ(this.Rotation)
 		.Scale(Vector3(Zoom, Zoom, Zoom))
-		.Translate(Vector3(Origin.X, Origin.Y, -1));
+		.Translate(Vector3(Origin.X, Origin.Y, Origin.Z));
 	}
 
 	/**

@@ -48,6 +48,11 @@ public enum Blending {
 	Additive 
 }
 
+public enum ProjectionState {
+	Orthographic,
+	Perspective
+}
+
 public enum Sampling {
 	AnisotropicClamp,
 	AnisotropicWrap,
@@ -81,8 +86,11 @@ public abstract class SpriteBatch {
 	public abstract void Begin();
 	public abstract void Begin(SpriteSorting sort_mode, Blending blend_state, Sampling sample_State, Shader s, Matrix4x4 matrix);
 	public abstract void Begin(SpriteSorting sort_mode, Blending blend_state, Sampling sample_State, Shader s, Camera camera);
+	public abstract void Begin(SpriteSorting sort_mode, Blending blend_state, Sampling sample_State, ProjectionState pstate, Shader s, Camera camera);
 	public abstract void Draw(Texture2D texture, Rectangle pos, Rectangle cutout, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f);
 	public abstract void Draw(Texture2D texture, Rectangle pos, Rectangle cutout, float rotation, Vector2 Origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f);
+	public abstract void DrawAABB(Texture2D texture, Rectangle pos_top, Rectangle pos_bottom, Rectangle cutout, Vector2 Origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f);
+	
 	public abstract void Flush();
 	public abstract void SwapChain();
 	public abstract void End();

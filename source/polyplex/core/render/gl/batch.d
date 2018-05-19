@@ -46,6 +46,7 @@ public class GlSpriteBatch : SpriteBatch {
 	private SpriteSorting sort_mode; 
 	private Blending blend_state;
 	private Sampling sample_state;
+	private ProjectionState project_state;
 	private Shader shader;
 	private Matrix4x4 view_project;
 	private Texture2D current_texture;
@@ -93,6 +94,10 @@ public class GlSpriteBatch : SpriteBatch {
 		Logger.Warn("Some things are not implemented yet, noteably: DepthStencilStates, RasterizerStates and some SpriteSortModes.");
 	}
 
+	private void set_projection_state(ProjectionState state) {
+		this.project_state = state;
+	}
+
 	private void set_sampler_state(Sampling sampling) {
 		switch (sampling) {
 			case sampling.PointWrap:
@@ -129,7 +134,9 @@ public class GlSpriteBatch : SpriteBatch {
 	}
 
 	private Matrix4x4 mult_matrices() {
-		return this.default_cam.Project(renderer.Window.Width, renderer.Window.Height) * this.view_project;
+		if (this.project_state == ProjectionState.Perspective)
+			return this.default_cam.ProjectPerspective(renderer.Window.Width, 90f, renderer.Window.Height) * this.view_project;
+		return this.default_cam.ProjectOrthographic(renderer.Window.Width, renderer.Window.Height) * this.view_project;
 	}
 
 	public override void Begin() {
@@ -140,7 +147,16 @@ public class GlSpriteBatch : SpriteBatch {
 		Begin begins the spritebatch, setting up sorting modes, blend states and sampling.
 		Begin also attaches a custom shader (if chosen) and sets the camera/view matrix.
 	*/
-	public override void Begin(SpriteSorting sort_mode, Blending blend_state, Sampling sample_State, Shader s, Camera camera) {
+	public override void Begin(SpriteSorting sort_mode, Blending blend_state, Sampling sample_state, ProjectionState pstate, Shader s, Camera camera) {
+		set_projection_state(pstate);
+		Begin(sort_mode, blend_state, sample_state, s, camera);
+	}
+
+	/**
+		Begin begins the spritebatch, setting up sorting modes, blend states and sampling.
+		Begin also attaches a custom shader (if chosen) and sets the camera/view matrix.
+	*/
+	public override void Begin(SpriteSorting sort_mode, Blending blend_state, Sampling sample_state, Shader s, Camera camera) {
 		Camera cam = camera;
 		if (cam is null) cam = default_cam;
 		cam.Update();
@@ -293,6 +309,57 @@ public class GlSpriteBatch : SpriteBatch {
 			x4 = pos.X;
 			y4 = pos.Y+pos.Height;
 		}
+		float pxx = 0.2f/cast(float)texture.Width;
+		float pxy = 0.2f/cast(float)texture.Height;
+
+		float u = ((cutout.X)/cast(float)texture.Width)+pxx;
+		float u2 = ((cutout.X+cutout.Width)/cast(float)texture.Width)-pxx;
+		if ((flip&SpriteFlip.FlipVertical)>0) {
+			float ux = u;
+			u = u2;
+			u2 = ux;
+		}
+
+		float v = ((cutout.Y)/cast(float)texture.Height)+pxy;
+		float v2 = ((cutout.Y+cutout.Height)/cast(float)texture.Height)-pxy;
+		if ((flip&SpriteFlip.FlipHorizontal)>0) {
+			float vx = v;
+			v = v2;
+			v2 = vx;
+		}
+
+		add_vertex(0, x1, y1, color.Rf(), color.Gf(), color.Bf(), color.Af(), u, v); // TOP LEFT
+		add_vertex(1, x2, y2, color.Rf(), color.Gf(), color.Bf(), color.Af(), u2, v), // TOP RIGHT
+		add_vertex(2, x4, y4, color.Rf(), color.Gf(), color.Bf(), color.Af(), u, v2); // BOTTOM LEFT
+		add_vertex(3, x2, y2, color.Rf(), color.Gf(), color.Bf(), color.Af(), u2, v), // TOP RIGHT
+		add_vertex(4, x3, y3, color.Rf(), color.Gf(), color.Bf(), color.Af(), u2, v2); // BOTTOM RIGHT
+		add_vertex(5, x4, y4, color.Rf(), color.Gf(), color.Bf(), color.Af(), u, v2); // BOTTOM LEFT
+		queued++;
+	}
+
+	/**
+		Draw draws a texture.
+		Rectangle pos will act like an AABB rectangle instead.
+	*/
+	public override void DrawAABB(Texture2D texture, Rectangle pos_top, Rectangle pos_bottom, Rectangle cutout, Vector2 Origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0) {
+		check_flush(texture);
+		float x1, y1;
+		float x2, y2;
+		float x3, y3;
+		float x4, y4;
+
+		static import std.math;
+		x1 = pos_top.X;
+		y1 = pos_top.Y;
+
+		x2 = pos_top.Width;
+		y2 = pos_top.Height;
+		
+		x3 = pos_bottom.Width;
+		y3 = pos_bottom.Height;
+
+		x4 = pos_bottom.X;
+		y4 = pos_bottom.Y;
 		float pxx = 0.2f/cast(float)texture.Width;
 		float pxy = 0.2f/cast(float)texture.Height;
 
