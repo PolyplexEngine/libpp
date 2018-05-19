@@ -53,6 +53,22 @@ public class Texture2DEffectors {
 	}
 
 	/**
+		Creates an transparent, blank, empty square.
+	*/
+	public static Color[][] CreateEmptySquare(uint width, uint height) {
+		Color[][] to_color;
+		to_color.length = height;
+		Logger.Debug("Creating an {0}x{1} empty square texture...", width, height);
+		for (int y = 0; y < height; y++) {
+			to_color[y].length = width;
+			for (int x = 0; x < width; x++) {
+				to_color[y][x] = new Color(0,0,0,0);
+			}
+		}
+		return to_color;
+	}
+
+	/**
 		Resizes the canvas that the texture is on.
 	*/
 	public static Color[][] ResizeCanvas(Color[][] from, uint width, uint height) {
@@ -153,6 +169,7 @@ public class Texture2DEffectors {
 		int width = cast(int)to[0].length;
 		if (width == 0) throw new Exception("Invalid width of 0");
 
+
 		for (int py = 0; py < from_height; py++) {
 
 			// Make sure that we don't add pixels not supposed to be there.
@@ -182,6 +199,18 @@ public class Texture2DEffectors {
 	*/
 	public static Texture2D SimpleUpscale(string T = "Gl")(Texture2D input, uint scale) {
 		mixin(q{return new {0}Texture2D(SimpleUpscale(input.Pixels, scale));}.Format(T));
+	}
+
+
+	/**
+		Creates an transparent, blank, empty square.
+		T = the backend to return for.
+		Currently supported:
+		- Gl (default)
+		- Vk
+	*/
+	public static Texture2D CreateEmptySquareTex(string T = "Gl")(uint width, uint height) {
+		mixin(q{return new {0}Texture2D(CreateEmptySquare(width, height));}.Format(T));
 	}
 
 	/**
