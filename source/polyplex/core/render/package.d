@@ -4,6 +4,7 @@ public import polyplex.core.render.shapes;
 
 import polyplex.core.render.gl;
 import polyplex.core.render.vk;
+import polyplex.core.render.simplefont;
 import polyplex.core.content;
 import polyplex.core.color;
 import polyplex.core.content;
