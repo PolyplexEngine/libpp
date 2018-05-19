@@ -53,16 +53,16 @@ public class Texture2DEffectors {
 	}
 
 	/**
-		Creates an transparent, blank, empty square.
+		Creates a new texture.
 	*/
-	public static Color[][] CreateEmptySquare(uint width, uint height) {
+	public static Color[][] NewCanvas(uint width, uint height, Color backgroundcolor = Color.Transparent) {
 		Color[][] to_color;
 		to_color.length = height;
 		Logger.Debug("Creating an {0}x{1} empty square texture...", width, height);
 		for (int y = 0; y < height; y++) {
 			to_color[y].length = width;
 			for (int x = 0; x < width; x++) {
-				to_color[y][x] = new Color(0,0,0,0);
+				to_color[y][x] = backgroundcolor;
 			}
 		}
 		return to_color;
@@ -203,14 +203,14 @@ public class Texture2DEffectors {
 
 
 	/**
-		Creates an transparent, blank, empty square.
+		Creates a new texture.
 		T = the backend to return for.
 		Currently supported:
 		- Gl (default)
 		- Vk
 	*/
-	public static Texture2D CreateEmptySquareTex(string T = "Gl")(uint width, uint height) {
-		mixin(q{return new {0}Texture2D(CreateEmptySquare(width, height));}.Format(T));
+	public static Texture2D NewCanvasTex(string T = "Gl")(uint width, uint height, Color backgroundcolor = Color.Transparent) {
+		mixin(q{return new {0}Texture2D(NewCanvas(width, height, backgroundcolor));}.Format(T));
 	}
 
 	/**
