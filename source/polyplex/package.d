@@ -6,7 +6,6 @@ import derelict.sdl2.ttf;
 import derelict.vulkan.vulkan;
 import derelict.opengl;
 import derelict.openal;
-import derelict.vorbis.file;
 import polyplex.utils.logging;
 import std.stdio;
 import std.conv;
@@ -100,7 +99,6 @@ public void InitLibraries() {
 			Logger.Info("Binding to system libraries....");
 			DerelictSDL2.load();
 		}
-		DerelictVorbisFile.load();
 		DerelictAL.load();
 		SDL_version linked;
 		SDL_version compiled;
