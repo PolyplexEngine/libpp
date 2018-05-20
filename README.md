@@ -81,7 +81,7 @@ class Game1 : Game {
     Drawing.ClearColor(Color.Black);
     
     sprite_batch.Begin();
-    sprite_batch.Draw(my_texture, new Rectangle(0, 0, 32, 32), new Rectangle(0, 0, my_texture.Width, my_texture.Height), Color.White);
+    sprite_batch.Draw(my_texture, new Rectangle(0, 0, 32, 32), texture.Size, Color.White);
     sprite_batch.End();
   }
 }
