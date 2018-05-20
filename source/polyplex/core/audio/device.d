@@ -17,22 +17,22 @@ public enum ALExtensionSupport {
 }
 
 public class AudioDevice {
-	public ALCDevice* ALDevice;
+	public ALCdevice* ALDevice;
 	public ALCcontext* ALContext;
 	public ALExtensionSupport SupportedExt;
 
 	/**
 		Constucts an audio device, NULL for preffered device.
 	*/
-	this(void* device = null) {
-		ALCDevice* dev = alcOpenDevice(device);
+	this(string device = null) {
+		ALCdevice* dev = alcOpenDevice(device.ptr);
 		if (dev) {
 			ALContext = alcCreateContext(dev, null);
 			alcMakeContextCurrent(ALContext);
 		}
 		
 		// If EAX 2.0 is supported, flag it as supported.
-		bool supex = alIsExtensionPresent("EAX2.0");
+		bool supex = cast(bool)alIsExtensionPresent("EAX2.0");
 		if (supex) SupportedExt |= ALExtensionSupport.EAX2;
 	}
 

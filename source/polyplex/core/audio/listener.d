@@ -1,5 +1,6 @@
 module polyplex.core.audio.listener;
 import derelict.openal;
+import polyplex.math;
 
 public class Listener {
 	private static Vector3 position;

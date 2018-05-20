@@ -22,7 +22,7 @@ public class AudioSource {
 	*/
 	public @property float Pitch() {
 		float v = 0f;
-		alGetSourcef(Id, AL_PITCH, v.ptr);
+		alGetSourcef(Id, AL_PITCH, &v);
 		return v;
 	}
 	public @property void Pitch(float val) { alSourcef(Id, AL_PITCH, val); }
@@ -32,7 +32,7 @@ public class AudioSource {
 	*/
 	public @property float Gain() {
 		float v = 0f;
-		alGetSourcef(Id, AL_GAIN, v.ptr);
+		alGetSourcef(Id, AL_GAIN, &v);
 		return v;
 	}
 	public @property void Gain(float val) { alSourcef(Id, AL_GAIN, val); }
@@ -42,7 +42,7 @@ public class AudioSource {
 	*/
 	public @property float MinGain() {
 		float v = 0f;
-		alGetSourcef(Id, AL_MIN_GAIN, v.ptr);
+		alGetSourcef(Id, AL_MIN_GAIN, &v);
 		return v;
 	}
 	public @property void MinGain(float val) { alSourcef(Id, AL_MIN_GAIN, val); }
@@ -52,7 +52,7 @@ public class AudioSource {
 	*/
 	public @property float MaxGain() {
 		float v = 0f;
-		alGetSourcef(Id, AL_MAX_GAIN, v.ptr);
+		alGetSourcef(Id, AL_MAX_GAIN, &v);
 		return v;
 	}
 	public @property void MaxGain(float val) { alSourcef(Id, AL_MAX_GAIN, val); }
@@ -62,7 +62,7 @@ public class AudioSource {
 	*/
 	public @property float MaxDistance() {
 		float v = 0f;
-		alGetSourcef(Id, AL_MAX_DISTANCE, v.ptr);
+		alGetSourcef(Id, AL_MAX_DISTANCE, &v);
 		return v;
 	}
 	public @property void MaxGain(float val) { alSourcef(Id, AL_MAX_DISTANCE, val); }
@@ -72,7 +72,7 @@ public class AudioSource {
 	*/
 	public @property float RolloffFactor() {
 		float v = 0f;
-		alGetSourcef(Id, AL_ROLLOFF_FACTOR, v.ptr);
+		alGetSourcef(Id, AL_ROLLOFF_FACTOR, &v);
 		return v;
 	}
 	public @property void RolloffFactor(float val) { alSourcef(Id, AL_ROLLOFF_FACTOR, val); }
@@ -82,7 +82,7 @@ public class AudioSource {
 	*/
 	public @property float ConeOuterGain() {
 		float v = 0f;
-		alGetSourcef(Id, AL_CONE_OUTER_GAIN, v.ptr);
+		alGetSourcef(Id, AL_CONE_OUTER_GAIN, &v);
 		return v;
 	}
 	public @property void ConeOuterGain(float val) { alSourcef(Id, AL_CONE_OUTER_GAIN, val); }
@@ -92,7 +92,7 @@ public class AudioSource {
 	*/
 	public @property float ConeInnerAngle() {
 		float v = 0f;
-		alGetSourcef(Id, AL_CONE_INNER_ANGLE, v.ptr);
+		alGetSourcef(Id, AL_CONE_INNER_ANGLE, &v);
 		return v;
 	}
 	public @property void ConeInnerAngle(float val) { alSourcef(Id, AL_CONE_INNER_ANGLE, val); }
@@ -102,7 +102,7 @@ public class AudioSource {
 	*/
 	public @property float ConeOuterAngle() {
 		float v = 0f;
-		alGetSourcef(Id, AL_CONE_OUTER_ANGLE, v.ptr);
+		alGetSourcef(Id, AL_CONE_OUTER_ANGLE, &v);
 		return v;
 	}
 	public @property void ConeOuterAngle(float val) { alSourcef(Id, AL_CONE_OUTER_ANGLE, val); }
@@ -112,7 +112,7 @@ public class AudioSource {
 	*/
 	public @property float ReferenceDistance() {
 		float v = 0f;
-		alGetSourcef(Id, AL_REFERENCE_DISTANCE, v.ptr);
+		alGetSourcef(Id, AL_REFERENCE_DISTANCE, &v);
 		return v;
 	}
 	public @property void ReferenceDistance(float val) { alSourcef(Id, AL_REFERENCE_DISTANCE, val); }
@@ -152,7 +152,7 @@ public class AudioSource {
 	*/
 	public @property bool Looping() {
 		int v = 0;
-		alGetSourcei(Id, AL_LOOPING, v.ptr);
+		alGetSourcei(Id, AL_LOOPING, &v);
 		return (v == 1);
 	}
 	public @property void Looping(bool val) { alSourcei(Id, AL_LOOPING, cast(int)val); }
@@ -170,16 +170,16 @@ public class AudioSource {
 
 	this(AudioDevice dev, ALBuffer buff) {
 		this(dev);
-		this.Buffer = buff;
+		this.currbuff = buff;
 	}
 
 	this(AudioDevice dev) {
 		this.HostDevice = dev;
-		alGenSources(1, this.id.ptr);
+		alGenSources(1, &this.id);
 	}
 
 	~this() {
-		alDeleteSources(1, this.id.ptr);
+		alDeleteSources(1, &this.id);
 	}
 
 	public void Play(bool looping, Vector3 position = Vector3.Zero) {

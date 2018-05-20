@@ -15,13 +15,13 @@ public class ALBuffer {
 		alGetError();
 		
 		// Generate buffer.
-		alGenBuffers(1, buff.ptr);
+		alGenBuffers(1, &buff);
 
 		// Buffer data from audio source.
-		if (aud.Channels == 1) alBufferData(this.buff, AL_FORMAT_MONO8, aud.Samples.ptr, aud.Length, aud.SampleRate);
-		else alBufferData(this.buff, AL_FORMAT_STEREO8, aud.Samples.ptr, aud.Length, aud.SampleRate);
+		if (aud.Channels == 1) alBufferData(this.buff, AL_FORMAT_MONO8, aud.Samples.ptr, cast(int)aud.Length, cast(int)aud.SampleRate);
+		else alBufferData(this.buff, AL_FORMAT_STEREO8, aud.Samples.ptr, cast(int)aud.Length, cast(int)aud.SampleRate);
 	}
 	~this() {
-		alDeleteBuffers(1, this.id.ptr);
+		alDeleteBuffers(1, &this.buff);
 	}
 }
