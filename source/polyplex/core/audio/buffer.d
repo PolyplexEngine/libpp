@@ -21,4 +21,7 @@ public class ALBuffer {
 		if (aud.Channels == 1) alBufferData(this.buff, AL_FORMAT_MONO8, aud.Samples.ptr, aud.Length, aud.SampleRate);
 		else alBufferData(this.buff, AL_FORMAT_STEREO8, aud.Samples.ptr, aud.Length, aud.SampleRate);
 	}
+	~this() {
+		alDeleteBuffers(1, this.id.ptr);
+	}
 }

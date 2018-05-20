@@ -178,6 +178,10 @@ public class AudioSource {
 		alGenSources(1, this.id.ptr);
 	}
 
+	~this() {
+		alDeleteSources(1, this.id.ptr);
+	}
+
 	public void Play(bool looping, Vector3 position = Vector3.Zero) {
 		this.Looping = looping;
 		Listener.Position = position;

@@ -12,6 +12,11 @@ import std.conv;
 static import std.file;
 static import std.process;
 
+public import polyplex.core;
+public import polyplex.math;
+public import polyplex.utils.logging;
+
+
 public static GraphicsBackend ChosenBackend = GraphicsBackend.NoneChosen;
 private static bool core_init = false;
 private static bool vk_init = false;
