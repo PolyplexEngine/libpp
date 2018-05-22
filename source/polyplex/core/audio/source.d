@@ -157,6 +157,24 @@ public class AudioSource {
 	}
 	public @property void Looping(bool val) { alSourcei(Id, AL_LOOPING, cast(int)val); }
 
+	public @property int ByteOffset() {
+		int v = 0;
+		alGetSourcei(Id, AL_BYTE_OFFSET, &v);
+		return v;
+	}
+
+	public @property int SecondOffset() {
+		int v = 0;
+		alGetSourcei(Id, AL_SEC_OFFSET, &v);
+		return v;
+	}
+
+	public @property int SampleOffset() {
+		int v = 0;
+		alGetSourcei(Id, AL_SAMPLE_OFFSET, &v);
+		return v;
+	}
+
 	/*
 		BUFFER
 	*/
@@ -168,12 +186,13 @@ public class AudioSource {
 		this.currbuff = val;
 	}
 
-	this(AudioDevice dev, ALBuffer buff) {
+	this(ALBuffer buff, AudioDevice dev = DefaultAudioDevice) {
 		this(dev);
 		this.currbuff = buff;
+		alSourcei(this.Id, AL_BUFFER, this.currbuff.ALBuff);
 	}
 
-	this(AudioDevice dev) {
+	this(AudioDevice dev = DefaultAudioDevice) {
 		this.HostDevice = dev;
 		alGenSources(1, &this.id);
 	}

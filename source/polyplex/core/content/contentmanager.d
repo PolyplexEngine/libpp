@@ -7,6 +7,7 @@ import polyplex.core.content.data;
 import polyplex.core.content.audio;
 import polyplex.utils.logging;
 import polyplex.utils.strutils;
+import polyplex.core.audio;
 
 static import ppc;
 
@@ -41,7 +42,7 @@ public abstract class ContentManager {
 	public abstract Texture2D LoadTexture(string name);
 	public abstract Data LoadText(string name);
 	public abstract Font LoadFont(string name);
-	//public abstract Sound LoadSound(string name);
+	public abstract ALBuffer LoadSound(string name);
 	//public abstract Music LoadMusic(string name);
 	//public abstract Audio LoadAudio(string name);
 }
@@ -74,10 +75,17 @@ public class PPCContentManager : ContentManager {
 		throw new Exception("Fonts not implemented in libppc yet!");
 	}
 
-	/*public override Sound LoadSound(string name) {
-		throw new Exception("Audio not implemented in libppc yet!");
+	public override ALBuffer LoadSound(string name) {
+		try {
+			ppc.Audio i = cast(ppc.Audio)ppc.ContentManager.Load(this.ContentRoot~name~".ppc");
+			if (i is null) throw new Exception("Could not find "~this.ContentRoot~name~".ppc");
+			return new ALBuffer(i);
+		} catch (Exception ex) {
+			Logger.Debug("{0}", ex.message);
+			return null;
+		}
 	}
-
+	/*
 	public override Music LoadMusic(string name) {
 		throw new Exception("Audio not implemented in libppc yet!");
 	}
@@ -110,10 +118,11 @@ public class RawContentManager : ContentManager {
 		return null;
 	}
 
-	/*public override Sound LoadSound(string name) {
-		return null;
+	public override ALBuffer LoadSound(string name) {
+		throw new Exception("Audio not implemented in libppc yet!");
 	}
 
+	/*
 	public override Music LoadMusic(string name) {
 		Mix_Music* m = Mix_LoadMUS((this.ContentRoot~name).ptr);
 		if (m is null) {

@@ -6,6 +6,7 @@ import polyplex.core.render;
 import polyplex.core.input;
 import polyplex.core.events;
 import polyplex.core.content;
+import polyplex.core.audio;
 import polyplex.utils.logging;
 
 import polyplex.utils.strutils;
@@ -181,8 +182,9 @@ public abstract class Game {
 
 		this.Content = new PPCContentManager();
 
+		DefaultAudioDevice = new AudioDevice();
+		
 		Init();
-
 		LoadContent();
 		Logger.Debug("~~~ Gameloop ~~~");
 		while (window.Visible) {
