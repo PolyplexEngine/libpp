@@ -31,9 +31,14 @@ public class Random {
 		return rnd.uniform(min, max, random);
 	}
 	
-	public int NextFloat() {
+	public float NextFloat() {
 		advance_seed();
 		return rnd.uniform01!float(random);	
+	}
+
+	public float NextDouble() {
+		advance_seed();
+		return rnd.uniform01!double(random);	
 	}
 
 	private void advance_seed() {
