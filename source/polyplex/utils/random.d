@@ -32,6 +32,7 @@ public class Random {
 	}
 	
 	public int NextFloat() {
+		advance_seed();
 		return rnd.uniform01!float(random);	
 	}
 
