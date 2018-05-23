@@ -36,7 +36,7 @@ public class Random {
 		return rnd.uniform01!float(random);	
 	}
 
-	public dobule NextDouble() {
+	public double NextDouble() {
 		advance_seed();
 		return rnd.uniform01!double(random);	
 	}
