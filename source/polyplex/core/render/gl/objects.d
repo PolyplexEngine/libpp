@@ -215,6 +215,79 @@ struct IndexBuffer {
 	}
 }
 
+public enum FBOTextureType {
+	Color,
+	Depth,
+	Stencil,
+	DepthStencil
+}
+
+/// WORK IN PROGRESS!
+
+class FrameBuffer {
+	// Internal managment value to make sure that the IsComplete function can revert to the userbound FBO.
+	private static GLuint current_attch;
+
+	private GLuint id;
+
+	private GLuint[FBOTextureType] render_textures;
+
+	private int width;
+	private int height;
+
+	public int Width() { return width; }
+	public int Height() { return height; }
+
+	public bool IsComplete() {
+		Bind();
+		bool status = (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
+		glBindFramebuffer(GL_FRAMEBUFFER, current_attch);
+		return status;
+	}
+
+	this() {
+		glGenFramebuffers(1, &id);
+	}
+
+	~this() {
+		glDeleteFramebuffers(1, &id);
+	}
+
+	public void SetTexture(FBOTextureType type) {
+		if (render_textures[type] != 0) {
+			// Delete previous texture.
+			glBindTexture(GL_TEXTURE, render_textures[type]);
+			glDeleteTextures(1, &render_textures[type]);
+		}
+
+		render_textures[type] = 0;
+		glGenTextures(1, &render_textures[type]);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, null);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);  
+
+	}
+
+	public void Rebuild(int width, int height) {
+		this.width = width;
+		this.height = height;
+	}
+
+	public void Bind() {
+		// Make sure IsComplete state can be reversed to this again.
+		current_attch = id;
+		glBindFramebuffer(GL_FRAMEBUFFER, id);
+	}
+
+	public void Unbind() {
+		// Make sure IsComplete state can be reversed to this again.
+		current_attch = id;
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+
+
+}
+
 /*
 class IBO : BufferObject {
 	this(Layout layout) {
