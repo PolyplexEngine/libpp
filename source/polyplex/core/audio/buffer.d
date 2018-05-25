@@ -19,11 +19,10 @@ public enum AudioRenderFormats : int {
 	StereoFloat = AL_FORMAT_STEREO_FLOAT32,
 }
 
-public class RawBuffer {
+public struct RawBuffer {
 	public ubyte[] Data;
 	public int SampleRate;
 	public int Length() { return cast(int)Data.length; }
-	
 }
 
 public class ALBuffer {
