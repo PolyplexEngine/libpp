@@ -103,12 +103,23 @@ public abstract class Game {
 	private ulong delta_frames = 0;
 	private ulong last_frames = 0;
 	private double avg_fps = 0;
+	private bool enable_audio = true;
 
 	protected ContentManager Content;
 
 	public Event OnWindowSizeChanged = new Event();
 	public @property GameTime TotalTime() { return times.TotalTime; }
 	public @property GameTime DeltaTime() { return times.DeltaTime; }
+
+	public @property bool AudioEnabled() {
+		return !(DefaultAudioDevice is null);
+	}
+
+	public @property void AudioEnabled(bool val) {
+		enable_audio = val;
+		if (val == true) DefaultAudioDevice = new AudioDevice();
+		else DefaultAudioDevice = null;
+	}
 
 	public @property float FPS() {
 		if (delta_frames != 0) {
@@ -133,19 +144,22 @@ public abstract class Game {
 
 	public @property SpriteBatch sprite_batch() { return window.Drawing.Batch; }
 
-	this(string title, Rectangle bounds) {
+	this(string title, Rectangle bounds, bool audio = true) {
 		window = new GameWindow(title, bounds);
 		events = new GameEventSystem();
+		enable_audio = audio;
 	}
 	 
-	this(Rectangle bounds) {
+	this(Rectangle bounds, bool audio = true) {
 		window = new GameWindow(bounds);
 		events = new GameEventSystem();
+		enable_audio = audio;
 	}
 
-	this() {
+	this(bool audio = true) {
 		window = new GameWindow();
 		events = new GameEventSystem();
+		enable_audio = audio;
 	}
 
 	~this() {
@@ -182,7 +196,7 @@ public abstract class Game {
 
 		this.Content = new PPCContentManager();
 
-		DefaultAudioDevice = new AudioDevice();
+		if (enable_audio) DefaultAudioDevice = new AudioDevice();
 		
 		Init();
 		LoadContent();
