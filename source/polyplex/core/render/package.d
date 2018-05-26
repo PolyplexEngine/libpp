@@ -69,6 +69,17 @@ public enum SpriteSorting {
 	Immediate,
 	Texture
 }
+
+public struct RasterizerState {
+	public static RasterizerState Default() {
+		return RasterizerState(false, false, 0f);
+	}
+
+	public bool ScissorTest;
+	public bool MSAA;
+	public float SlopeScaleBias;
+}
+
 /*
 public enum Stencil {
 	Default,
@@ -84,9 +95,9 @@ public enum SpriteFlip {
 
 public abstract class SpriteBatch {
 	public abstract void Begin();
-	public abstract void Begin(SpriteSorting sort_mode, Blending blend_state, Sampling sample_State, Shader s, Matrix4x4 matrix);
-	public abstract void Begin(SpriteSorting sort_mode, Blending blend_state, Sampling sample_State, Shader s, Camera camera);
-	public abstract void Begin(SpriteSorting sort_mode, Blending blend_state, Sampling sample_State, ProjectionState pstate, Shader s, Camera camera);
+	public abstract void Begin(SpriteSorting sort_mode, Blending blend_state, Sampling sample_state, RasterizerState raster_state, Shader s, Matrix4x4 matrix);
+	public abstract void Begin(SpriteSorting sort_mode, Blending blend_state, Sampling sample_State, RasterizerState raster_state, Shader s, Camera camera);
+	public abstract void Begin(SpriteSorting sort_mode, Blending blend_state, Sampling sample_State, RasterizerState raster_state, ProjectionState pstate, Shader s, Camera camera);
 	public abstract void Draw(Texture2D texture, Rectangle pos, Rectangle cutout, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f);
 	public abstract void Draw(Texture2D texture, Rectangle pos, Rectangle cutout, float rotation, Vector2 Origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f);
 	public abstract void DrawAABB(Texture2D texture, Rectangle pos_top, Rectangle pos_bottom, Rectangle cutout, Vector2 Origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f);

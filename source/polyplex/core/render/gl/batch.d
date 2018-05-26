@@ -51,6 +51,9 @@ public class GlSpriteBatch : SpriteBatch {
 	private Matrix4x4 view_project;
 	private Texture2D current_texture;
 	private Texture2D current_texture_2;
+
+	private RasterizerState raster_state;
+
 	private bool has_begun = false;
 	private bool swap = false;
 
@@ -98,6 +101,18 @@ public class GlSpriteBatch : SpriteBatch {
 		this.project_state = state;
 	}
 
+	private void set_raster_state(RasterizerState state) {
+		if (state.ScissorTest) glEnable(GL_SCISSOR_TEST);
+		if (state.MSAA) glEnable(GL_MULTISAMPLE);
+		if (state.SlopeScaleBias > 0f) glEnable(GL_POLYGON_OFFSET_FILL);
+	}
+
+	private void reset_raster_state() {
+		glDisable(GL_MULTISAMPLE);
+		glDisable(GL_SCISSOR_TEST);
+		glDisable(GL_POLYGON_OFFSET_FILL);
+	}
+
 	private void set_sampler_state(Sampling sampling) {
 		switch (sampling) {
 			case sampling.PointWrap:
@@ -140,34 +155,34 @@ public class GlSpriteBatch : SpriteBatch {
 	}
 
 	public override void Begin() {
-		Begin(SpriteSorting.Deferred, Blending.AlphaBlend, Sampling.LinearClamp, default_shader, default_cam);
+		Begin(SpriteSorting.Deferred, Blending.AlphaBlend, Sampling.LinearClamp, raster_state.Default, default_shader, default_cam);
 	}
 
 	/**
 		Begin begins the spritebatch, setting up sorting modes, blend states and sampling.
 		Begin also attaches a custom shader (if chosen) and sets the camera/view matrix.
 	*/
-	public override void Begin(SpriteSorting sort_mode, Blending blend_state, Sampling sample_state, ProjectionState pstate, Shader s, Camera camera) {
+	public override void Begin(SpriteSorting sort_mode, Blending blend_state, Sampling sample_state, RasterizerState raster_state, ProjectionState pstate, Shader s, Camera camera) {
 		set_projection_state(pstate);
-		Begin(sort_mode, blend_state, sample_state, s, camera);
+		Begin(sort_mode, blend_state, sample_state, raster_state, s, camera);
 	}
 
 	/**
 		Begin begins the spritebatch, setting up sorting modes, blend states and sampling.
 		Begin also attaches a custom shader (if chosen) and sets the camera/view matrix.
 	*/
-	public override void Begin(SpriteSorting sort_mode, Blending blend_state, Sampling sample_state, Shader s, Camera camera) {
+	public override void Begin(SpriteSorting sort_mode, Blending blend_state, Sampling sample_state, RasterizerState raster_state, Shader s, Camera camera) {
 		Camera cam = camera;
 		if (cam is null) cam = default_cam;
 		cam.Update();
-		Begin(sort_mode, blend_state, sample_state, s, cam.Matrix);
+		Begin(sort_mode, blend_state, sample_state, raster_state, s, cam.Matrix);
 	}
 
 	/**
 		Begin begins the spritebatch, setting up sorting modes, blend states and sampling.
 		Begin also attaches a custom shader (if chosen) and sets the camera/view matrix.
 	*/
-	public override void Begin(SpriteSorting sort_mode, Blending blend_state, Sampling sample_state, Shader s, Matrix4x4 matrix) {
+	public override void Begin(SpriteSorting sort_mode, Blending blend_state, Sampling sample_state, RasterizerState raster_state, Shader s, Matrix4x4 matrix) {
 		if (this.has_begun) throw new Exception("SpriteBatch.Begin called more than once! Remember to end spritebatch sessions before beginning new ones.");
 		this.has_begun = true;
 		this.sort_mode = sort_mode;
@@ -175,6 +190,8 @@ public class GlSpriteBatch : SpriteBatch {
 		this.blend_state = blend_state;
 		this.view_project = matrix;
 		this.shader = s;
+		this.raster_state = raster_state;
+		set_raster_state(this.raster_state);
 		if (this.shader is null) this.shader = default_shader;
 		this.current_texture = null;
 		this.queued = 0;
@@ -238,6 +255,13 @@ public class GlSpriteBatch : SpriteBatch {
 	*/
 	public override void SwapChain() {
 		swap = !swap;
+	}
+
+	/**
+		(Temporary) Sets the Scissor rectangle
+	*/
+	public void SetScissorRect(Rectangle rect) {
+		glScissor(rect.X, renderer.Window.Height-rect.Y, rect.Width, rect.Height);
 	}
 
 	/**
@@ -395,5 +419,6 @@ public class GlSpriteBatch : SpriteBatch {
 		if (!has_begun) throw new Exception("SpriteBatch.Begin must be called before SpriteBatch.End.");
 		has_begun = false;
 		Flush();
+		reset_raster_state();
 	}
 }
