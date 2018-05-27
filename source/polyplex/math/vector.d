@@ -2,7 +2,7 @@ module polyplex.math.vector;
 import std.math, std.traits, std.string;
 
 private bool ProperVectorBinaryOperation(string op) {
-	return op == "/" || op == "*" || op == "+" || op == "-";
+	return op == "/" || op == "*" || op == "+" || op == "-" || op == "+=" || op == "-=";
 }
 
 private bool ProperVectorUnaryOperation(string op) {
@@ -234,7 +234,6 @@ private template GenericVectorMixin(T, int _Dim) {
 			return tvec; // return this vector ( v.xy = v.zw = .. )
 		}
 	}
-
 
 	/// Returns a pointer to the data container of this vector
 	public inout(T)* ptr() pure inout nothrow { return data.ptr; }

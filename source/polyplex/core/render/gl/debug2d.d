@@ -66,15 +66,15 @@ public class GlDebugging2D {
 	/**
 		Resets the matrix for the debugging primitives.
 	*/
-	public static void ResetMatrix() {
+	public static void ResetCamera() {
 		cm = new Camera2D(Vector2(0, 0));
 	}
 
 	/**
 		Sets the matrix for the debugging primitives.
 	*/
-	public static void SetMatrix(Matrix4x4 camMatrix) {
-		cm.Matrix = camMatrix;
+	public static void SetCamera(Camera2D cam) {
+		cm = cam;
 	}
 
 	/**
