@@ -215,7 +215,7 @@ public abstract class Game {
 			Draw(times);
 
 			//Swap buffers and chain.
-			sprite_batch.SwapChain();
+			if (sprite_batch !is null) sprite_batch.SwapChain();
 			window.SwapBuffers();
 
 			//FPS counter.

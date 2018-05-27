@@ -9,6 +9,8 @@ import polyplex.math;
 import derelict.sdl2.sdl;
 import derelict.vulkan.vulkan;
 
+import std.stdio;
+
 public import polyplex.core.render.vk.shader;
 
 public class VkRenderer : Renderer {
@@ -16,9 +18,7 @@ public class VkRenderer : Renderer {
 	this(GameWindow parent) { super(parent); }
 	
 	public override void Init(SDL_Window* w) {
-		ApplicationInfo info = new ApplicationInfo("AAAA", "EEEEE", new Version(), new Version(), new Version());
-		InstanceCreateInfo cinfo = info.CreateInfo;
-		
+		writeln("Heyo!");
 	}
 
 	public override void ClearColor(Color color) {

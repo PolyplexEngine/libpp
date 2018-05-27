@@ -42,7 +42,7 @@ public class BasicGameLauncher
 	{
 		try
 		{
-			/*if (ChosenBackend == GraphicsBackend.Vulkan)
+			if (ChosenBackend == GraphicsBackend.Vulkan)
 			{
 				try
 				{
@@ -57,12 +57,11 @@ public class BasicGameLauncher
 				}
 			}
 			else
-			{*/
-				Logger.Recover("Going to OpenGL fallback mode...");
+			{
 				ChosenBackend = GraphicsBackend.OpenGL;
 				InitLibraries();
 				game.Run();
-			/*}*/
+			}
 		}
 		catch (Error err)
 		{
