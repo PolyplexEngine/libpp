@@ -13,7 +13,7 @@ import std.stdio;
 
 public import polyplex.core.render.vk.shader;
 
-public class VkRenderer : Renderer {
+public class VkRenderer : BackendRenderer {
 
 	this(GameWindow parent) { super(parent); }
 	

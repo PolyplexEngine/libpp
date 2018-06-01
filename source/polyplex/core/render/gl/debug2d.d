@@ -20,7 +20,6 @@ private struct DebugVertexLayout {
 public class GlDebugging2D {
 	private static GLShader shader;
 	private static Camera2D cm;
-	private static Renderer renderer;
 
 	private static VertexBuffer!(DebugVertexLayout, Layout.Interleaved) buff;
 	private static int matr_indx;
@@ -28,8 +27,7 @@ public class GlDebugging2D {
 	/**
 		Prepares GlDebugging2D for rendering (backend, you don't need to run this yourself.)
 	*/
-	public static void PrepDebugging(Renderer rend) {
-		renderer = rend;
+	public static void PrepDebugging() {
 		buff = VertexBuffer!(DebugVertexLayout, Layout.Interleaved)([]);
 		shader = new GLShader(new ShaderCode(import("debug.vsh"), import("debug.fsh"), ["ppPosition", "ppColor"]));
 		matr_indx = shader.GetUniform("ppProjection");
@@ -84,7 +82,7 @@ public class GlDebugging2D {
 		create_buffer_points(dot_points, color);
 		buff.UpdateBuffer();
 		shader.Attach();
-		shader.SetUniform(matr_indx, cm.Project(renderer.Window.Width, renderer.Window.Height) * cm.Matrix);
+		shader.SetUniform(matr_indx, cm.Project(Renderer.Window.Width, Renderer.Window.Height) * cm.Matrix);
 		buff.Draw(0, DrawType.Points);
 		buff.Unbind();
 		shader.Detach();
@@ -101,7 +99,7 @@ public class GlDebugging2D {
 		create_buffer_line(line_points, color);
 		buff.UpdateBuffer();
 		shader.Attach();
-		shader.SetUniform(matr_indx, cm.Project(renderer.Window.Width, renderer.Window.Height) * cm.Matrix);
+		shader.SetUniform(matr_indx, cm.Project(Renderer.Window.Width, Renderer.Window.Height) * cm.Matrix);
 		buff.Draw(0, DrawType.Lines);
 		buff.Unbind();
 		shader.Detach();
@@ -114,7 +112,7 @@ public class GlDebugging2D {
 		create_buffer(rect, color);
 		buff.UpdateBuffer();
 		shader.Attach();
-		shader.SetUniform(matr_indx, cm.Project(renderer.Window.Width, renderer.Window.Height) * cm.Matrix);
+		shader.SetUniform(matr_indx, cm.Project(Renderer.Window.Width, Renderer.Window.Height) * cm.Matrix);
 		buff.Draw(0, DrawType.LineStrip);
 		buff.Unbind();
 		shader.Detach();
@@ -127,7 +125,7 @@ public class GlDebugging2D {
 		create_buffer(rect, color);
 		buff.UpdateBuffer();
 		shader.Attach();
-		shader.SetUniform(matr_indx, cm.Project(renderer.Window.Width, renderer.Window.Height) * cm.Matrix);
+		shader.SetUniform(matr_indx, cm.Project(Renderer.Window.Width, Renderer.Window.Height) * cm.Matrix);
 		buff.Draw();
 		shader.Detach();
 		buff.Unbind();

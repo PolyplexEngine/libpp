@@ -42,7 +42,6 @@ public class GlSpriteBatch : SpriteBatch {
 	private VertexBuffer!(SprBatchData, Layout.Interleaved) render_object;
 	private VertexBuffer!(SprBatchData, Layout.Interleaved) render_object_2;
 
-	private Renderer renderer;
 	private SpriteSorting sort_mode; 
 	private Blending blend_state;
 	private Sampling sample_state;
@@ -57,8 +56,7 @@ public class GlSpriteBatch : SpriteBatch {
 	private bool has_begun = false;
 	private bool swap = false;
 
-	this(Renderer renderer, int size = 1000) {
-		this.renderer = renderer;
+	this(int size = 1000) {
 		InitializeSpritebatch();
 		this.size = size;
 		render_object = VertexBuffer!(SprBatchData, Layout.Interleaved)([]);
@@ -150,8 +148,8 @@ public class GlSpriteBatch : SpriteBatch {
 
 	private Matrix4x4 mult_matrices() {
 		if (this.project_state == ProjectionState.Perspective)
-			return this.default_cam.ProjectPerspective(renderer.Window.Width, 90f, renderer.Window.Height) * this.view_project;
-		return this.default_cam.ProjectOrthographic(renderer.Window.Width, renderer.Window.Height) * this.view_project;
+			return this.default_cam.ProjectPerspective(Renderer.Window.Width, 90f, Renderer.Window.Height) * this.view_project;
+		return this.default_cam.ProjectOrthographic(Renderer.Window.Width, Renderer.Window.Height) * this.view_project;
 	}
 
 	public override void Begin() {
@@ -261,7 +259,7 @@ public class GlSpriteBatch : SpriteBatch {
 		(Temporary) Sets the Scissor rectangle
 	*/
 	public void SetScissorRect(Rectangle rect) {
-		glScissor(rect.X, renderer.Window.Height-rect.Y, rect.Width, rect.Height);
+		glScissor(rect.X, Renderer.Window.Height-rect.Y, rect.Width, rect.Height);
 	}
 
 	/**

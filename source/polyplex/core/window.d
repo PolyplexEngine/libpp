@@ -21,14 +21,11 @@ public class GameWindow {
 	private int width;
 	private int height;
     private SDL_Window* window;
-	private Renderer renderer;
 	private string start_title;
 	private Rectangle start_bounds;
 
 	public @property int Width() { return this.width; }
 	public @property int Height() { return this.height; }
-
-	public @property Renderer Backend() { return this.renderer; }
 
 	/*
 		Gets whenever the window is visible
@@ -44,9 +41,9 @@ public class GameWindow {
 
 	//Vertical Syncronization
 	public @property VSyncState VSync() {
-		return renderer.VSync;
+		return Renderer.VSync;
 	}
-	public @property void VSync(VSyncState allow) { renderer.VSync = allow; }
+	public @property void VSync(VSyncState allow) { Renderer.VSync = allow; }
 
 
 	//Borderless
@@ -88,9 +85,6 @@ public class GameWindow {
 		//Fullscreen
 		SDL_SetWindowFullscreen(this.window, SDL_WINDOW_FULLSCREEN);
 	}
-
-	//Renderer
-	public @property Renderer Drawing() { return this.renderer; }
 
 	/*
 		Returns the raw placement of the window.
@@ -182,21 +176,13 @@ public class GameWindow {
 	}
 
 	/**
-		Swaps the rendering buffer.
-	*/
-	void SwapBuffers() {
-		this.renderer.SwapBuffers();
-	}
-
-	/**
 		Shows the window.
 	*/
     void Show() {
 		Logger.Debug("Spawning window...");
 		if (polyplex.ChosenBackend == polyplex.GraphicsBackend.Vulkan) this.window = SDL_CreateWindow(this.start_title.dup.ptr, this.start_bounds.X, this.start_bounds.Y, this.start_bounds.Width, this.start_bounds.Height, SDL_WINDOW_VULKAN);
 		else this.window = SDL_CreateWindow(this.start_title.toStringz, this.start_bounds.X, this.start_bounds.Y, this.start_bounds.Width, this.start_bounds.Height, SDL_WINDOW_OPENGL);
-		this.renderer = CreateBackendRenderer(this);
-		this.renderer.Init(this.window);
+		Renderer.AssignRenderer(this, this.window);
 		if (this.window == null) {
 			destroy(this.window);
 			Logger.Fatal("Window creation error: {0}", SDL_GetError());

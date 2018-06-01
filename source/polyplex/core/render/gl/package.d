@@ -15,7 +15,7 @@ import std.stdio;
 
 public import polyplex.core.render.gl.shader;
 
-public class GlRenderer : Renderer {
+public class GlRenderer : BackendRenderer {
 	private SDL_Window* win;
 	private SDL_GLContext context;
 
@@ -36,9 +36,7 @@ public class GlRenderer : Renderer {
 		int wd, hd;
 		SDL_GetWindowSize(w, &wd, &hd);
 		GlSpriteBatch.InitializeSpritebatch();
-		Renderer r = cast(Renderer)this;
-		this.Batch = new GlSpriteBatch(r);
-		GlDebugging2D.PrepDebugging(r);
+		GlDebugging2D.PrepDebugging();
 		
 		//Default settings for sprite clamping and wrapping
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);

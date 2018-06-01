@@ -22,6 +22,49 @@ public enum VSyncState {
 }
 
 public class Renderer {
+	private static BackendRenderer BGRend;
+	public static GameWindow Window;
+
+	/**
+		Backend function, run automatically, no need to invoke it manually. c:
+	*/
+	public static void AssignRenderer(GameWindow parent, SDL_Window* win) {
+		BGRend = CreateBackendRenderer(parent);
+		BGRend.Init(win);
+		Window = parent;
+	}
+
+	public static void ClearColor(Color color) {
+		BGRend.ClearColor(color);
+	}
+
+	public static void ClearDepth() {
+		BGRend.ClearDepth();
+	}
+
+	public static void SwapBuffers() {
+		BGRend.SwapBuffers();
+	}
+
+	public static Shader CreateShader(ShaderCode code) {
+		return BGRend.CreateShader(code);
+	}
+
+	public static void AdjustViewport() {
+		BGRend.AdjustViewport();
+	}
+
+	public static @property VSyncState VSync() {
+		return BGRend.VSync;
+	}
+
+	public static @property void VSync(VSyncState state) {
+		BGRend.VSync = state;
+	}
+
+}
+
+public class BackendRenderer {
 	public SpriteBatch Batch;
 	public GameWindow Window;
 
@@ -179,7 +222,7 @@ class ShaderCode {
 	}
 }
 
-public Renderer CreateBackendRenderer(GameWindow parent) {
+public BackendRenderer CreateBackendRenderer(GameWindow parent) {
 	if (ChosenBackend == GraphicsBackend.Vulkan) return new VkRenderer(parent);
 	return new GlRenderer(parent);
 }

@@ -106,6 +106,7 @@ public abstract class Game {
 	private bool enable_audio = true;
 
 	protected ContentManager Content;
+	protected SpriteBatch sprite_batch;
 
 	public Event OnWindowSizeChanged = new Event();
 	public @property GameTime TotalTime() { return times.TotalTime; }
@@ -140,9 +141,6 @@ public abstract class Game {
 	}
 
 	public @property GameWindow Window() { return window; }
-	public @property Renderer Drawing() { return window.Drawing; }
-
-	public @property SpriteBatch sprite_batch() { return window.Drawing.Batch; }
 
 	this(string title, Rectangle bounds, bool audio = true) {
 		window = new GameWindow(title, bounds);
@@ -187,7 +185,7 @@ public abstract class Game {
 
 		events.OnWindowSizeChanged += (void* sender, EventArgs data) {
 			window.UpdateInfo();
-			window.Drawing.AdjustViewport();
+			Renderer.AdjustViewport();
 			OnWindowSizeChanged(sender, data);
 		};
 		
@@ -216,7 +214,7 @@ public abstract class Game {
 
 			//Swap buffers and chain.
 			if (sprite_batch !is null) sprite_batch.SwapChain();
-			window.SwapBuffers();
+			Renderer.SwapBuffers();
 
 			//FPS counter.
 			delta_frames = SDL_GetTicks() - start_frames;
