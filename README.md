@@ -92,4 +92,4 @@ You can also check out [example_game](https://github.com/PolyplexEngine/example_
 ## Notice
 ##### The library is written in what would be considered non-idiomatic D.
 
-[logo]: https://github.com/PolyplexEngine/ppbranding/blob/master/polyplex3.jpg
+[logo]: http://git.pplex.org/Polyplex/ppbranding/raw/master/polyplex3.jpg
