@@ -19,7 +19,7 @@ Once added, you will need to set logging levels, choose a backend and create a w
 
 ### Current capabilities
 Polyplex is still very early in development, but libpp can already be used to make simple 2D games, that are relatively easy to port to other platforms.
-Polyplex packages textures, sounds, etc. into files with the extension ppc. To convert png, jpeg or tga files to .ppc, use [ppcc](https://github.com/PolyplexEngine/ppcc)
+Polyplex packages textures, sounds, etc. into files with the extension ppc. To convert png, jpeg or tga files to .ppc, use [ppcc](https://git.pplex.org/Polyplex/ppcc)
 
 
 ### Examples
@@ -87,7 +87,7 @@ class Game1 : Game {
 }
 ```
 
-You can also check out [example_game](https://github.com/PolyplexEngine/example_game), which is used as a testbed for new libpp features/fixes.
+You can also check out [example_game](http://git.pplex.org/Polyplex/example_game), which is used as a testbed for new libpp features/fixes.
 
 ## Notice
 ##### The library is written in what would be considered non-idiomatic D.
