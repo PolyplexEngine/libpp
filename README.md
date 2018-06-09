@@ -19,12 +19,14 @@ Once added, you will need to set logging levels, choose a backend and create a w
 
 ### Current capabilities
 Polyplex is still very early in development, but libpp can already be used to make simple 2D games, that are relatively easy to port to other platforms.
-Polyplex packages textures, sounds, etc. into files with the extension ppc. To convert png, jpeg or tga files to .ppc, use [ppcc](https://git.pplex.org/Polyplex/ppcc)
+Polyplex packages textures, sounds, etc. into files with the extension ppc. To convert ogg, png, jpeg or tga files to .ppc, use [ppcc](https://git.pplex.org/Polyplex/ppcc)
 
 
 ### Examples
 ## PPCC
-`ppcc -c (or --convert) my_texture.png` output will be put in `my_texture.ppc`.
+`ppcc -c (or --convert) my_file.(extension)` output will be put in `my_file.ppc`.
+
+From libpp it can be accessed via `ContentManager.Load<Type>("my_file")`
 
 ## libpp
 Example of simple polyplex application:
