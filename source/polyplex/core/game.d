@@ -179,11 +179,11 @@ public abstract class Game {
 
 		//Update window info.
 		window.UpdateInfo();
-		events.OnExitRequested += (void* sender, EventArgs data) {
-			window.Close(); 
+		events.OnExitRequested ~= (void* sender, EventArgs data) {
+			window.Close();
 		};
 
-		events.OnWindowSizeChanged += (void* sender, EventArgs data) {
+		events.OnWindowSizeChanged ~= (void* sender, EventArgs data) {
 			window.UpdateInfo();
 			Renderer.AdjustViewport();
 			OnWindowSizeChanged(sender, data);
