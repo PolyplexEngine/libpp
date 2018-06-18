@@ -128,8 +128,6 @@ struct VertexBuffer(T, Layout layout) {
 			mixin(q{int field_size = T.{0}.sizeof/4;}.Format(member));
 			mixin(q{void* field_t = cast(void*)T.{0}.offsetof;}.Format(member));
 
-			Logger.VerboseDebug("{0}", T.sizeof);
-
 			// Check if it's a valid type for the VBO buffer.
 			mixin(q{ alias M = T.{0}; }.Format(member));
 			static assert(ValidBufferType!(typeof(M)), "Invalid buffer value <{0}>, may only contain: float, vector2, vector3 and vector4s!".Format(member));
@@ -141,16 +139,13 @@ struct VertexBuffer(T, Layout layout) {
 				glEnableVertexAttribArray(iterator);
 			} else {
 				Bind();
-				Logger.VerboseDebug("glVertexAttribPointer({0}, {1}, GL_FLOAT, GL_FALSE, {2}, {3})", iterator, field_size, T.sizeof, field_t);
 				glVertexAttribPointer(cast(GLuint)iterator, field_size, GL_FLOAT, GL_FALSE, T.sizeof, field_t);
-				Logger.VerboseDebug("glEnableVertexAttribArray({0})", iterator);
 				glEnableVertexAttribArray(iterator);
 			}
 		}
 	}
 
 	public void Bind(int index = 0) {
-		Logger.VerboseDebug("glBindBuffer(GL_ARRAY_BUFFER, gl_buffers[{0}]) <ptr {1}>", index, gl_buffers[index]);
 		vao.Bind();
 		glBindBuffer(GL_ARRAY_BUFFER, gl_buffers[index]);
 	}
@@ -162,7 +157,6 @@ struct VertexBuffer(T, Layout layout) {
 
 	public void UpdateBuffer(int index = 0, BufferMode mode = BufferMode.Dynamic) {
 		Bind(index);
-		Logger.VerboseDebug("glBufferData(GL_ARRAY_BUFFER, {0}, {1}, {2})", Data.sizeof, Data.ptr, mode);
 		glBufferData(GL_ARRAY_BUFFER, Data.length * T.sizeof, Data.ptr, mode);
 		UpdateAttribPointers();
 	}
@@ -205,7 +199,6 @@ struct IndexBuffer {
 
 	public void UpdateBuffer(int index = 0, BufferMode mode = BufferMode.Dynamic) {
 		Bind();
-		Logger.VerboseDebug("glBufferData(GL_ARRAY_BUFFER, {0}, {1}, {2})", Indices.sizeof, Indices.ptr, mode);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, Indices.sizeof, Indices.ptr, mode);
 	}
 
