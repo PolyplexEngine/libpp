@@ -198,6 +198,9 @@ public abstract class Game {
 		
 		Init();
 		LoadContent();
+
+		// Init sprite batch
+		this.sprite_batch = Renderer.NewBatcher();
 		Logger.Debug("~~~ Gameloop ~~~");
 		while (window.Visible) {
 			//FPS begin counting.
