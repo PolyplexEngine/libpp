@@ -24,7 +24,7 @@ public class BasicGameLauncher
 	private static void launch(Game game, string[] args) {
 		try {
 			ChosenBackend = GraphicsBackend.Vulkan;
-			if (args.length == 2) {
+			if (args.length > 0) {
 				if (args[0] == "--vulkan") {
 					ChosenBackend = GraphicsBackend.Vulkan;
 				}
