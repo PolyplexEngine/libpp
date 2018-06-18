@@ -81,20 +81,22 @@ public class Camera3D : Camera {
 }
 
 public class Camera2D : Camera {
-	public Vector3 Position;
+	public Vector2 Position;
 	public float Rotation;
 	public float RotationY;
 	public float RotationX;
 	public float Zoom;
-	public Vector3 Origin;
+	public float Depth;
+	public Vector2 Origin;
 
-	this(Vector2 position, float rotation = 0f, float zoom = 1f, float near = 0.01f, float far = 100f) {
-		this.Position = Vector3(position.X, position.Y, -5);
+	this(Vector2 position, float depth = -5f, float rotation = 0f, float zoom = 1f, float near = 0.01f, float far = 100f) {
+		this.Position = Vector2(position.X, position.Y);
 		this.Rotation = rotation;
 		this.RotationX = 0;
 		this.RotationY = 0;
 		this.Zoom = zoom;
-		this.Origin = Vector3(0, 0, -5);
+		this.Depth = depth;
+		this.Origin = Vector2(0, 0);
 
 		this.znear = near;
 		this.zfar = far;
@@ -107,12 +109,12 @@ public class Camera2D : Camera {
 	*/
 	public override void Update() {
 		this.matrix = Matrix4x4.Identity
-		.Translate(Vector3(-Position.X, -Position.Y, 0))
+		.Translate(Vector3(-Position.X, -Position.Y, Depth))
 		.RotateX(this.RotationX)
 		.RotateY(this.RotationY)
 		.RotateZ(this.Rotation)
 		.Scale(Vector3(Zoom, Zoom, Zoom))
-		.Translate(Vector3(Origin.X, Origin.Y, Origin.Z));
+		.Translate(Vector3(Origin.X, Origin.Y, Depth));
 	}
 
 	/**
