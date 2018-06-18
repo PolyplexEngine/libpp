@@ -62,6 +62,11 @@ public class Renderer {
 		BGRend.VSync = state;
 	}
 
+	public static SpriteBatch NewBatcher() {
+		if (ChosenBackend == GraphicsBackend.Vulkan) return null;
+		return new GlSpriteBatch();
+	}
+
 }
 
 public class BackendRenderer {
