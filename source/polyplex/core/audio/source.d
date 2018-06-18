@@ -201,6 +201,12 @@ public class AudioSource {
 		alDeleteSources(1, &this.id);
 	}
 
+	public bool IsPlaying() {
+		ALenum state;
+		alGetSourcei(this.id, AL_SOURCE_STATE, &state);
+		return (state == AL_PLAYING);
+	}
+
 	public void Play(bool looping, Vector3 position = Vector3.Zero) {
 		this.Looping = looping;
 		Listener.Position = position;
