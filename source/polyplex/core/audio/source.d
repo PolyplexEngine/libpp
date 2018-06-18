@@ -65,7 +65,7 @@ public class AudioSource {
 		alGetSourcef(Id, AL_MAX_DISTANCE, &v);
 		return v;
 	}
-	public @property void MaxGain(float val) { alSourcef(Id, AL_MAX_DISTANCE, val); }
+	public @property void MaxDistance(float val) { alSourcef(Id, AL_MAX_DISTANCE, val); }
 
 	/*
 		ROLLOFF FACTOR
