@@ -37,6 +37,9 @@ public class GlRenderer : BackendRenderer {
 		SDL_GetWindowSize(w, &wd, &hd);
 		GlSpriteBatch.InitializeSpritebatch();
 		GlDebugging2D.PrepDebugging();
+
+		// Assign sprite batcher.
+		this.Batch = new GlSpriteBatch();
 		
 		//Default settings for sprite clamping and wrapping
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
