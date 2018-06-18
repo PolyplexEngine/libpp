@@ -13,58 +13,52 @@ import polyplex.utils;
 
 public class BasicGameLauncher
 {
-	private static void launch(Game game, string[] args)
-	{
-		try
-		{
+	/**
+		Removes the first element in the arguments array.
+		(this value is generally the name of the executable and unneeded.)
+	*/
+	public static string[] ProcessArgs(string[] args) {
+		return args[1..$];
+	}
+
+	private static void launch(Game game, string[] args) {
+		try {
 			ChosenBackend = GraphicsBackend.Vulkan;
-			if (args.length == 2)
-			{
-				if (args[1] == "-vulkan")
-				{
+			if (args.length == 2) {
+				if (args[0] == "--vulkan") {
 					ChosenBackend = GraphicsBackend.Vulkan;
 				}
-				else if (args[1] == "-opengl")
-				{
+				else if (args[0] == "--opengl") {
 					ChosenBackend = GraphicsBackend.OpenGL;
 				}
 			}
 			Logger.Info("Set rendering backend to {0}...", ChosenBackend);
 			do_launch(game);
 		}
-		catch (Exception ex)
-		{
+		catch (Exception ex) {
 			Logger.Info("Application failed! {0}", ex);
 		}
 	}
 
-	private static void do_launch(Game game)
-	{
-		try
-		{
-			if (ChosenBackend == GraphicsBackend.Vulkan)
-			{
-				try
-				{
+	private static void do_launch(Game game) {
+		try {
+			if (ChosenBackend == GraphicsBackend.Vulkan) {
+				try {
 					InitLibraries();
 					game.Run();
 				}
-				catch
-				{
+				catch {
 					Logger.Recover("Going to OpenGL fallback mode...");
 					ChosenBackend = GraphicsBackend.OpenGL;
 					do_launch(game);
 				}
-			}
-			else
-			{
+			} else {
 				ChosenBackend = GraphicsBackend.OpenGL;
 				InitLibraries();
 				game.Run();
 			}
 		}
-		catch (Error err)
-		{
+		catch (Error err) {
 			Logger.Log("Fatal Error! {0}", err, LogType.Fatal);
 		}
 	}
