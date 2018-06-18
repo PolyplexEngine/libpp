@@ -192,15 +192,14 @@ public abstract class Game {
 		times = new GameTimes(new GameTime(0), new GameTime(0));
 		int avg_c = 0;
 
+		// Init sprite batch
+		this.sprite_batch = Renderer.NewBatcher();
 		this.Content = new PPCContentManager();
 
 		if (enable_audio) DefaultAudioDevice = new AudioDevice();
 		
 		Init();
 		LoadContent();
-
-		// Init sprite batch
-		this.sprite_batch = Renderer.NewBatcher();
 		Logger.Debug("~~~ Gameloop ~~~");
 		while (window.Visible) {
 			//FPS begin counting.
