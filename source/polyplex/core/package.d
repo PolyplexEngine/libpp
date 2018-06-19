@@ -59,7 +59,7 @@ public class BasicGameLauncher
 			}
 		}
 		catch (Error err) {
-			Logger.Log("Fatal Error! {0}", err, LogType.Fatal);
+			Logger.Fatal("Fatal Error! {0}", err);
 		}
 	}
 

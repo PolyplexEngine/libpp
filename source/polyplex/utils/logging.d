@@ -17,14 +17,14 @@ public enum LogType {
 	VerboseDebug = 	0x80
 }
 
-public static LogType LogLevel = LogType.Warning | LogType.Error | LogType.Fatal;
+public static LogType LogLevel = LogType.Recover | LogType.Warning | LogType.Error | LogType.Fatal;
 public class Logger {
 
 	/**
 		Allows you to put a log of LogType type with an simple string message.
 	*/
 	public static void Log(string message, LogType type = LogType.Info)  {
-		Log(message, null, type);
+		Log(message, type, null);
 	}
 
 	/**
@@ -87,61 +87,61 @@ public class Logger {
 		Log a verbose debug message.
 	*/
 	public static void VerboseDebug(T...) (string message, T args) {
-		Logger.Log(message, args, LogType.VerboseDebug);
+		Logger.Log(message, LogType.VerboseDebug, args);
 	}
 
 	/**
 		Log a debug message.
 	*/
 	public static void Debug(T...) (string message, T args) {
-		Logger.Log(message, args, LogType.Debug);
+		Logger.Log(message, LogType.Debug, args);
 	}
 
 	/**
 		Log an info message.
 	*/
 	public static void Info(T...) (string message, T args) {
-		Logger.Log(message, args, LogType.Info);
+		Logger.Log(message, LogType.Info, args);
 	}
 
 	/**
 		Log a success message.
 	*/
 	public static void Success(T...) (string message, T args) {
-		Logger.Log(message, args, LogType.Success);
+		Logger.Log(message, LogType.Success, args);
 	}
 
 	/**
 		Log a warning message.
 	*/
 	public static void Warn(T...) (string message, T args) {
-		Logger.Log(message, args, LogType.Warning);
+		Logger.Log(message, LogType.Warning, args);
 	}
 
 	/**
 		Log an Error message.
 	*/
 	public static void Err(T...) (string message, T args) {
-		Logger.Log(message, args, LogType.Error);
+		Logger.Log(message, LogType.Error, args);
 	}
 
 	/**
 		Log a Fatal Error message.
 	*/
 	public static void Fatal(T...) (string message, T args) {
-		Logger.Log(message, args, LogType.Fatal);
+		Logger.Log(message, LogType.Fatal, args);
 	}
 
 	/**
 		Log a Error Recovery message.
 	*/
 	public static void Recover(T...) (string message, T args) {
-		Logger.Log(message, args, LogType.Recover);
+		Logger.Log(message, LogType.Recover, args);
 	}
 
 	/* Raw impl */
 
-	public static void Log(T...) (string message, T args, LogType type)  {
+	public static void Log(T...) (string message, LogType type, T args)  {
 		bool color = false;
 		if ((LogLevel != LogType.Off && (LogLevel & type)) || (type == LogType.Fatal || type == LogType.Recover)) {
 			import colorize : fg, color, cwriteln;

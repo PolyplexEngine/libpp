@@ -109,8 +109,8 @@ public void InitLibraries() {
 		SDL_version compiled;
 		SDL_GetVersion(&linked);
 		SDL_VERSION(&compiled);
-		Logger.Log("SDL (compiled against): {0}.{1}.{2}", to!string(compiled.major), to!string(compiled.minor), to!string(compiled.patch), LogType.Info);
-		Logger.Log("SDL (linked): {0}.{1}.{2}", to!string(linked.major), to!string(linked.minor), to!string(linked.patch), LogType.Info);
+		Logger.Debug("SDL (compiled against): {0}.{1}.{2}", to!string(compiled.major), to!string(compiled.minor), to!string(compiled.patch));
+		Logger.Debug("SDL (linked): {0}.{1}.{2}", to!string(linked.major), to!string(linked.minor), to!string(linked.patch));
 		core_init = true;
 	}
 	if (ChosenBackend == GraphicsBackend.NoneChosen) return;

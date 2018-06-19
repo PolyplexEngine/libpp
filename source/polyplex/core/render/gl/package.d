@@ -44,12 +44,12 @@ public class GlRenderer : BackendRenderer {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-		Logger.Log("OpenGL version: {0}", to!string(glGetString(GL_VERSION)), LogType.Info);
+		Logger.Info("OpenGL version: {0}", to!string(glGetString(GL_VERSION)));
 		glEnable (GL_BLEND);
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		//Crash if system has unsupported opengl version.
 		if (glver < GLVersion.gl30) throw new Error("Sorry, your graphics card does not support Open GL 3 or above.");
-		Logger.Log("OpenGL initialized...");
+		Logger.Info("OpenGL initialized...");
 	}
 	
 	public override @property VSyncState VSync() {
