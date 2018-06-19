@@ -141,7 +141,7 @@ public class Logger {
 
 	/* Raw impl */
 
-	public static void Log(T...) (string message, T args, LogType type = LogType.Info)  {
+	public static void Log(T...) (string message, T args, LogType type)  {
 		bool color = false;
 		if ((LogLevel != LogType.Off && (LogLevel & type)) || (type == LogType.Fatal || type == LogType.Recover)) {
 			import colorize : fg, color, cwriteln;
