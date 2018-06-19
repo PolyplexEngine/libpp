@@ -61,7 +61,7 @@ public class PPCContentManager : ContentManager {
 			TextureImg img = new TextureImg(cast(int)i.Width, cast(int)i.Height, i.Colors);
 			return new GlTexture2D(img);
 		} catch (Exception ex) {
-			Logger.Debug("{0}", ex.message);
+			Logger.Error("Failed loading texture: {0}", ex.message);
 			return null;
 		}
 	}
