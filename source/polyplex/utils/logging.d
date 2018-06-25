@@ -17,7 +17,7 @@ public enum LogType {
 	VerboseDebug = 	0x80
 }
 
-public static LogType LogLevel = LogType.Recover | LogType.Warning | LogType.Error | LogType.Fatal;
+public static LogType LogLevel = LogType.Recover | LogType.Success | LogType.Warning | LogType.Error | LogType.Fatal;
 public class Logger {
 
 	/**

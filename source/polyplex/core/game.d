@@ -169,7 +169,7 @@ public abstract class Game {
 		do_update();
 	}
 
-    private void do_update() {
+    	private void do_update() {
 		//Preupdate before init, just in case some event functions are use there.
 		events.Update();
 
@@ -245,8 +245,9 @@ public abstract class Game {
 			t /= MAX_SAMPLES;
 			avg_fps = t;
 		}
+		destroy(DefaultAudioDevice);
 		Logger.Success("~~~ GAME ENDED ~~~\nHave a nice day! c:");
-    }
+    	}
 
 	public void Quit() {
 		this.window.Close();
