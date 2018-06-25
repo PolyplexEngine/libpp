@@ -214,6 +214,9 @@ public abstract class Game {
 			Update(times);
 			Draw(times);
 
+			// Exit the game if the window is closed.
+			if (!window.Visible) break;
+
 			//Swap buffers and chain.
 			if (sprite_batch !is null) sprite_batch.SwapChain();
 			Renderer.SwapBuffers();

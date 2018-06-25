@@ -30,7 +30,7 @@ public class GameWindow {
 	/*
 		Gets whenever the window is visible
 	*/
-    public @property bool Visible() { return (this.window != null); }
+    public @property bool Visible() { return (this.window !is null); }
 
 	//Resizing
 	public @property bool AllowResizing() {
@@ -155,7 +155,6 @@ public class GameWindow {
 	*/
 	void Close() {
 		SDL_DestroyWindow(this.window);
-		IMG_Quit();
 		//Explicitly destroy window.
 		destroy(this.window);
 	}
