@@ -172,8 +172,11 @@ struct VertexBuffer(T, Layout layout) {
 		if (amount == 0) glDrawArrays(dt, 0, cast(GLuint)this.Data.length);
 		else glDrawArrays(dt, 0, amount);
 		uint err = glGetError();
+		import std.format;
 		if (err != GL_NO_ERROR) {
-			Logger.Debug("{0}", err);
+			if (err == 0x500) throw new Exception("GLSL Invalid Enum Error ("~format!"%x"(err)~")!");
+			if (err == 0x502) throw new Exception("GLSL Invalid Operation Error ("~format!"%x"(err)~")! (Are you sending the right types? Uniforms count!)");
+			throw new Exception("Unhandled GLSL Exception.");
 		}
 	}
 }
