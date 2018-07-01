@@ -22,22 +22,17 @@ public class BasicGameLauncher
 	}
 
 	private static void launch(Game game, string[] args) {
-		try {
-			ChosenBackend = GraphicsBackend.Vulkan;
-			if (args.length > 0) {
-				if (args[0] == "--vulkan") {
-					ChosenBackend = GraphicsBackend.Vulkan;
-				}
-				else if (args[0] == "--opengl") {
-					ChosenBackend = GraphicsBackend.OpenGL;
-				}
+		ChosenBackend = GraphicsBackend.Vulkan;
+		if (args.length > 0) {
+			if (args[0] == "--vulkan") {
+				ChosenBackend = GraphicsBackend.Vulkan;
 			}
-			Logger.Info("Set rendering backend to {0}...", ChosenBackend);
-			do_launch(game);
+			else if (args[0] == "--opengl") {
+				ChosenBackend = GraphicsBackend.OpenGL;
+			}
 		}
-		catch (Exception ex) {
-			Logger.Info("Application failed! {0}", ex);
-		}
+		Logger.Info("Set rendering backend to {0}...", ChosenBackend);
+		do_launch(game);
 	}
 
 	private static void do_launch(Game game) {
