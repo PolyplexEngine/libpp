@@ -37,7 +37,7 @@ class VkShader : Shader {
 
 	}
 	
-	public override uint GetUniform(string name) { return -1; }
+	public override int GetUniform(string name) { return -1; }
 	
 	public override bool HasUniform(string name) {
 		auto u = GetUniform(name);

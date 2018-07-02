@@ -171,7 +171,7 @@ public abstract class Shader {
 	public abstract void SetUniform(int location, Matrix2x2 value);
 	public abstract void SetUniform(int location, Matrix3x3 value);
 	public abstract void SetUniform(int location, Matrix4x4 value);
-	public abstract uint GetUniform(string name);
+	public abstract int GetUniform(string name);
 	public abstract bool HasUniform(string name);
 
 }
