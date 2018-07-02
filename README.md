@@ -33,12 +33,7 @@ Example of simple polyplex application:
 ```d
 import polyplex;
 import polyplex.math;
-import polyplex.core.window;
-import polyplex.core.input;
-import polyplex.core.game;
-import polyplex.core.color;
-import polyplex.core.render;
-import polyplex.core.content;
+import polyplex.core;
 import std.conv;
 
 void main(string[] args) {
