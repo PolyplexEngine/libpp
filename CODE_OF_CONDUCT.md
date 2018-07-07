@@ -28,4 +28,4 @@ Only the Polyplex Discord server strictly follows these principles, but followin
 	The pages associated with this project (be it mailing lists, issues, forums, etc.) are for discussing the project. Please keep politics off those pages, arguing over politics is not productive.
 
 ## This applies to
-All projects in the [PolyplexEngine](https://github.com/PolyplexEngine) organization.
+All projects in the [PolyplexEngine](https://git.pplex.org/Polyplex) organization, aswell the github mirror.

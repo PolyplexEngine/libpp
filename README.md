@@ -33,12 +33,7 @@ Example of simple polyplex application:
 ```d
 import polyplex;
 import polyplex.math;
-import polyplex.core.window;
-import polyplex.core.input;
-import polyplex.core.game;
-import polyplex.core.color;
-import polyplex.core.render;
-import polyplex.core.content;
+import polyplex.core;
 import std.conv;
 
 void main(string[] args) {
@@ -48,7 +43,9 @@ void main(string[] args) {
   // libpp now has a simple game launcher
   // It will automatically choose the graphics API most suitable.
   BasicGameLauncher.InitSDL();
-  BasicGameLauncher.LaunchGame(new Game1(), args);
+  
+  //When using the ~master build, use --opengl since vulkan support is not done yet.
+  BasicGameLauncher.LaunchGame(new Game1(), ["--opengl"] ~ args);
 }
 
 class Game1 : Game {
@@ -64,6 +61,12 @@ class Game1 : Game {
   
   //Init is run before the game loop starts.
   public override void Init() {
+    // Set the content root to content/
+    Content.ContentRoot = "content/";
+  }
+
+  // LoadContent is a method you can load content in, exists to split up init and content loading for more readability.
+  public override void LoadContent() {
     my_texture = this.Content.LoadTexture("my_texture");
   }
   
