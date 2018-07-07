@@ -42,7 +42,7 @@ public class BasicGameLauncher
 					InitLibraries();
 					game.Run();
 				}
-				catch {
+				catch(Throwable) {
 					Logger.Recover("Going to OpenGL fallback mode...");
 					ChosenBackend = GraphicsBackend.OpenGL;
 					do_launch(game);
