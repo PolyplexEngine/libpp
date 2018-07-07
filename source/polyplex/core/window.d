@@ -24,6 +24,11 @@ public class GameWindow {
 	private string start_title;
 	private Rectangle start_bounds;
 
+	/**
+		Whenever the window should automatically focus on launch.
+	*/
+	public bool AutoFocus = false;
+
 	public @property int Width() { return this.width; }
 	public @property int Height() { return this.height; }
 
@@ -111,7 +116,7 @@ public class GameWindow {
 		SDL_SetWindowPosition(this.window, cast(int)pos.X, cast(int)pos.Y);
 	}
 
-    this(string name, Rectangle bounds) {
+    this(string name, Rectangle bounds, bool focus = true) {
         if (!SDL_Init(SDL_INIT_EVERYTHING) < 0) {
             Logger.Fatal("Initialization of SDL2 failed!...\n{0}", SDL_GetError());
         }
@@ -119,6 +124,8 @@ public class GameWindow {
 		//Set info.
         this.start_bounds = bounds;
 		this.start_title = name;
+
+		this.AutoFocus = focus;
 
 		//Cap info.
 		if (this.start_bounds is null) this.start_bounds = new Rectangle(WindowPosition.Undefined, WindowPosition.Undefined, 640, 480);
@@ -130,12 +137,12 @@ public class GameWindow {
 		if (this.start_bounds.Height == WindowPosition.Undefined) this.start_bounds.Height = 480;
     }
 
-	this (Rectangle bounds) {
-		this("My Game", bounds);
+	this (Rectangle bounds, bool focus = true) {
+		this("My Game", bounds, focus);
 	}
 
-	this() {
-		this(new Rectangle(WindowPosition.Undefined, WindowPosition.Undefined, 640, 480));
+	this(bool focus = true) {
+		this(new Rectangle(WindowPosition.Undefined, WindowPosition.Undefined, 640, 480), focus);
 	}
 
     ~this() {
@@ -188,7 +195,8 @@ public class GameWindow {
 		}
 		// Enable VSync by default.
 		VSync = VSyncState.VSync;
+
 		// Focus window
-		this.Focus();
+		if (AutoFocus) this.Focus();
     }
 }

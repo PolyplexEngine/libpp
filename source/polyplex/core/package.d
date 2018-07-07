@@ -24,6 +24,9 @@ public class BasicGameLauncher
 	private static void launch(Game game, string[] args) {
 		ChosenBackend = GraphicsBackend.Vulkan;
 		if (args.length > 0) {
+			if (args[0] == "--no-autofocus") {
+				game.Window.AutoFocus = false;
+			}
 			if (args[0] == "--vulkan") {
 				ChosenBackend = GraphicsBackend.Vulkan;
 			}
