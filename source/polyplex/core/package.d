@@ -23,14 +23,14 @@ public class BasicGameLauncher
 
 	private static void launch(Game game, string[] args) {
 		ChosenBackend = GraphicsBackend.Vulkan;
-		if (args.length > 0) {
-			if (args[0] == "--no-autofocus") {
+		foreach (arg; args) {
+			if (arg == "--no-autofocus") {
 				game.Window.AutoFocus = false;
 			}
-			if (args[0] == "--vulkan") {
+			if (arg == "--vulkan") {
 				ChosenBackend = GraphicsBackend.Vulkan;
 			}
-			else if (args[0] == "--opengl") {
+			else if (arg == "--opengl") {
 				ChosenBackend = GraphicsBackend.OpenGL;
 			}
 		}
