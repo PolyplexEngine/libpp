@@ -155,6 +155,7 @@ The reasons to extend the public rules (no Hungarian, underscore prefix for memb
 ## File Organization
 * Class members should be grouped logically, and encapsulated into regions (Fields, Properties, Events, Constructors, Methods, Private interface implementations, Nested types)
 * `import` statements should be at the top of the file.
+
 ```d
 import std.stdio;
 import sev.events;
