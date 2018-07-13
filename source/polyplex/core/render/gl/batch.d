@@ -201,7 +201,6 @@ public class GlSpriteBatch : SpriteBatch {
 	*/
 	public override void Flush() {
 		render();
-		this.render_object.Data = [];
 		last_queued = queued;
 		queued = 0;
 	}
@@ -242,8 +241,6 @@ public class GlSpriteBatch : SpriteBatch {
 		
 		// Draw.
 		render_object.Draw(queued*6);
-		
-		this.render_object.Unbind();
 	}
 
 	/**

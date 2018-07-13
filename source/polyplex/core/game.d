@@ -112,6 +112,14 @@ public abstract class Game {
 	public @property GameTime TotalTime() { return times.TotalTime; }
 	public @property GameTime DeltaTime() { return times.DeltaTime; }
 
+	public @property bool ShowCursor() {
+		return (SDL_ShowCursor(SDL_QUERY) == SDL_ENABLE);
+	}
+
+	public @property void ShowCursor(bool value) {
+		SDL_ShowCursor(cast(int)value);
+	}
+
 	public @property bool AudioEnabled() {
 		return !(DefaultAudioDevice is null);
 	}
