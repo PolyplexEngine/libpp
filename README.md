@@ -31,65 +31,7 @@ From libpp it can be accessed via `ContentManager.Load<Type>("my_file")`
 ## libpp
 Example of simple polyplex application:
 ```d
-import polyplex;
-import polyplex.math;
-import polyplex.core;
-import std.conv;
-
-void main(string[] args) {
-  // Show info logs.
-  LogLevel |= LogType.Info;
-  
-  // libpp now has a simple game launcher
-  // It will automatically choose the graphics API most suitable.
-  BasicGameLauncher.InitSDL();
-  
-  //When using the ~master build, use --opengl since vulkan support is not done yet.
-  BasicGameLauncher.LaunchGame(new Game1(), ["--opengl"] ~ args);
-}
-
-class Game1 : Game {
-  Texture2D my_texture;
-
-  // Constructor
-  this() {
-    WindowInfo inf = new WindowInfo();
-    inf.Name = "Game1";
-    inf.Bounds = new Rectangle(WindowPosition.Undefined, WindowPosition.Undefined, 1080, 1024);
-    super(inf);
-  }
-  
-  //Init is run before the game loop starts.
-  public override void Init() {
-    // Set the content root to content/
-    Content.ContentRoot = "content/";
-  }
-
-  // LoadContent is a method you can load content in, exists to split up init and content loading for more readability.
-  public override void LoadContent() {
-    my_texture = this.Content.LoadTexture("my_texture");
-  }
-  
-  //Update is run before draw in the game loop.
-  public override void Update(GameTimes game_time) {
-    // Quit game if Q is pressed.
-    if (Keyboard.GetState().IsKeyDown(Keys.Q)) this.Quit();
-    
-    //FPS counter as window title.
-    Window.Title = "FPS: " ~ to!string(AverageFPS);
-  }
-  
-  //Draw is run after the logic update of the game loop.
-  public override void Draw(GameTimes game_time) {
-  
-    //Clears color, generally put first in the Draw method.
-    Drawing.ClearColor(Color.Black);
-    
-    sprite_batch.Begin();
-    sprite_batch.Draw(my_texture, new Rectangle(0, 0, 32, 32), texture.Size, Color.White);
-    sprite_batch.End();
-  }
-}
+// Most of this is being restructured, old example is obsolete, a new one will be here soon :)
 ```
 
 You can also check out [example_game](http://git.pplex.org/Polyplex/example_game), which is used as a testbed for new libpp features/fixes.
