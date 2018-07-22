@@ -4,10 +4,13 @@ import polyplex.math;
 static import polyplex;
 
 public class RenderSurface {
+	protected string SurfaceName;
 	public bool AutoFocus = true;
 
 	// Base Constructor.
-	public this(string name);
+	public this(string name) {
+		this.SurfaceName = name;
+	}
 
 	// Backend
 	public @property polyplex.GraphicsBackend GLBackend() { return polyplex.ChosenBackend; }

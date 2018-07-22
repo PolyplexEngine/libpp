@@ -276,8 +276,6 @@ unittest {
 		[0, 0, 0, 1]
 	]);
 
-	writeln((mt4_o.Translate(Vector3(1, 1, 1))).ToString);
-	writeln((mt4_o.Translate(Vector3(1, 1, 1))).Transpose.ToString);
 	assert((mt4*mt4_o) == mt4_o, "Matrix multiplication error! should be " ~ mt4_o.ToString);
 	
 	Matrix3x3 mt3 = Matrix3x3.Identity;
