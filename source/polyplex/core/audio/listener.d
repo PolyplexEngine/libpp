@@ -11,7 +11,7 @@ public class Listener {
 	}
 	public static @property void Position(Vector3 val) {
 		this.position = val;
-		alListenerfv(AL_POSITION, val.data.ptr);
+		alListenerfv(AL_POSITION, val.ptr);
 	}
 
 	public static @property Vector3 Velocity() {
@@ -19,6 +19,6 @@ public class Listener {
 	}
 	public static @property void Velocity(Vector3 val) {
 		this.velocity = val;
-		alListenerfv(AL_VELOCITY, val.data.ptr);
+		alListenerfv(AL_VELOCITY, val.ptr);
 	}
 }

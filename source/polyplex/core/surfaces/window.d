@@ -1,4 +1,5 @@
-module polyplex.core.window;
+module polyplex.core.surfaces.window;
+import polyplex.core.rendersurface;
 import polyplex.utils.sdlbool;
 public import polyplex.core.render;
 static import polyplex;
@@ -17,17 +18,12 @@ public enum WindowPosition {
 	Undefined = 0
 }
 
-public class GameWindow {
+public class SDLGameWindow : RenderSurface {
+	private string start_title;
 	private int width;
 	private int height;
     private SDL_Window* window;
-	private string start_title;
 	private Rectangle start_bounds;
-
-	/**
-		Whenever the window should automatically focus on launch.
-	*/
-	public bool AutoFocus = false;
 
 	public @property int Width() { return this.width; }
 	public @property int Height() { return this.height; }
@@ -35,7 +31,7 @@ public class GameWindow {
 	/*
 		Gets whenever the window is visible
 	*/
-    public @property bool Visible() { return (this.window !is null); }
+    public override @property bool Visible() { return (this.window !is null); }
 
 	//Resizing
 	public @property bool AllowResizing() {
@@ -44,11 +40,6 @@ public class GameWindow {
 	}
 	public @property void AllowResizing(bool allow) { SDL_SetWindowResizable(this.window, ToSDL(allow)); }
 
-	//Vertical Syncronization
-	public @property VSyncState VSync() {
-		return Renderer.VSync;
-	}
-	public @property void VSync(VSyncState allow) { Renderer.VSync = allow; }
 
 
 	//Borderless
@@ -60,15 +51,12 @@ public class GameWindow {
 	public @property void Borderless(bool i) { SDL_SetWindowBordered(this.window, ToSDL(!i)); }
 
 	//Title
-	public @property string Title() { return to!string(SDL_GetWindowTitle(this.window)); }
-	public @property void Title(string t) { return SDL_SetWindowTitle(this.window, t.toStringz); }
+	public override @property string Title() { return to!string(SDL_GetWindowTitle(this.window)); }
+	public override @property void Title(string value) { return SDL_SetWindowTitle(this.window, value.toStringz); }
 
 	//Brightness
 	public @property float Brightness() { return SDL_GetWindowBrightness(this.window); }
 	public @property void Brightness(float b) { SDL_SetWindowBrightness(this.window, b); }
-
-	//Backend
-	public @property polyplex.GraphicsBackend GLBackend() { return polyplex.ChosenBackend; }
 
 	//Fullscreen
 	public @property bool Fullscreen() {
@@ -95,7 +83,7 @@ public class GameWindow {
 		Returns the raw placement of the window.
 		Use RealPlacement if you want your application to be dpi aware.
 	*/
-	public @property Rectangle Placement() {
+	public override @property Rectangle ClientBounds() {
 		int x, y;
 		SDL_GetWindowPosition(this.window, &x, &y);
 		return new Rectangle(x, y, width, height);
@@ -105,7 +93,7 @@ public class GameWindow {
 		Returns the position of the window.
 	*/
 	public @property Vector2 Position() {
-		Rectangle r = Placement();
+		Rectangle r = ClientBounds();
 		return Vector2(r.X, r.Y);
 	}
 
@@ -117,6 +105,7 @@ public class GameWindow {
 	}
 
     this(string name, Rectangle bounds, bool focus = true) {
+		super(name);
         if (!SDL_Init(SDL_INIT_EVERYTHING) < 0) {
             Logger.Fatal("Initialization of SDL2 failed!...\n{0}", SDL_GetError());
         }
@@ -153,14 +142,14 @@ public class GameWindow {
 	/**
 		Triggers an window info update.
 	*/
-	void UpdateInfo() {
+	override void UpdateState() {
 		SDL_GetWindowSize(this.window, &this.width, &this.height);
 	}
 
 	/**
 		Closes the window.
 	*/
-	void Close() {
+	override void Close() {
 		SDL_DestroyWindow(this.window);
 		//Explicitly destroy window.
 		destroy(this.window);
@@ -184,7 +173,7 @@ public class GameWindow {
 	/**
 		Shows the window.
 	*/
-    void Show() {
+    override void Show() {
 		Logger.Debug("Spawning window...");
 		if (polyplex.ChosenBackend == polyplex.GraphicsBackend.Vulkan) this.window = SDL_CreateWindow(this.start_title.dup.ptr, this.start_bounds.X, this.start_bounds.Y, this.start_bounds.Width, this.start_bounds.Height, SDL_WINDOW_VULKAN);
 		else this.window = SDL_CreateWindow(this.start_title.toStringz, this.start_bounds.X, this.start_bounds.Y, this.start_bounds.Width, this.start_bounds.Height, SDL_WINDOW_OPENGL);

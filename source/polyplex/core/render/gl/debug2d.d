@@ -82,7 +82,7 @@ public class GlDebugging2D {
 		create_buffer_points(dot_points, color);
 		buff.UpdateBuffer();
 		shader.Attach();
-		shader.SetUniform(matr_indx, cm.Project(Renderer.Window.Width, Renderer.Window.Height) * cm.Matrix);
+		shader.SetUniform(matr_indx, cm.Project(Renderer.Surface.ClientBounds.Width, Renderer.Surface.ClientBounds.Height) * cm.Matrix);
 		buff.Draw(0, DrawType.Points);
 		buff.Unbind();
 		shader.Detach();
@@ -99,7 +99,7 @@ public class GlDebugging2D {
 		create_buffer_line(line_points, color);
 		buff.UpdateBuffer();
 		shader.Attach();
-		shader.SetUniform(matr_indx, cm.Project(Renderer.Window.Width, Renderer.Window.Height) * cm.Matrix);
+		shader.SetUniform(matr_indx, cm.Project(Renderer.Surface.ClientBounds.Width, Renderer.Surface.ClientBounds.Height) * cm.Matrix);
 		buff.Draw(0, DrawType.Lines);
 		buff.Unbind();
 		shader.Detach();
@@ -112,7 +112,7 @@ public class GlDebugging2D {
 		create_buffer(rect, color);
 		buff.UpdateBuffer();
 		shader.Attach();
-		shader.SetUniform(matr_indx, cm.Project(Renderer.Window.Width, Renderer.Window.Height) * cm.Matrix);
+		shader.SetUniform(matr_indx, cm.Project(Renderer.Surface.ClientBounds.Width, Renderer.Surface.ClientBounds.Height) * cm.Matrix);
 		buff.Draw(0, DrawType.LineStrip);
 		buff.Unbind();
 		shader.Detach();
@@ -125,7 +125,7 @@ public class GlDebugging2D {
 		create_buffer(rect, color);
 		buff.UpdateBuffer();
 		shader.Attach();
-		shader.SetUniform(matr_indx, cm.Project(Renderer.Window.Width, Renderer.Window.Height) * cm.Matrix);
+		shader.SetUniform(matr_indx, cm.Project(Renderer.Surface.ClientBounds.Width, Renderer.Surface.ClientBounds.Height) * cm.Matrix);
 		buff.Draw();
 		shader.Detach();
 		buff.Unbind();

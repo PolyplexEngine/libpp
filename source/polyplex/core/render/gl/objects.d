@@ -130,7 +130,7 @@ struct VertexBuffer(T, Layout layout) {
 
 			// Check if it's a valid type for the VBO buffer.
 			mixin(q{ alias M = T.{0}; }.Format(member));
-			static assert(ValidBufferType!(typeof(M)), "Invalid buffer value <{0}>, may only contain: float, vector2, vector3 and vector4s!".Format(member));
+			static assert(ValidBufferType!(typeof(M)), "Invalid buffer value <{0}>, may only contain: float, vector2, vector3 and vector4s! (contains {1})".Format(member, typeof(M).stringof));
 
 			if (layout == Layout.Seperated) {
 				Bind(iterator+1);

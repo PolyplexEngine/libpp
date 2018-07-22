@@ -1,7 +1,8 @@
 module polyplex.core.game;
 
 import polyplex.math;
-import polyplex.core.window;
+import polyplex.core.rendersurface;
+import polyplex.core.surfaces.window;
 import polyplex.core.render;
 import polyplex.core.input;
 import polyplex.core.events;
@@ -94,7 +95,7 @@ public class GameTimes {
 
 public abstract class Game {
 	//Private properties
-	private GameWindow window;
+	private RenderSurface surface;
 	private GameEventSystem events;
 	private GameTimes times;
 	private static uint MAX_SAMPLES = 100;
@@ -148,32 +149,26 @@ public abstract class Game {
 		return delta_frames;
 	}
 
-	public @property GameWindow Window() { return window; }
+	public @property RenderSurface Surface() { return surface; }
 
-	this(string title, Rectangle bounds, bool audio = true) {
-		window = new GameWindow(title, bounds);
-		events = new GameEventSystem();
-		enable_audio = audio;
-	}
-	 
-	this(Rectangle bounds, bool audio = true) {
-		window = new GameWindow(bounds);
+	this(RenderSurface plane, bool audio = true) {
+		surface = plane;
 		events = new GameEventSystem();
 		enable_audio = audio;
 	}
 
 	this(bool audio = true) {
-		window = new GameWindow();
+		surface = new SDLGameWindow(new Rectangle(0, 0, 0, 0), false);
 		events = new GameEventSystem();
 		enable_audio = audio;
 	}
 
 	~this() {
-		destroy(window);
+		destroy(surface);
 	}
 
 	public void Run() {
-		window.Show();
+		surface.Show();
 		do_update();
 	}
 
@@ -181,18 +176,18 @@ public abstract class Game {
 		//Preupdate before init, just in case some event functions are use there.
 		events.Update();
 
-		//Wait for window to open.
+		//Wait for surface to open.
 		Logger.Debug("~~~ Init ~~~");
-		while (!window.Visible) {}
+		while (!surface.Visible) {}
 
-		//Update window info.
-		window.UpdateInfo();
+		//Update surface info.
+		surface.UpdateState();
 		events.OnExitRequested ~= (void* sender, EventArgs data) {
-			window.Close();
+			surface.Close();
 		};
 
 		events.OnWindowSizeChanged ~= (void* sender, EventArgs data) {
-			window.UpdateInfo();
+			surface.UpdateState();
 			Renderer.AdjustViewport();
 			OnWindowSizeChanged(sender, data);
 		};
@@ -209,7 +204,7 @@ public abstract class Game {
 		Init();
 		LoadContent();
 		Logger.Debug("~~~ Gameloop ~~~");
-		while (window.Visible) {
+		while (surface.Visible) {
 			//FPS begin counting.
 			start_frames = SDL_GetTicks();
 			times.TotalTime.BaseValue = start_frames;
@@ -222,8 +217,8 @@ public abstract class Game {
 			Update(times);
 			Draw(times);
 
-			// Exit the game if the window is closed.
-			if (!window.Visible) break;
+			// Exit the game if the surface is closed.
+			if (!surface.Visible) break;
 
 			//Swap buffers and chain.
 			if (sprite_batch !is null) sprite_batch.SwapChain();
@@ -258,7 +253,7 @@ public abstract class Game {
     	}
 
 	public void Quit() {
-		this.window.Close();
+		this.surface.Close();
 	}
 
 	public abstract void Init();

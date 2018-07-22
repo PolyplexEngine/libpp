@@ -1,5 +1,5 @@
-module polyplex.math.quaternion;
-import polyplex.math.vector;
+module polyplex.math.glmath.quaternion;
+import polyplex.math.glmath.vector;
 static import Mathf = polyplex.math.mathf;
 
 import std.traits;

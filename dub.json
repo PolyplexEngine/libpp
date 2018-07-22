@@ -71,6 +71,16 @@
 			"importPaths": [ "modules/pp-derelict-vulkan/source" ]
 		}
 	],
+	"configurations": [
+		{
+			"name": "simplemath",
+			"versions": ["SIMPLE_MATH"]
+		},
+		{
+			"name": "glmath",
+			"versions": ["GL_MATH"]
+		}
+	],
 	"dependencies": {
 		"colorize": "~>1.0.5",
 		"sharpevents": "~>1.0.0",

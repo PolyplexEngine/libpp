@@ -2,7 +2,7 @@
 module polyplex.core.render.vk;
 import polyplex.core.render;
 import polyplex.core.render.vk.vk;
-import polyplex.core.window;
+import polyplex.core.rendersurface;
 import polyplex.core.color;
 import polyplex.math;
 
@@ -15,7 +15,7 @@ public import polyplex.core.render.vk.shader;
 
 public class VkRenderer : BackendRenderer {
 
-	this(GameWindow parent) { super(parent); }
+	this(RenderSurface parent) { super(parent); }
 	
 	public override void Init(SDL_Window* w) {
 		writeln("Heyo!");

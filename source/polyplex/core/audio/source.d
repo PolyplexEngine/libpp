@@ -122,30 +122,30 @@ public class AudioSource {
 	*/
 	public @property Vector3 Position() {
 		Vector3 v = 0f;
-		alGetSourcefv(Id, AL_POSITION, v.data.ptr);
+		alGetSourcefv(Id, AL_POSITION, v.ptr);
 		return v;
 	}
-	public @property void Position(Vector3 val) { alSourcefv(Id, AL_POSITION, val.data.ptr); }
+	public @property void Position(Vector3 val) { alSourcefv(Id, AL_POSITION, val.ptr); }
 
 	/*
 		VELOCITY
 	*/
 	public @property Vector3 Velocity() {
 		Vector3 v = 0f;
-		alGetSourcefv(Id, AL_VELOCITY, v.data.ptr);
+		alGetSourcefv(Id, AL_VELOCITY, v.ptr);
 		return v;
 	}
-	public @property void Velocity(Vector3 val) { alSourcefv(Id, AL_VELOCITY, val.data.ptr); }
+	public @property void Velocity(Vector3 val) { alSourcefv(Id, AL_VELOCITY, val.ptr); }
 
 	/*
 		DIRECTION
 	*/
 	public @property Vector3 Direction() {
 		Vector3 v = 0f;
-		alGetSourcefv(Id, AL_DIRECTION, v.data.ptr);
+		alGetSourcefv(Id, AL_DIRECTION, v.ptr);
 		return v;
 	}
-	public @property void Direction(Vector3 val) { alSourcefv(Id, AL_DIRECTION, val.data.ptr); }
+	public @property void Direction(Vector3 val) { alSourcefv(Id, AL_DIRECTION, val.ptr); }
 
 	/*
 		LOOPING

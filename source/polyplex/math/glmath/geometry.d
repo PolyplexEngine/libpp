@@ -1,5 +1,5 @@
-module polyplex.math.geometry;
-import polyplex.math.vector;
+module polyplex.math.glmath.geometry;
+import polyplex.math.glmath.vector;
 
 alias Ray2D = RayT!float2;
 alias Ray = RayT!float3;

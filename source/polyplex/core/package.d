@@ -2,7 +2,7 @@ module polyplex.core;
 
 public import polyplex.core.game;
 public import polyplex.core.render;
-public import polyplex.core.window;
+public import polyplex.core.rendersurface;
 public import polyplex.core.locale;
 public import polyplex.core.input;
 public import polyplex.core.content;
@@ -25,7 +25,7 @@ public class BasicGameLauncher
 		ChosenBackend = GraphicsBackend.Vulkan;
 		foreach (arg; args) {
 			if (arg == "--no-autofocus") {
-				game.Window.AutoFocus = false;
+				game.Surface.AutoFocus = false;
 			}
 			if (arg == "--vulkan") {
 				ChosenBackend = GraphicsBackend.Vulkan;
@@ -67,7 +67,7 @@ public class BasicGameLauncher
 	}
 
 	public static void LaunchGame(Game g, string[] args) {
-		Logger.Debug("Launching {0} with args {1}...", g.Window.Title, args);
+		Logger.Debug("Launching {0} with args {1}...", g.Surface.Title, args);
 		launch(g, args);
 	}
 }

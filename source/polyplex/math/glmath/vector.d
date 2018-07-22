@@ -1,4 +1,4 @@
-module polyplex.math.vector;
+module polyplex.math.glmath.vector;
 import std.math, std.traits, std.string;
 
 private bool ProperVectorBinaryOperation(string op) {
@@ -272,8 +272,6 @@ alias vec2 = Vector2T!float;
 alias vec2i = Vector2T!int;
 alias float2 = Vector2T!float;
 alias int2 = Vector2T!int;
-alias Vector2 = Vector2T!float;
-alias Vector2i = Vector2T!int;
 
 struct Vector(T, int _Dim:2) {
 	public T[2] data = [0, 0];
@@ -305,8 +303,6 @@ alias vec3 = Vector3T!float;
 alias vec3i = Vector3T!int;
 alias float3 = Vector3T!float;
 alias int3 = Vector3T!int;
-alias Vector3 = Vector3T!float;
-alias Vector3i = Vector3T!int;
 
 struct Vector(T, int _Dim:3) {
 	public T[3] data = [0, 0, 0];
@@ -345,8 +341,6 @@ alias vec4 = Vector4T!float;
 alias vec4i = Vector4T!int;
 alias float4 = Vector4T!float;
 alias int4 = Vector4T!int;
-alias Vector4 = Vector4T!float;
-alias Vector4i = Vector4T!int;
 
 struct Vector(T, int _Dim:4) {
 	public T[4] data = [0, 0, 0, 0];

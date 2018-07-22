@@ -4723,7 +4723,7 @@ public class Color {
 	public static @property Color Transparent() { return new Color(0x00000000); }
 
 	private Vector4i coldata;
-	public @property Vector4i GLColor() { return coldata; };
+	public @property Vector4i GLColor() { return coldata; }
 
 	public @property int R() { return coldata.X; }
 	public @property void R(int r) { coldata.X = r; }

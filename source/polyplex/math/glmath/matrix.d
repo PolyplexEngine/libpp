@@ -1,5 +1,6 @@
-module polyplex.math.matrix;
-import polyplex.math;
+module polyplex.math.glmath.matrix;
+import polyplex.math.glmath.vector;
+import polyplex.math.glmath.quaternion;
 import std.conv;
 import std.stdio;
 
@@ -30,7 +31,7 @@ struct Matrix(int Dimensions) {
 	}
 
 	static if (Dimensions == 4)
-	public static GMatrix Scaling(Vector3 scale_vec) {
+	public static GMatrix Scaling(float3 scale_vec) {
 		GMatrix i = GMatrix.Identity;
 		i.data[0][0] = scale_vec.X;
 		i.data[1][1] = scale_vec.Y;

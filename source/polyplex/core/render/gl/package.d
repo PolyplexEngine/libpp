@@ -2,7 +2,7 @@ module polyplex.core.render.gl;
 public import polyplex.core.render.gl.batch;
 public import polyplex.core.render.gl.debug2d;
 import polyplex.core.render;
-import polyplex.core.window;
+import polyplex.core.rendersurface;
 import polyplex.core.color;
 import polyplex.utils;
 import polyplex.math;
@@ -15,11 +15,13 @@ import std.stdio;
 
 public import polyplex.core.render.gl.shader;
 
+// TODO: Remove SDL dependency from this.
+
 public class GlRenderer : BackendRenderer {
 	private SDL_Window* win;
 	private SDL_GLContext context;
 
-	this(GameWindow parent) { super(parent); }
+	this(RenderSurface parent) { super(parent); }
 
 	~this() {
 		SDL_GL_DeleteContext(context);
@@ -61,7 +63,7 @@ public class GlRenderer : BackendRenderer {
 	}
 
 	public override void AdjustViewport() {
-		glViewport(0, 0, Window.Width, Window.Height);
+		glViewport(0, 0, Surface.ClientBounds.Width, Surface.ClientBounds.Height);
 	}
 
 	public override void ClearColor(Color color) {

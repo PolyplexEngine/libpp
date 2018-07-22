@@ -8,7 +8,7 @@ import polyplex.core.render.simplefont;
 import polyplex.core.content;
 import polyplex.core.color;
 import polyplex.core.content;
-import polyplex.core.window;
+import polyplex.core.rendersurface;
 import polyplex.math;
 import derelict.sdl2.sdl;
 import polyplex.math;
@@ -23,15 +23,15 @@ public enum VSyncState {
 
 public class Renderer {
 	private static BackendRenderer BGRend;
-	public static GameWindow Window;
+	public static RenderSurface Surface;
 
 	/**
 		Backend function, run automatically, no need to invoke it manually. c:
 	*/
-	public static void AssignRenderer(GameWindow parent, SDL_Window* win) {
+	public static void AssignRenderer(RenderSurface parent, SDL_Window* win) {
 		BGRend = CreateBackendRenderer(parent);
 		BGRend.Init(win);
-		Window = parent;
+		Surface = parent;
 	}
 
 	public static void ClearColor(Color color) {
@@ -71,10 +71,10 @@ public class Renderer {
 
 public class BackendRenderer {
 	public SpriteBatch Batch;
-	public GameWindow Window;
+	public RenderSurface Surface;
 
-	this(GameWindow parent) {
-		this.Window = parent;
+	this(RenderSurface parent) {
+		this.Surface = parent;
 	}
 
 	public abstract void Init(SDL_Window* win);
@@ -227,7 +227,7 @@ class ShaderCode {
 	}
 }
 
-public BackendRenderer CreateBackendRenderer(GameWindow parent) {
+public BackendRenderer CreateBackendRenderer(RenderSurface parent) {
 	if (ChosenBackend == GraphicsBackend.Vulkan) return new VkRenderer(parent);
 	return new GlRenderer(parent);
 }
