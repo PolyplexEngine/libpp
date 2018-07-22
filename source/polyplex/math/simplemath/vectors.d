@@ -11,40 +11,43 @@ public struct Vector2T(T) if (isNumeric!(T)) {
 	private alias GVector = typeof(this);
 	public alias Type = T;
 	enum Dimensions = 2;
-	private T[2] data;
+
+	/**
+		Due to https://issues.dlang.org/show_bug.cgi?id=8006 this has to be flipped like this
+
+		TOOD: Replace with getter/setter structure once https://github.com/dlang/dmd/pull/7079 is merged.
+	**/
+	private @property T[Dimensions] data() {
+		return [X, Y];
+	}
 	
-	/**
-		Creates a new Vector2 of type (T), in which initial values are X and Y.
-	*/
-	public this(T x, T y) {
-		data[0] = x;
-		data[1] = y;
+	private @property void data(T[Dimensions] data) {
+		X = data[0];
+		Y = data[1];
 	}
 
-	/**
-		Creates a new Vector2 of type (T), in which all initial values are X.
-	*/
-	public this(T x) {
-		data[0] = x;
-		data[1] = x;
+	/// The X component
+	public T X = 0;
+
+	/// The Y component
+	public T Y = 0;
+
+	/// Constructor
+	this(T x) {
+		this.X = x;
+		this.Y = x;
 	}
 
-	/**
-		The X component.	
-	*/
-	public T X() { return data[0]; }
-	public void X(T value) { data[0] = value; }
-		
-	/**
-		The Y component.	
-	*/
-	public T Y() { return data[1]; }
-	public void Y(T value) { data[1] = value; }
+	/// Constructor
+	this(T x, T y) {
+		this.X = x;
+		this.Y = y;
+	}
 
 	/**
 		Pointer to the underlying array data.
 	*/
-	public T* ptr() { return data.ptr; }
+	public T* ptr() { return &X; }
 
 	// Binary actions.
 	public GVector opBinary(string op, T2)(T2 other) if (IsVector!T2) { 
@@ -148,57 +151,56 @@ public struct Vector3T(T) if (isNumeric!T) {
 	private alias GVector = typeof(this);
 	public alias Type = T;
 	enum Dimensions = 3;
-	private T[3] data;
+
+	/**
+		Due to https://issues.dlang.org/show_bug.cgi?id=8006 this has to be flipped like this
+
+		TOOD: Replace with getter/setter structure once https://github.com/dlang/dmd/pull/7079 is merged.
+	**/
+	private @property T[Dimensions] data() {
+		return [X, Y, Z];
+	}
 	
-	/**
-		Creates a new Vector3 of type (T), in which initial values are X, Y and Z.
-	*/
-	public this(T x, T y, T z) {
-		data[0] = x;
-		data[1] = y;
-		data[2] = z;
-	}	
-
-	/**
-		Creates a new Vector3 of type (T), in which initial values are X, Y and 0.
-	*/
-	public this(T x, T y) {
-		data[0] = x;
-		data[1] = y;
-		data[2] = 0;
+	private @property void data(T[Dimensions] data) {
+		X = data[0];
+		Y = data[1];
+		Z = data[2];
 	}
 
-	/**
-		Creates a new Vector3 of type (T), in which all initial values are X.
-	*/
-	public this(T x) {
-		data[0] = x;
-		data[1] = x;
-		data[2] = x;
+	/// The X component
+	public T X = 0;
+
+	/// The Y component
+	public T Y = 0;
+
+	// The Z component
+	public T Z = 0;
+
+	/// Constructor
+	this(T x) {
+		this.X = x;
+		this.Y = x;
+		this.Z = 0;
 	}
 
-	/**
-		The X component.	
-	*/
-	public T X() { return data[0]; }
-	public void X(T value) { data[0] = value; }
-		
-	/**
-		The Y component.	
-	*/
-	public T Y() { return data[1]; }
-	public void Y(T value) { data[1] = value; }
+	/// Constructor
+	this(T x, T y) {
+		this.X = x;
+		this.Y = y;
+		this.Z = 0;
+	}
 
-	/**
-		The Z component.	
-	*/
-	public T Z() { return data[2]; }
-	public void Z(T value) { data[2] = value; }
+	/// Constructor
+	this(T x, T y, T z) {
+		this.X = x;
+		this.Y = y;
+		this.Z = z;
+	}
 
 	/**
 		Pointer to the underlying array data.
 	*/
-	public T* ptr() { return data.ptr; }
+	public T* ptr() { return &X; }
 
 	/**
 		Generic opBinary operation for Vectors.
@@ -309,76 +311,71 @@ public struct Vector4T(T) if (isNumeric!(T)) {
 	private alias GVector = typeof(this);
 	public alias Type = T;
 	enum Dimensions = 4;
-	private T[4] data;
-	
-	/**
-		Creates a new Vector4 of type (T), in which initial values are X, Y, Z and W.
-	*/
-	public this(T x, T y, T z, T w) {
-		data[0] = x;
-		data[1] = y;
-		data[2] = z;
-		data[3] = w;
-	}	
-	
-	/**
-		Creates a new Vector4 of type (T), in which initial values are X, Y, Z and 0.
-	*/
-	public this(T x, T y, T z) {
-		data[0] = x;
-		data[1] = y;
-		data[2] = z;
-		data[3] = 0;
-	}	
 
 	/**
-		Creates a new Vector4 of type (T), in which initial values are X, Y, 0 and 0.
-	*/
-	public this(T x, T y) {
-		data[0] = x;
-		data[1] = y;
-		data[2] = 0;
-		data[3] = 0;
+		Due to https://issues.dlang.org/show_bug.cgi?id=8006 this has to be flipped like this
+
+		TOOD: Replace with getter/setter structure once https://github.com/dlang/dmd/pull/7079 is merged.
+	**/
+	private @property T[Dimensions] data() {
+		return [X, Y, Z, W];
 	}
 
-	/**
-		Creates a new Vector4 of type (T), in which all initial values are X.
-	*/
-	public this(T x) {
-		data[0] = x;
-		data[1] = x;
-		data[2] = x;
-		data[3] = x;
+	private @property void data(T[Dimensions] data) {
+		X = data[0];
+		Y = data[1];
+		Z = data[2];
+		W = data[3];
 	}
 
-	/**
-		The X component.	
-	*/
-	public T X() { return data[0]; }
-	public void X(T value) { data[0] = value; }
-		
-	/**
-		The Y component.	
-	*/
-	public T Y() { return data[1]; }
-	public void Y(T value) { data[1] = value; }
+	/// The X component
+	public T X = 0;
 
-	/**
-		The Z component.	
-	*/
-	public T Z() { return data[2]; }
-	public void Z(T value) { data[2] = value; }
+	/// The Y component
+	public T Y = 0;
 
-	/**
-		The W component.	
-	*/
-	public T W() { return data[3]; }
-	public void W(T value) { data[3] = value; }
+	// The Z component
+	public T Z = 0;
+
+	// The W component
+	public T W = 0;
+
+	/// Constructor
+	this(T x) {
+		this.X = x;
+		this.Y = x;
+		this.Z = 0;
+		this.W = 0;
+	}
+
+	/// Constructor
+	this(T x, T y) {
+		this.X = x;
+		this.Y = y;
+		this.Z = 0;
+		this.W = 0;
+	}
+
+	/// Constructor
+	this(T x, T y, T z) {
+		this.X = x;
+		this.Y = y;
+		this.Z = z;
+		this.W = 0;
+	}
+
+	/// Constructor
+	this(T x, T y, T z, T w) {
+		this.X = x;
+		this.Y = y;
+		this.Z = z;
+		this.W = w;
+	}
 
 	/**
 		Pointer to the underlying array data.
 	*/
-	public T* ptr() { return data.ptr; }
+	public T* ptr() { return &X; }
 	
 	/**
 		Generic opBinary operation for Vectors.
