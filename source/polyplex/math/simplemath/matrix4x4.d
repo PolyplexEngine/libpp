@@ -3,6 +3,7 @@ import polyplex.math.simplemath;
 import polyplex.math;
 import std.conv;
 
+// TODO: Redo implementation
 public struct Matrix4x4 {
 	private float[4][4] data;
 

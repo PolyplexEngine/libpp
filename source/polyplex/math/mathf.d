@@ -209,9 +209,27 @@ T HermiteInterpolation(T)(T x, T y, T z, T w, float a, float tension, float bias
 
 	return cast(T)(a_x*y + a_y*m_y + a_z*m_z + a_w*z);
 }
+
 unittest {
 	assert(__traits(compiles, HermiteInterpolation(0, 1, 2, 3, 0.5f, 0.2f, 0f)));
 	assert(__traits(compiles, HermiteInterpolation(0f, 1f, 2f, 3f, 0.5f, 0.2f, 0f)));
 }
 
+/**
+	Smoothstep Interpolation.
+	Params:
+		Low = the low value
+		High = the high value
+		X = the point between the values
+	Returns:
+		A smoothed value.
+**/
+T SmoothStepInterpolation(T)(T low, T high, T x) {
+	T o = Clamp((x-low) / (high - low), 0.0f, 1.0f);
+	return o * o * ( 3 - 2 * o);
+}
 
+unittest {
+	assert(__traits(compiles, SmoothStepInterpolation(0f, 1f, 0.5f)));
+	assert(__traits(compiles, SmoothStepInterpolation(1f, 0f, 0.5f)));
+}
