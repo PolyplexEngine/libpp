@@ -2,6 +2,7 @@ module polyplex.math.simplemath.vectors;
 import polyplex.utils.strutils;
 import std.math, std.traits, std.string;
 import polyplex.math.simplemath;
+static import Mathf = polyplex.math.mathf;
 
 /**
 	A 2 dimensional vector.
@@ -9,7 +10,7 @@ import polyplex.math.simplemath;
 public struct Vector2T(T) if (isNumeric!(T)) {
 	private alias GVector = typeof(this);
 	public alias Type = T;
-	enum Dimensions = 3;
+	enum Dimensions = 2;
 	private T[2] data;
 	
 	/**
@@ -71,14 +72,76 @@ public struct Vector2T(T) if (isNumeric!(T)) {
 		mixin(q{this = this {0} other;}.Format(op));
 	}
 
-	public GVector Distance(GVector other) {
+	/**
+		Returns:
+			The difference between the 2 vectors.
+	**/
+	public GVector Difference(T2)(T2 other) if (IsVector!T2) {
 		return other-this;
 	}
 
+	/**
+		Returns:
+			The distance between this and another vector.
+	**/
+	public T Distance(T2)(T2 other) if (IsVector!T2) {
+		return (other-this).Length;
+	}
+
+	/**
+		Returns:
+			The length/magnitude of this vector.
+	**/
+	public T Length() {
+		T len;
+		static foreach(i; 0 .. Dimensions) {
+			len += this.data[i] * this.data[i];
+		}
+		return cast(T)Mathf.Sqrt(cast(float)len);
+	}
+
+	/**
+		Returns:
+			A normalized version of this vector.
+	**/
+	public GVector Normalize() {
+		GVector o;
+		T len = Length();
+		static foreach(i; 0 .. Dimensions) {
+			o.data[i] = this.data[i]/len;
+		}
+		return o;
+	}
+
+	/**
+		Returns:
+			Initial (zero) state of this vector.
+	**/
 	public static GVector Zero() {
 		return GVector(0, 0);
 	}
 	
+	/**
+		Returns:
+			String representation of the array.
+	**/
+	public string ToString() {
+		string o = "<";
+		static foreach(i; 0 .. Dimensions) {
+			switch(i) {
+				case (Dimensions-1):
+					o~= "{0}".Format(this.data[i]);
+					break;
+				default:
+					o ~= "{0}, ".Format(this.data[i]);
+					break;
+			}
+		}
+		return o~">";
+	}
+
+	/// Backwards compatiblity with glmath.
+	alias toString = ToString;
 }
 
 public struct Vector3T(T) if (isNumeric!T) {
@@ -170,13 +233,76 @@ public struct Vector3T(T) if (isNumeric!T) {
 		mixin(q{this = this {0} other;}.Format(op));
 	}
 
-	public Vector3T!(T) Distance(Vector3T!(T) other) {
+	/**
+		Returns:
+			The difference between the 2 vectors.
+	**/
+	public GVector Difference(T2)(T2 other) if (IsVector!T2) {
 		return other-this;
 	}
 
+	/**
+		Returns:
+			The distance between this and another vector.
+	**/
+	public T Distance(T2)(T2 other) if (IsVector!T2) {
+		return (other-this).Length;
+	}
+
+	/**
+		Returns:
+			The length/magnitude of this vector.
+	**/
+	public T Length() {
+		T len;
+		static foreach(i; 0 .. Dimensions) {
+			len += this.data[i] * this.data[i];
+		}
+		return cast(T)Mathf.Sqrt(cast(float)len);
+	}
+
+	/**
+		Returns:
+			A normalized version of this vector.
+	**/
+	public GVector Normalize() {
+		GVector o;
+		T len = Length();
+		static foreach(i; 0 .. Dimensions) {
+			o.data[i] = this.data[i]/len;
+		}
+		return o;
+	}
+
+	/**
+		Returns:
+			Initial (zero) state of this vector.
+	**/
 	public static Vector3T!(T) Zero() {
 		return Vector3T!(T)(0, 0, 0);
 	}
+
+	/**
+		Returns:
+			String representation of the array.
+	**/
+	public string ToString() {
+		string o = "<";
+		static foreach(i; 0 .. Dimensions) {
+			switch(i) {
+				case (Dimensions-1):
+					o~= "{0}".Format(this.data[i]);
+					break;
+				default:
+					o ~= "{0}, ".Format(this.data[i]);
+					break;
+			}
+		}
+		return o~">";
+	}
+	
+	/// Backwards compatiblity with glmath.
+	alias toString = ToString;
 }
 
 public struct Vector4T(T) if (isNumeric!(T)) {
@@ -272,9 +398,9 @@ public struct Vector4T(T) if (isNumeric!(T)) {
 	}
 	
 	// Binary actions numeric.
-	public Vector4T!(T) opBinary(string op)(T other) if (isNumeric!(T)) {
+	public GVector opBinary(string op)(T other) if (isNumeric!(T)) {
 		mixin(q{
-			return Vector2T!({0})(
+			return GVector(
 				this.X {1} other, 
 				this.Y {1} other, 
 				this.Z {1} other, 
@@ -288,13 +414,76 @@ public struct Vector4T(T) if (isNumeric!(T)) {
 		mixin(q{this = this {0} other;}.Format(op));
 	}
 
-	public Vector4T!(T) Distance(Vector4T!(T) other) {
+	/**
+		Returns:
+			The difference between the 2 vectors.
+	**/
+	public GVector Difference(T2)(T2 other) if (IsVector!T2) {
 		return other-this;
 	}
 
-	public static Vector4T!(T) Zero() {
-		return Vector4T!(T)(0, 0, 0, 0);
+	/**
+		Returns:
+			The distance between this and another vector.
+	**/
+	public T Distance(T2)(T2 other) if (IsVector!T2) {
+		return (other-this).Length;
 	}
+
+	/**
+		Returns:
+			The length/magnitude of this vector.
+	**/
+	public T Length() {
+		T len;
+		static foreach(i; 0 .. Dimensions) {
+			len += this.data[i] * this.data[i];
+		}
+		return cast(T)Mathf.Sqrt(cast(float)len);
+	}
+
+	/**
+		Returns:
+			A normalized version of this vector.
+	**/
+	public GVector Normalize() {
+		GVector o;
+		T len = Length();
+		static foreach(i; 0 .. Dimensions) {
+			o.data[i] = this.data[i]/len;
+		}
+		return o;
+	}
+
+	/**
+		Returns:
+			Initial (zero) state of this vector.
+	**/
+	public static GVector Zero() {
+		return GVector(0, 0, 0, 0);
+	}
+
+	/**
+		Returns:
+			String representation of the array.
+	**/
+	public string ToString() {
+		string o = "<";
+		static foreach(i; 0 .. Dimensions) {
+			switch(i) {
+				case (Dimensions-1):
+					o~= "{0}".Format(this.data[i]);
+					break;
+				default:
+					o ~= "{0}, ".Format(this.data[i]);
+					break;
+			}
+		}
+		return o~">";
+	}
+	
+	/// Backwards compatiblity with glmath.
+	alias toString = ToString;
 }
 
 // Copied from the GLMath implementation, checks if T is a Vector2T
