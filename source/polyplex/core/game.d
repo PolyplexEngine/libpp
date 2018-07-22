@@ -2,7 +2,7 @@ module polyplex.core.game;
 
 import polyplex.math;
 import polyplex.core.rendersurface;
-import polyplex.core.surfaces.window;
+import polyplex.core.surfaces;
 import polyplex.core.render;
 import polyplex.core.input;
 import polyplex.core.events;

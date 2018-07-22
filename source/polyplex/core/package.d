@@ -7,6 +7,8 @@ public import polyplex.core.locale;
 public import polyplex.core.input;
 public import polyplex.core.content;
 public import polyplex.core.color;
+public import polyplex.core.rendersurface;
+public import polyplex.core.surfaces;
 
 import polyplex;
 import polyplex.utils;

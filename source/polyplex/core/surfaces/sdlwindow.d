@@ -1,4 +1,4 @@
-module polyplex.core.surfaces.window;
+module polyplex.core.surfaces.sdlwindow;
 import polyplex.core.rendersurface;
 import polyplex.utils.sdlbool;
 public import polyplex.core.render;

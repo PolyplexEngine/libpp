@@ -110,9 +110,9 @@ public class Camera2D : Camera {
 	public override void Update() {
 		this.matrix = Matrix4x4.Identity
 		.Translate(Vector3(-Position.X, -Position.Y, Depth))
-		//.RotateX(this.RotationX)
-		//.RotateY(this.RotationY)
-		//.RotateZ(this.Rotation)
+		.RotateX(this.RotationX)
+		.RotateY(this.RotationY)
+		.RotateZ(this.Rotation)
 		.Scale(Vector3(Zoom, Zoom, Zoom))
 		.Translate(Vector3(Origin.X, Origin.Y, Depth));
 	}
