@@ -220,7 +220,7 @@ unittest {
 	Params:
 		Low = the low value
 		High = the high value
-		X = the point between the values
+		X = the point between the values (between 0.0 and 1.0)
 	Returns:
 		A smoothed value.
 **/
