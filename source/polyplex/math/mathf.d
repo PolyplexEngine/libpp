@@ -128,8 +128,9 @@ T Lerp(T)(T x, T y, float a) pure nothrow if (__traits(isScalar, T)) {
 	a = Clamp(a, 0f, 1f);
 	return cast(T)(x*(1.0f - a) + y*a);
 }
+
 /// Alias for linear interpolation, to follow the same GLSL convention
-alias Mix = Linear;
+alias Mix = Lerp;
 
 unittest {
 	assert(Linear(0f, 1f, 0.5f) == 0.5f);
