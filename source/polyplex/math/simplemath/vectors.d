@@ -18,7 +18,7 @@ public struct Vector2T(T) if (isNumeric!(T)) {
 		TOOD: Replace with getter/setter structure once https://github.com/dlang/dmd/pull/7079 is merged.
 	**/
 	private @trusted nothrow @property T* data() {
-		return cast(T*)(this.ptr);
+		return this.ptr;
 	}
 	
 	private @property void data(T[Dimensions] data) {
@@ -158,7 +158,7 @@ public struct Vector3T(T) if (isNumeric!T) {
 		TOOD: Replace with getter/setter structure once https://github.com/dlang/dmd/pull/7079 is merged.
 	**/
 	private @trusted nothrow @property T* data() {
-		return cast(T*)(this.ptr);
+		return this.ptr;
 	}
 	
 	private @property void data(T[Dimensions] data) {
@@ -318,7 +318,7 @@ public struct Vector4T(T) if (isNumeric!(T)) {
 		TOOD: Replace with getter/setter structure once https://github.com/dlang/dmd/pull/7079 is merged.
 	**/
 	private @trusted nothrow @property T* data() {
-		return cast(T*)(this.ptr);
+		return this.ptr;
 	}
 
 	private @property void data(T[Dimensions] data) {
