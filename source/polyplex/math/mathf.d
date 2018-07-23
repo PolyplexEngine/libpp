@@ -147,7 +147,7 @@ unittest {
       details.
 **/
 T Cosine(T)(T x, T y, float a) pure nothrow if (__traits(isScalar, T)) {
-	return Linear(x, y, (1.0f - Cos(a*PI))/2.0f);
+	return Lerp(x, y, (1.0f - Cos(a*PI))/2.0f);
 }
 unittest {
 	assert(__traits(compiles, Cosine(0, 1, 0.5f)));
