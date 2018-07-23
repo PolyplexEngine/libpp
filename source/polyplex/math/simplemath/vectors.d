@@ -17,8 +17,8 @@ public struct Vector2T(T) if (isNumeric!(T)) {
 
 		TOOD: Replace with getter/setter structure once https://github.com/dlang/dmd/pull/7079 is merged.
 	**/
-	private @trusted nothrow @property T[Dimensions] data() {
-		return cast(T[Dimensions])(this.ptr[0..Dimensions]);
+	private @trusted nothrow @property T* data() {
+		return cast(T*)(this.ptr);
 	}
 	
 	private @property void data(T[Dimensions] data) {
@@ -50,7 +50,7 @@ public struct Vector2T(T) if (isNumeric!(T)) {
 	public T* ptr() { return &X; }
 
 	// Binary actions.
-	public @safe nothrow GVector opBinary(string op, T2)(T2 other) if (IsVector!T2) { 
+	public @trusted nothrow GVector opBinary(string op, T2)(T2 other) if (IsVector!T2) { 
 		// Operation on these, (due to being smallest size) can be done faster this way.
 		mixin(q{
 			return GVector(
@@ -61,7 +61,7 @@ public struct Vector2T(T) if (isNumeric!(T)) {
 	}
 
 	// Binary actions numeric.
-	public @safe nothrow GVector opBinary(string op, T2)(T2 other) if (isNumeric!(T2)) {
+	public @trusted nothrow GVector opBinary(string op, T2)(T2 other) if (isNumeric!(T2)) {
 		mixin(q{
 			return GVector(
 				this.X {0} other, 
@@ -71,7 +71,7 @@ public struct Vector2T(T) if (isNumeric!(T)) {
 	}
 
 	// Binary Action w/ assignment
-	public @safe nothrow void opOpAssign(string op, T2)(T2 other) if (isNumeric!(T2) || IsVector!(T2)) { 
+	public @trusted nothrow void opOpAssign(string op, T2)(T2 other) if (isNumeric!(T2) || IsVector!(T2)) { 
 		mixin(q{this = this {0} other;}.Format(op));
 	}
 
@@ -79,7 +79,7 @@ public struct Vector2T(T) if (isNumeric!(T)) {
 		Returns:
 			The difference between the 2 vectors.
 	**/
-	public @safe nothrow GVector Difference(T2)(T2 other) if (IsVector!T2) {
+	public @trusted nothrow GVector Difference(T2)(T2 other) if (IsVector!T2) {
 		return other-this;
 	}
 
@@ -87,7 +87,7 @@ public struct Vector2T(T) if (isNumeric!(T)) {
 		Returns:
 			The distance between this and another vector.
 	**/
-	public @safe nothrow T Distance(T2)(T2 other) if (IsVector!T2) {
+	public @trusted nothrow T Distance(T2)(T2 other) if (IsVector!T2) {
 		return (other-this).Length;
 	}
 
@@ -95,7 +95,7 @@ public struct Vector2T(T) if (isNumeric!(T)) {
 		Returns:
 			The length/magnitude of this vector.
 	**/
-	public @safe nothrow T Length() {
+	public @trusted nothrow T Length() {
 		T len;
 		static foreach(i; 0 .. Dimensions) {
 			len += this.data[i] * this.data[i];
@@ -107,7 +107,7 @@ public struct Vector2T(T) if (isNumeric!(T)) {
 		Returns:
 			A normalized version of this vector.
 	**/
-	public @safe nothrow GVector Normalize() {
+	public @trusted nothrow GVector Normalize() {
 		GVector o;
 		T len = Length();
 		static foreach(i; 0 .. Dimensions) {
@@ -157,8 +157,8 @@ public struct Vector3T(T) if (isNumeric!T) {
 
 		TOOD: Replace with getter/setter structure once https://github.com/dlang/dmd/pull/7079 is merged.
 	**/
-	private @trusted nothrow @property T[Dimensions] data() {
-		return cast(T[Dimensions])(this.ptr[0..Dimensions]);
+	private @trusted nothrow @property T* data() {
+		return cast(T*)(this.ptr);
 	}
 	
 	private @property void data(T[Dimensions] data) {
@@ -205,7 +205,7 @@ public struct Vector3T(T) if (isNumeric!T) {
 	/**
 		Generic opBinary operation for Vectors.
 	*/
-	public @safe nothrow GVector opBinary(string op, T2)(T2 other) if (IsVector!T2) {
+	public @trusted nothrow GVector opBinary(string op, T2)(T2 other) if (IsVector!T2) {
 		GVector o;
 		// Get the length of the smallest vector
 		
@@ -220,7 +220,7 @@ public struct Vector3T(T) if (isNumeric!T) {
 	}
 
 	// Binary actions numeric.
-	public @safe nothrow GVector opBinary(string op)(T other) if (isNumeric!(T)) {
+	public @trusted nothrow GVector opBinary(string op)(T other) if (isNumeric!(T)) {
 		mixin(q{
 			return GVector(
 				this.X {0} other, 
@@ -231,7 +231,7 @@ public struct Vector3T(T) if (isNumeric!T) {
 	}
 
 	// Binary Action w/ assignment
-	public @safe nothrow void opOpAssign(string op)(T other) if (isNumeric!(T) || IsVector!(T)) { 
+	public @trusted nothrow void opOpAssign(string op)(T other) if (isNumeric!(T) || IsVector!(T)) { 
 		mixin(q{this = this {0} other;}.Format(op));
 	}
 
@@ -239,7 +239,7 @@ public struct Vector3T(T) if (isNumeric!T) {
 		Returns:
 			The difference between the 2 vectors.
 	**/
-	public @safe nothrow GVector Difference(T2)(T2 other) if (IsVector!T2) {
+	public @trusted nothrow GVector Difference(T2)(T2 other) if (IsVector!T2) {
 		return other-this;
 	}
 
@@ -247,7 +247,7 @@ public struct Vector3T(T) if (isNumeric!T) {
 		Returns:
 			The distance between this and another vector.
 	**/
-	public @safe nothrow T Distance(T2)(T2 other) if (IsVector!T2) {
+	public @trusted nothrow T Distance(T2)(T2 other) if (IsVector!T2) {
 		return (other-this).Length;
 	}
 
@@ -255,7 +255,7 @@ public struct Vector3T(T) if (isNumeric!T) {
 		Returns:
 			The length/magnitude of this vector.
 	**/
-	public @safe nothrow T Length() {
+	public @trusted nothrow T Length() {
 		T len;
 		static foreach(i; 0 .. Dimensions) {
 			len += this.data[i] * this.data[i];
@@ -267,7 +267,7 @@ public struct Vector3T(T) if (isNumeric!T) {
 		Returns:
 			A normalized version of this vector.
 	**/
-	public @safe nothrow GVector Normalize() {
+	public @trusted nothrow GVector Normalize() {
 		GVector o;
 		T len = Length();
 		static foreach(i; 0 .. Dimensions) {
@@ -317,8 +317,8 @@ public struct Vector4T(T) if (isNumeric!(T)) {
 
 		TOOD: Replace with getter/setter structure once https://github.com/dlang/dmd/pull/7079 is merged.
 	**/
-	private @property T[Dimensions] data() @trusted nothrow {
-		return cast(T[Dimensions])(this.ptr[0..Dimensions]);
+	private @trusted nothrow @property T* data() {
+		return cast(T*)(this.ptr);
 	}
 
 	private @property void data(T[Dimensions] data) {
@@ -380,7 +380,7 @@ public struct Vector4T(T) if (isNumeric!(T)) {
 	/**
 		Generic opBinary operation for Vectors.
 	*/
-	public @safe nothrow GVector opBinary(string op, T2)(T2 other) if (IsVector!(T2)) {
+	public @trusted nothrow GVector opBinary(string op, T2)(T2 other) if (IsVector!(T2)) {
 		GVector o;
 		// Get the length of the smallest vector
 		
@@ -395,7 +395,7 @@ public struct Vector4T(T) if (isNumeric!(T)) {
 	}
 	
 	// Binary actions numeric.
-	public @safe nothrow GVector opBinary(string op)(T other) if (isNumeric!(T)) {
+	public @trusted nothrow GVector opBinary(string op)(T other) if (isNumeric!(T)) {
 		mixin(q{
 			return GVector(
 				this.X {1} other, 
@@ -407,7 +407,7 @@ public struct Vector4T(T) if (isNumeric!(T)) {
 	}
 
 	// Binary Action w/ assignment
-	public @safe nothrow void opOpAssign(string op, T2)(T2 other) if (isNumeric!(T2) || IsVector!(T2)) { 
+	public @trusted nothrow void opOpAssign(string op, T2)(T2 other) if (isNumeric!(T2) || IsVector!(T2)) { 
 		mixin(q{this = this {0} other;}.Format(op));
 	}
 
@@ -415,7 +415,7 @@ public struct Vector4T(T) if (isNumeric!(T)) {
 		Returns:
 			The difference between the 2 vectors.
 	**/
-	public @safe nothrow GVector Difference(T2)(T2 other) if (IsVector!T2){
+	public @trusted nothrow GVector Difference(T2)(T2 other) if (IsVector!T2){
 		return other-this;
 	}
 
@@ -423,7 +423,7 @@ public struct Vector4T(T) if (isNumeric!(T)) {
 		Returns:
 			The distance between this and another vector.
 	**/
-	public @safe nothrow T Distance(T2)(T2 other) if (IsVector!T2) {
+	public @trusted nothrow T Distance(T2)(T2 other) if (IsVector!T2) {
 		return (other-this).Length;
 	}
 
@@ -431,7 +431,7 @@ public struct Vector4T(T) if (isNumeric!(T)) {
 		Returns:
 			The length/magnitude of this vector.
 	**/
-	public @safe nothrow T Length() @safe nothrow {
+	public @trusted nothrow T Length() @trusted nothrow {
 		T len;
 		static foreach(i; 0 .. Dimensions) {
 			len += this.data[i] * this.data[i];
@@ -443,7 +443,7 @@ public struct Vector4T(T) if (isNumeric!(T)) {
 		Returns:
 			A normalized version of this vector.
 	**/
-	public @safe nothrow GVector Normalize() {
+	public @trusted nothrow GVector Normalize() {
 		GVector o;
 		T len = Length();
 		static foreach(i; 0 .. Dimensions) {
