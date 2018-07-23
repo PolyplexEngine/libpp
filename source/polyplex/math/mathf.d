@@ -124,32 +124,32 @@ T Step(T)(T edge, T a) pure nothrow if (__traits(isScalar, T)) {
           range. For example, the result of this function will equal (x+y)/2
           when `a = 0.5`
 **/
-T LinearInterpolation(T)(T x, T y, float a) pure nothrow if (__traits(isScalar, T)) {
+T Linear(T)(T x, T y, float a) pure nothrow if (__traits(isScalar, T)) {
 	a = Clamp(a, 0f, 1f);
 	return cast(T)(x*(1.0f - a) + y*a);
 }
 /// Alias for linear interpolation, to follow the same GLSL convention
-alias Mix = LinearInterpolation;
+alias Mix = Linear;
 unittest {
-	assert(LinearInterpolation(0f, 1f, 0.5f) == 0.5f);
-	assert(LinearInterpolation(0f, 2f, 0.5f) == 1.0f);
-	assert(LinearInterpolation(0f, 2f, 0.0f) == 0.0f);
-	assert(LinearInterpolation(0f, 2f, 1.0f) == 2.0f);
-	assert(LinearInterpolation(0f, 2f, 3.0f) == 2.0f);
-	assert(LinearInterpolation(0f, 2f, -1.0f) == 0.0f);
+	assert(Linear(0f, 1f, 0.5f) == 0.5f);
+	assert(Linear(0f, 2f, 0.5f) == 1.0f);
+	assert(Linear(0f, 2f, 0.0f) == 0.0f);
+	assert(Linear(0f, 2f, 1.0f) == 2.0f);
+	assert(Linear(0f, 2f, 3.0f) == 2.0f);
+	assert(Linear(0f, 2f, -1.0f) == 0.0f);
 }
 
 /** Cosine interpolation on scalar elements. It interpolates between
       two scalars `x` and `y` using a cosine-weighted `a` (this function
-      applies the cosine-weight). Check `LinearInterpolation` for more
+      applies the cosine-weight). Check `Linear` for more
       details.
 **/
-T CosineInterpolation(T)(T x, T y, float a) pure nothrow if (__traits(isScalar, T)) {
-	return LinearInterpolation(x, y, (1.0f - Cos(a*PI))/2.0f);
+T Cosine(T)(T x, T y, float a) pure nothrow if (__traits(isScalar, T)) {
+	return Linear(x, y, (1.0f - Cos(a*PI))/2.0f);
 }
 unittest {
-	assert(__traits(compiles, CosineInterpolation(0, 1, 0.5f)));
-	assert(__traits(compiles, CosineInterpolation(0f, 1f, 0.5f)));
+	assert(__traits(compiles, Cosine(0, 1, 0.5f)));
+	assert(__traits(compiles, Cosine(0f, 1f, 0.5f)));
 }
 
 /** Cube interpolation using Catmull-Rom splines on scalar elements.
@@ -157,7 +157,7 @@ unittest {
       takes `x <-> y` and `z <-> w` into account in order to offer better
       continuity between segments. Check `LinearInerpolation` for more details.
 **/
-T CubicInterpolation(T)(T x, T y, T z, T w, float a) pure nothrow if (__traits(isScalar, T)) {
+T Cubic(T)(T x, T y, T z, T w, float a) pure nothrow if (__traits(isScalar, T)) {
 	a = Clamp(a, 0f, 1f);
 	// Use slope between last and next point as derivative at current point
 	T cx = cast(T)(-0.5*x + 1.5*y - 1.5*z + 0.5*w);
@@ -167,8 +167,8 @@ T CubicInterpolation(T)(T x, T y, T z, T w, float a) pure nothrow if (__traits(i
 	return cast(T)(cx*a*a*a + cy*a*a + cz*a + cw);
 }
 unittest {
-	assert(__traits(compiles, CubicInterpolation(0, 1, 2, 3, 0.5f)));
-	assert(__traits(compiles, CubicInterpolation(0f, 1f, 2f, 3f, 0.5f)));
+	assert(__traits(compiles, Cubic(0, 1, 2, 3, 0.5f)));
+	assert(__traits(compiles, Cubic(0f, 1f, 2f, 3f, 0.5f)));
 }
 
 /** Hermite interpolation on scalar elements as described by GLSL smoothstep.
@@ -176,12 +176,10 @@ unittest {
         smooth transitions as the gradient approaches `1` or `0`. See
         `LinearInterpolation` for more details.
 **/
-T HermiteInterpolation(T)(T x, T y, float a) pure nothrow if (__traits(isScalar, T)) {
+T SmoothStep(T)(T x, T y, float a) pure nothrow if (__traits(isScalar, T)) {
 	T t = cast(T)Clamp((a - x)/(y - x), 0f, 1f);
 	return t*t*cast(T)(3f - 2f*t);
 }
-/// Alias to GLSL name for hermite interpolation
-alias Smoothstep = HermiteInterpolation;
 unittest {
 	assert(__traits(compiles, Smoothstep(0, 1, 0.5f)));
 	assert(__traits(compiles, Smoothstep(0f, 1f, 0.5f)));
@@ -195,7 +193,7 @@ unittest {
     Bias = any value from -1 to 1. 0 is no bias, -1 is biased towards first,
            segment, 1 is biased towards the last segment
 **/
-T HermiteInterpolation(T)(T x, T y, T z, T w, float a, float tension, float bias) pure nothrow if (__traits(isScalar, T)) {
+T Hermite(T)(T x, T y, T z, T w, float a, float tension, float bias) pure nothrow if (__traits(isScalar, T)) {
 	a = Clamp(a, 0f, 1f);
 	float a2 = a*a, a3 = a2*a;
 	tension = (1f - tension)/2f;
@@ -211,25 +209,6 @@ T HermiteInterpolation(T)(T x, T y, T z, T w, float a, float tension, float bias
 }
 
 unittest {
-	assert(__traits(compiles, HermiteInterpolation(0, 1, 2, 3, 0.5f, 0.2f, 0f)));
-	assert(__traits(compiles, HermiteInterpolation(0f, 1f, 2f, 3f, 0.5f, 0.2f, 0f)));
-}
-
-/**
-	Smoothstep Interpolation.
-	Params:
-		Low = the low value
-		High = the high value
-		X = the point between the values (between 0.0 and 1.0)
-	Returns:
-		A smoothed value.
-**/
-T SmoothStepInterpolation(T)(T low, T high, T x) {
-	T o = Clamp((x-low) / (high - low), 0.0f, 1.0f);
-	return o * o * ( 3 - 2 * o);
-}
-
-unittest {
-	assert(__traits(compiles, SmoothStepInterpolation(0f, 1f, 0.5f)));
-	assert(__traits(compiles, SmoothStepInterpolation(1f, 0f, 0.5f)));
+	assert(__traits(compiles, Hermite(0, 1, 2, 3, 0.5f, 0.2f, 0f)));
+	assert(__traits(compiles, Hermite(0f, 1f, 2f, 3f, 0.5f, 0.2f, 0f)));
 }

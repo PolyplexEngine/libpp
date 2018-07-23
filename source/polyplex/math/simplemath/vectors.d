@@ -17,7 +17,7 @@ public struct Vector2T(T) if (isNumeric!(T)) {
 
 		TOOD: Replace with getter/setter structure once https://github.com/dlang/dmd/pull/7079 is merged.
 	**/
-	private @trusted nothrow @property T* data() {
+	private @safe nothrow @property T* data() {
 		return this.ptr;
 	}
 	
@@ -157,7 +157,7 @@ public struct Vector3T(T) if (isNumeric!T) {
 
 		TOOD: Replace with getter/setter structure once https://github.com/dlang/dmd/pull/7079 is merged.
 	**/
-	private @trusted nothrow @property T* data() {
+	private @safe nothrow @property T* data() {
 		return this.ptr;
 	}
 	
@@ -317,7 +317,7 @@ public struct Vector4T(T) if (isNumeric!(T)) {
 
 		TOOD: Replace with getter/setter structure once https://github.com/dlang/dmd/pull/7079 is merged.
 	**/
-	private @trusted nothrow @property T* data() {
+	private @safe nothrow @property T* data() {
 		return this.ptr;
 	}
 
