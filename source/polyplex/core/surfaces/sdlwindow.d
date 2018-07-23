@@ -34,24 +34,31 @@ public class SDLGameWindow : RenderSurface {
 	*/
     public override @property bool Visible() { return (this.window !is null); }
 
-	//Resizing
+	// Resizing
 	public @property bool AllowResizing() {
 		SDL_WindowFlags flags = SDL_GetWindowFlags(window);
 		return ((flags & SDL_WINDOW_RESIZABLE) > 0);
 	}
 	public @property void AllowResizing(bool allow) { SDL_SetWindowResizable(this.window, ToSDL(allow)); }
 
+	// VSync
+	public override @property VSyncState VSync() {
+		if (ActiveBackend == GraphicsBackend.OpenGL) return cast(VSyncState)SDL_GL_GetSwapInterval();
+		return VSyncState.VSync;
+	}
 
+	public override @property void VSync(VSyncState state) {
+		if (ActiveBackend == GraphicsBackend.OpenGL) SDL_GL_SetSwapInterval(state);
+	}
 
-	//Borderless
+	// Borderless
 	public @property bool Borderless() {
 		SDL_WindowFlags flags = SDL_GetWindowFlags(window);
 		return ((flags & SDL_WINDOW_BORDERLESS) > 0);
 	}
-
 	public @property void Borderless(bool i) { SDL_SetWindowBordered(this.window, ToSDL(!i)); }
 
-	//Title
+	// Title
 	public override @property string Title() { return to!string(SDL_GetWindowTitle(this.window)); }
 	public override @property void Title(string value) { return SDL_SetWindowTitle(this.window, value.toStringz); }
 
@@ -141,15 +148,16 @@ public class SDLGameWindow : RenderSurface {
     }
 
 	override GraphicsContext CreateContext(GraphicsBackend backend) {
+		ActiveBackend = backend;
 		if (backend is GraphicsBackend.OpenGL) {
 			SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 			SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
 			SDL_GLContext context = SDL_GL_CreateContext(this.window);
 			DerelictGL3.reload();
 			if (context == null) throw new Error(to!string(SDL_GetError()));
-			return GraphicsContext(context);
+			ActiveContext = GraphicsContext(context);
+			return ActiveContext;
 		}
-		// TODO: Create an Vulkan context.
 		import polyplex.core.render.vk;
 		import derelict.vulkan;
 		import derelict.vulkan.base;
@@ -160,8 +168,11 @@ public class SDLGameWindow : RenderSurface {
 		
 		// Get list of required extensions.
 		uint arrLen;
-		const(char)** arr;
-		SDL_Vulkan_GetInstanceExtensions(this.window, &arrLen, arr);
+		const(char)*[] arr;
+		SDL_Vulkan_GetInstanceExtensions(this.window, &arrLen, null);
+
+		arr.length = arrLen;
+		SDL_Vulkan_GetInstanceExtensions(this.window, &arrLen, arr.ptr);
 
 		// Create InstanceCreateInfo.
 		VkInstanceCreateInfo createInfo = VkInstanceCreateInfo(
@@ -172,12 +183,30 @@ public class SDLGameWindow : RenderSurface {
 			0,
 			null, 
 			arrLen, 
-			arr
+			arr.ptr
 		);
 
 		// Create instance and return it.
 		vkCreateInstance(&createInfo, null, &instance);
-		return GraphicsContext(instance);
+
+		// Make 100% sure the array is destroyed.
+		// As per https://gist.github.com/rcgordon/ad23f873393423e1f1069502b92ad035
+		destroy(arr);
+		ActiveContext = GraphicsContext(instance);
+		return ActiveContext;
+	}
+
+	override void DestroyContext() {
+		if (ActiveBackend == GraphicsBackend.OpenGL) {
+			SDL_GL_DeleteContext(ActiveContext.ContextPtr);
+			Logger.Log("Deleted OpenGL context.");
+			return;
+		}
+		// TODO: Destroy vulkan context.
+	}
+
+	override void SwapBuffers() {
+		if (ActiveBackend == GraphicsBackend.OpenGL) SDL_GL_SwapWindow(this.window);
 	}
 
 	/**
@@ -218,7 +247,7 @@ public class SDLGameWindow : RenderSurface {
 		Logger.Debug("Spawning window...");
 		if (polyplex.ChosenBackend == polyplex.GraphicsBackend.Vulkan) this.window = SDL_CreateWindow(this.start_title.dup.ptr, this.start_bounds.X, this.start_bounds.Y, this.start_bounds.Width, this.start_bounds.Height, SDL_WINDOW_VULKAN);
 		else this.window = SDL_CreateWindow(this.start_title.toStringz, this.start_bounds.X, this.start_bounds.Y, this.start_bounds.Width, this.start_bounds.Height, SDL_WINDOW_OPENGL);
-		Renderer.AssignRenderer(this, this.window);
+		Renderer.AssignRenderer(this);
 		if (this.window == null) {
 			destroy(this.window);
 			Logger.Fatal("Window creation error: {0}", SDL_GetError());

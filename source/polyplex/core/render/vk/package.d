@@ -6,6 +6,7 @@ import polyplex.core.render;
 import polyplex.core.rendersurface;
 import polyplex.core.color;
 import polyplex.math;
+import polyplex;
 
 import derelict.sdl2.sdl;
 import derelict.vulkan.vulkan;
@@ -18,8 +19,8 @@ public class VkRenderer : BackendRenderer {
 
 	this(RenderSurface parent) { super(parent); }
 	
-	public override void Init(SDL_Window* w) {
-		writeln("Heyo!");
+	public override void Init() {
+		Surface.CreateContext(GraphicsBackend.Vulkan);
 	}
 
 	public override void ClearColor(Color color) {
@@ -39,10 +40,11 @@ public class VkRenderer : BackendRenderer {
 	}
 		
 	public override @property VSyncState VSync() {
-		return VSyncState.VSync;
+		return Surface.VSync;
 	}
 
 	public override @property void VSync(VSyncState state) {
+		Surface.VSync = state;
 	}
 
 	public override Shader CreateShader(ShaderCode code) {

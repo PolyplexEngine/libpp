@@ -6,6 +6,7 @@ import polyplex.core.rendersurface;
 import polyplex.core.color;
 import polyplex.utils;
 import polyplex.math;
+import polyplex;
 
 import derelict.sdl2.sdl;
 import derelict.opengl;
@@ -18,17 +19,17 @@ public import polyplex.core.render.gl.shader;
 // TODO: Remove SDL dependency from this.
 
 public class GlRenderer : BackendRenderer {
-	private SDL_Window* win;
-	private SDL_GLContext context;
 
 	this(RenderSurface parent) { super(parent); }
 
 	~this() {
-		SDL_GL_DeleteContext(context);
-		Logger.Log("Deleted OpenGL context.");
+		Surface.DestroyContext();
 	}
 
-	public override void Init(SDL_Window* w) {
+	public override void Init() {
+		// Create the neccesary rendering backend.
+		Surface.CreateContext(GraphicsBackend.OpenGL);
+
 		GlSpriteBatch.InitializeSpritebatch();
 		GlDebugging2D.PrepDebugging();
 		
@@ -49,11 +50,11 @@ public class GlRenderer : BackendRenderer {
 	}
 	
 	public override @property VSyncState VSync() {
-		return cast(VSyncState)SDL_GL_GetSwapInterval();
+		return Surface.VSync;
 	}
 
 	public override @property void VSync(VSyncState state) {
-		SDL_GL_SetSwapInterval(state);
+		Surface.VSync = state;
 	}
 
 	public override void AdjustViewport() {
@@ -71,7 +72,7 @@ public class GlRenderer : BackendRenderer {
 	}
 
 	public override void SwapBuffers() {
-		SDL_GL_SwapWindow(win);
+		Surface.SwapBuffers();
 	}
 
 	public override Shader CreateShader(ShaderCode code) {

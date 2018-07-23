@@ -28,9 +28,9 @@ public class Renderer {
 	/**
 		Backend function, run automatically, no need to invoke it manually. c:
 	*/
-	public static void AssignRenderer(RenderSurface parent, SDL_Window* win) {
+	public static void AssignRenderer(RenderSurface parent) {
 		BGRend = CreateBackendRenderer(parent);
-		BGRend.Init(win);
+		BGRend.Init();
 		Surface = parent;
 	}
 
@@ -77,7 +77,7 @@ public class BackendRenderer {
 		this.Surface = parent;
 	}
 
-	public abstract void Init(SDL_Window* win);
+	public abstract void Init();
 	public abstract void ClearColor(Color color);
 	public abstract void ClearDepth();
 	public abstract void SwapBuffers();

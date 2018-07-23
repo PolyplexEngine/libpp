@@ -5,6 +5,8 @@ import polyplex;
 
 public class RenderSurface {
 	protected string SurfaceName;
+	protected GraphicsBackend ActiveBackend;
+	protected GraphicsContext ActiveContext;
 	public bool AutoFocus = true;
 
 	// Base Constructor.
@@ -12,14 +14,9 @@ public class RenderSurface {
 		this.SurfaceName = name;
 	}
 
-	// Backend
-	public @property polyplex.GraphicsBackend GLBackend() { return polyplex.ChosenBackend; }
-
 	// VSync
-	public @property VSyncState VSync() {
-		return Renderer.VSync;
-	}
-	public @property void VSync(VSyncState value) { Renderer.VSync = value; }
+	public abstract @property VSyncState VSync();
+	public abstract @property void VSync(VSyncState value);
 
 	// Client Bounds
 	public abstract @property Rectangle ClientBounds();
@@ -31,8 +28,10 @@ public class RenderSurface {
 	public abstract void Close();
 	public abstract void Show();
 	public abstract void UpdateState();
+	public abstract void SwapBuffers();
 
 	public abstract GraphicsContext CreateContext(GraphicsBackend backend);
+	public abstract void DestroyContext();
 }
 
 public struct GraphicsContext {
