@@ -1,11 +1,12 @@
 module polyplex.core.surfaces.sdlwindow;
 import polyplex.core.rendersurface;
+import polyplex;
 import polyplex.utils.sdlbool;
 public import polyplex.core.render;
 static import polyplex;
 
 import derelict.sdl2.sdl;
-import derelict.sdl2.image;
+import derelict.opengl;
 import polyplex.math;
 import polyplex.utils.logging;
 import std.stdio;
@@ -138,6 +139,46 @@ public class SDLGameWindow : RenderSurface {
 		if (this.window != null) Close();
         SDL_Quit();
     }
+
+	override GraphicsContext CreateContext(GraphicsBackend backend) {
+		if (backend is GraphicsBackend.OpenGL) {
+			SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+			SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+			SDL_GLContext context = SDL_GL_CreateContext(this.window);
+			DerelictGL3.reload();
+			if (context == null) throw new Error(to!string(SDL_GetError()));
+			return GraphicsContext(context);
+		}
+		// TODO: Create an Vulkan context.
+		import polyplex.core.render.vk;
+		import derelict.vulkan;
+		import derelict.vulkan.base;
+		VkInstance instance;
+
+		// Create instance via SDL, by first making a dummy-esque application info, then making an instance from that.
+		ApplicationInfo info = ApplicationInfo(this.Title, "libpp", Version(1, 0, 0), Version(1, 0, 0), Version.VulkanAPIVersion);
+		
+		// Get list of required extensions.
+		uint arrLen;
+		const(char)** arr;
+		SDL_Vulkan_GetInstanceExtensions(this.window, &arrLen, arr);
+
+		// Create InstanceCreateInfo.
+		VkInstanceCreateInfo createInfo = VkInstanceCreateInfo(
+			VkStructureType.VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
+			null,
+			0,
+			info.ptr, 
+			0,
+			null, 
+			arrLen, 
+			arr
+		);
+
+		// Create instance and return it.
+		vkCreateInstance(&createInfo, null, &instance);
+		return GraphicsContext(instance);
+	}
 
 	/**
 		Triggers an window info update.

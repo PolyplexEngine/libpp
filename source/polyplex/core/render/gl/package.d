@@ -29,14 +29,6 @@ public class GlRenderer : BackendRenderer {
 	}
 
 	public override void Init(SDL_Window* w) {
-		win = w;
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
-		context = SDL_GL_CreateContext(w);
-		auto glver = DerelictGL3.reload();
-		if (context == null) throw new Error(to!string(SDL_GetError()));
-		int wd, hd;
-		SDL_GetWindowSize(w, &wd, &hd);
 		GlSpriteBatch.InitializeSpritebatch();
 		GlDebugging2D.PrepDebugging();
 		
@@ -49,8 +41,10 @@ public class GlRenderer : BackendRenderer {
 		Logger.Info("OpenGL version: {0}", to!string(glGetString(GL_VERSION)));
 		glEnable (GL_BLEND);
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		
+		// TODO: reimplement this.
 		//Crash if system has unsupported opengl version.
-		if (glver < GLVersion.gl30) throw new Error("Sorry, your graphics card does not support Open GL 3 or above.");
+		//if (glver < GLVersion.gl30) throw new Error("Sorry, your graphics card does not support Open GL 3 or above.");
 		Logger.Info("OpenGL initialized...");
 	}
 	

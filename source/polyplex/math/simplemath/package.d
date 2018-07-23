@@ -20,7 +20,7 @@ unittest {
 	assert(!IsVector!(float));
 
 	// ================ Vector2 ===================
-
+ 
 	// Test IsVector2T
 	assert(IsVector2T!(Vector2));
 	assert(IsVector2T!(Vector2i));

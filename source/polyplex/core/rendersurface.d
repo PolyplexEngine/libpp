@@ -1,7 +1,7 @@
 module polyplex.core.rendersurface;
 import polyplex.core.render;
 import polyplex.math;
-static import polyplex;
+import polyplex;
 
 public class RenderSurface {
 	protected string SurfaceName;
@@ -31,4 +31,10 @@ public class RenderSurface {
 	public abstract void Close();
 	public abstract void Show();
 	public abstract void UpdateState();
+
+	public abstract GraphicsContext CreateContext(GraphicsBackend backend);
+}
+
+public struct GraphicsContext {
+	void* ContextPtr;
 }

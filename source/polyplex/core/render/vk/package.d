@@ -1,7 +1,8 @@
 //deprecated("Polyplex-Vulkan is not in a ready state yet. Please see Polyplex-OpenGL")
 module polyplex.core.render.vk;
+public import polyplex.core.render.vk.vk;
+
 import polyplex.core.render;
-import polyplex.core.render.vk.vk;
 import polyplex.core.rendersurface;
 import polyplex.core.color;
 import polyplex.math;

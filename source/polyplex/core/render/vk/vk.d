@@ -11,6 +11,8 @@ public struct Version {
 	public int Patch;
 	public @property uint VKVersion() { return VK_MAKE_VERSION(Major, Minor, Patch); }
 	public @property string ToString() { return to!string(Major) ~ "." ~ to!string(Minor) ~ "." ~ to!string(Patch); }
+
+	public static Version VulkanAPIVersion() { return Version(VK_VERSION_MAJOR(VK_API_VERSION), VK_VERSION_MINOR(VK_API_VERSION), VK_VERSION_PATCH(VK_API_VERSION)); }
 }
 
 public struct ApplicationInfo {
@@ -30,6 +32,10 @@ public struct ApplicationInfo {
 
 	public VkStructureType Type() {
 		return info.sType;
+	}
+
+	public VkApplicationInfo* ptr() {
+		return &info;
 	}
 
 	public string AppName() {
