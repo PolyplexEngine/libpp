@@ -124,12 +124,13 @@ T Step(T)(T edge, T a) pure nothrow if (__traits(isScalar, T)) {
           range. For example, the result of this function will equal (x+y)/2
           when `a = 0.5`
 **/
-T Linear(T)(T x, T y, float a) pure nothrow if (__traits(isScalar, T)) {
+T Lerp(T)(T x, T y, float a) pure nothrow if (__traits(isScalar, T)) {
 	a = Clamp(a, 0f, 1f);
 	return cast(T)(x*(1.0f - a) + y*a);
 }
 /// Alias for linear interpolation, to follow the same GLSL convention
 alias Mix = Linear;
+
 unittest {
 	assert(Linear(0f, 1f, 0.5f) == 0.5f);
 	assert(Linear(0f, 2f, 0.5f) == 1.0f);
@@ -157,7 +158,7 @@ unittest {
       takes `x <-> y` and `z <-> w` into account in order to offer better
       continuity between segments. Check `LinearInerpolation` for more details.
 **/
-T Cubic(T)(T x, T y, T z, T w, float a) pure nothrow if (__traits(isScalar, T)) {
+T Spline(T)(T x, T y, T z, T w, float a) pure nothrow if (__traits(isScalar, T)) {
 	a = Clamp(a, 0f, 1f);
 	// Use slope between last and next point as derivative at current point
 	T cx = cast(T)(-0.5*x + 1.5*y - 1.5*z + 0.5*w);
