@@ -7,3 +7,4 @@ If you've pledged $5 or over, make sure to join the Discord server to get your d
 
 ## VkRenderer ($10) pledges
 * The Linux Gamer Community
+* WeimTime
