@@ -11,6 +11,7 @@ libpp is the base rendering, input handling, content handling, etc. library for 
 
 ### Top Tier Patrons
 * The Linux Gamer Community
+* WeimTime
 
 ## Using libpp
 Find libpp on the [dub database](https://code.dlang.org/packages/pp) for instructions on adding libpp as a dependency to your dub project.
