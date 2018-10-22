@@ -431,7 +431,7 @@ public struct Vector4T(T) if (isNumeric!(T)) {
 		Returns:
 			The length/magnitude of this vector.
 	**/
-	public @trusted nothrow T Length() @trusted nothrow {
+	public @trusted nothrow T Length() {
 		T len;
 		static foreach(i; 0 .. Dimensions) {
 			len += this.data[i] * this.data[i];

@@ -24,13 +24,9 @@ public class BasicGameLauncher
 	}
 
 	private static void launch(Game game, string[] args) {
-		ChosenBackend = GraphicsBackend.Vulkan;
 		foreach (arg; args) {
 			if (arg == "--no-autofocus") {
 				game.Surface.AutoFocus = false;
-			}
-			if (arg == "--vulkan") {
-				ChosenBackend = GraphicsBackend.Vulkan;
 			}
 			else if (arg == "--opengl") {
 				ChosenBackend = GraphicsBackend.OpenGL;
@@ -41,30 +37,13 @@ public class BasicGameLauncher
 	}
 
 	private static void do_launch(Game game) {
-		try {
-			if (ChosenBackend == GraphicsBackend.Vulkan) {
-				try {
-					InitLibraries();
-					game.Run();
-				}
-				catch(Throwable) {
-					Logger.Recover("Going to OpenGL fallback mode...");
-					ChosenBackend = GraphicsBackend.OpenGL;
-					do_launch(game);
-				}
-			} else {
-				ChosenBackend = GraphicsBackend.OpenGL;
-				InitLibraries();
-				game.Run();
-			}
-		}
-		catch (Error err) {
-			Logger.Fatal("Fatal Error! {0}", err);
-		}
+		ChosenBackend = GraphicsBackend.OpenGL;
+		InitLibraries();
+		game.Run();
 	}
 
 	public static void InitSDL() {
-		ChosenBackend = GraphicsBackend.NoneChosen;
+		ChosenBackend = GraphicsBackend.OpenGL;
 		InitLibraries();
 	}
 

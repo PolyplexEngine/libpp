@@ -149,50 +149,12 @@ public class SDLGameWindow : RenderSurface {
 
 	override GraphicsContext CreateContext(GraphicsBackend backend) {
 		ActiveBackend = backend;
-		if (backend is GraphicsBackend.OpenGL) {
-			SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-			SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
-			SDL_GLContext context = SDL_GL_CreateContext(this.window);
-			DerelictGL3.reload();
-			if (context == null) throw new Error(to!string(SDL_GetError()));
-			ActiveContext = GraphicsContext(context);
-			return ActiveContext;
-		}
-		import polyplex.core.render.vk;
-		import derelict.vulkan;
-		import derelict.vulkan.base;
-		VkInstance instance;
-
-		// Create instance via SDL, by first making a dummy-esque application info, then making an instance from that.
-		ApplicationInfo info = ApplicationInfo(this.Title, "libpp", Version(1, 0, 0), Version(1, 0, 0), Version.VulkanAPIVersion);
-		
-		// Get list of required extensions.
-		uint arrLen;
-		const(char)*[] arr;
-		SDL_Vulkan_GetInstanceExtensions(this.window, &arrLen, null);
-
-		arr.length = arrLen;
-		SDL_Vulkan_GetInstanceExtensions(this.window, &arrLen, arr.ptr);
-
-		// Create InstanceCreateInfo.
-		VkInstanceCreateInfo createInfo = VkInstanceCreateInfo(
-			VkStructureType.VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
-			null,
-			0,
-			info.ptr, 
-			0,
-			null, 
-			arrLen, 
-			arr.ptr
-		);
-
-		// Create instance and return it.
-		vkCreateInstance(&createInfo, null, &instance);
-
-		// Make 100% sure the array is destroyed.
-		// As per https://gist.github.com/rcgordon/ad23f873393423e1f1069502b92ad035
-		destroy(arr);
-		ActiveContext = GraphicsContext(instance);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+		SDL_GLContext context = SDL_GL_CreateContext(this.window);
+		DerelictGL3.reload();
+		if (context == null) throw new Error(to!string(SDL_GetError()));
+		ActiveContext = GraphicsContext(context);
 		return ActiveContext;
 	}
 
@@ -245,8 +207,7 @@ public class SDLGameWindow : RenderSurface {
 	*/
     override void Show() {
 		Logger.Debug("Spawning window...");
-		if (polyplex.ChosenBackend == polyplex.GraphicsBackend.Vulkan) this.window = SDL_CreateWindow(this.start_title.dup.ptr, this.start_bounds.X, this.start_bounds.Y, this.start_bounds.Width, this.start_bounds.Height, SDL_WINDOW_VULKAN);
-		else this.window = SDL_CreateWindow(this.start_title.toStringz, this.start_bounds.X, this.start_bounds.Y, this.start_bounds.Width, this.start_bounds.Height, SDL_WINDOW_OPENGL);
+		this.window = SDL_CreateWindow(this.start_title.toStringz, this.start_bounds.X, this.start_bounds.Y, this.start_bounds.Width, this.start_bounds.Height, SDL_WINDOW_OPENGL);
 		Renderer.AssignRenderer(this);
 		if (this.window == null) {
 			destroy(this.window);

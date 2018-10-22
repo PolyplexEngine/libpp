@@ -17,16 +17,14 @@ public import polyplex.math;
 public import polyplex.utils.logging;
 
 
-public static GraphicsBackend ChosenBackend = GraphicsBackend.NoneChosen;
+public static GraphicsBackend ChosenBackend = GraphicsBackend.OpenGL;
 private static bool core_init = false;
 private static bool vk_init = false;
 private static bool gl_init = false;
 
 
 public enum GraphicsBackend {
-	Vulkan,
-	OpenGL,
-	NoneChosen
+	OpenGL
 }
 
 private string get_arch() {
@@ -113,32 +111,9 @@ public void InitLibraries() {
 		Logger.Debug("SDL (linked): {0}.{1}.{2}", to!string(linked.major), to!string(linked.minor), to!string(linked.patch));
 		core_init = true;
 	}
-	if (ChosenBackend == GraphicsBackend.NoneChosen) return;
-
-	if (ChosenBackend == GraphicsBackend.Vulkan) {
-		if (gl_init) DerelictGL3.unload();
-		gl_init = false;
-
-
-		//Load vulkan... twice...
-		DerelictVulkan.load();
-		SDL_Vulkan_LoadLibrary(null);
-		SDL_VideoInit(null);
-
-		vk_init = true;
-		Logger.Info("Intialized Vulkan... ");
-
-		return;
-	}
-	else {
-		if (vk_init) {
-			DerelictVulkan.unload();
-			SDL_Vulkan_UnloadLibrary();
-		}
-		vk_init = false;
-		
-		DerelictGL3.load();
-		gl_init = true;
-		Logger.Info("Initialized OpenGL...");
-	}
+	
+	DerelictGL3.load();
+	gl_init = true;
+	Logger.Info("Initialized OpenGL...");
+	
 }
