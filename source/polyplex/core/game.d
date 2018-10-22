@@ -109,6 +109,9 @@ public abstract class Game {
 	protected ContentManager Content;
 	protected SpriteBatch sprite_batch;
 
+	/// Wether the engine should count FPS and frametimes.
+	public bool CountFPS = false;
+
 	public Event OnWindowSizeChanged = new Event();
 	public @property GameTime TotalTime() { return times.TotalTime; }
 	public @property GameTime DeltaTime() { return times.DeltaTime; }
@@ -224,29 +227,31 @@ public abstract class Game {
 			if (sprite_batch !is null) sprite_batch.SwapChain();
 			Renderer.SwapBuffers();
 
-			//FPS counter.
-			delta_frames = SDL_GetTicks() - start_frames;
-			times.DeltaTime.BaseValue = delta_frames;
-			last_frames = start_frames;
+			if (CountFPS) {
+				//FPS counter.
+				delta_frames = SDL_GetTicks() - start_frames;
+				times.DeltaTime.BaseValue = delta_frames;
+				last_frames = start_frames;
 
-			if (samples.length <= MAX_SAMPLES) {
-				samples.length++;
-			} else {
-				samples[0] = -1;
-				for (int i = 1; i < samples.length; i++) {
-					if (samples[i-1] == -1) {
-						samples[i-1] = samples[i];
-						samples[i] = -1;
+				if (samples.length <= MAX_SAMPLES) {
+					samples.length++;
+				} else {
+					samples[0] = -1;
+					for (int i = 1; i < samples.length; i++) {
+						if (samples[i-1] == -1) {
+							samples[i-1] = samples[i];
+							samples[i] = -1;
+						}
 					}
+					samples[samples.length-1] = cast(long)delta_frames;
 				}
-				samples[samples.length-1] = cast(long)delta_frames;
+				double t = 0;
+				foreach(ulong sample; samples) {
+					t += cast(double)sample;
+				}
+				t /= MAX_SAMPLES;
+				avg_fps = t;
 			}
-			double t = 0;
-			foreach(ulong sample; samples) {
-				t += cast(double)sample;
-			}
-			t /= MAX_SAMPLES;
-			avg_fps = t;
 		}
 		destroy(DefaultAudioDevice);
 		Logger.Success("~~~ GAME ENDED ~~~\nHave a nice day! c:");
