@@ -2,13 +2,12 @@ module polyplex.core;
 
 public import polyplex.core.game;
 public import polyplex.core.render;
-public import polyplex.core.rendersurface;
+public import polyplex.core.window;
 public import polyplex.core.locale;
 public import polyplex.core.input;
 public import polyplex.core.content;
 public import polyplex.core.color;
-public import polyplex.core.rendersurface;
-public import polyplex.core.surfaces;
+public import polyplex.core.windows;
 
 import polyplex;
 import polyplex.utils;
@@ -26,7 +25,7 @@ public class BasicGameLauncher
 	private static void launch(Game game, string[] args) {
 		foreach (arg; args) {
 			if (arg == "--no-autofocus") {
-				game.Surface.AutoFocus = false;
+				game.Window.AutoFocus = false;
 			}
 			else if (arg == "--opengl") {
 				ChosenBackend = GraphicsBackend.OpenGL;
@@ -41,7 +40,7 @@ public class BasicGameLauncher
 		game.Run();
 	}
 	public static void LaunchGame(Game g, string[] args = []) {
-		Logger.Debug("Launching {0} with args {1}...", g.Surface.Title, args);
+		Logger.Debug("Launching {0} with args {1}...", g.Window.Title, args);
 		launch(g, args);
 	}
 }

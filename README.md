@@ -46,21 +46,20 @@ void main(string[] args)
 	LogLevel |= LogType.Debug;
 
 	// Create game instance and start game.
-	MyGame game = new MyGame("Example Game");
+	MyGame game = new MyGame();
 	game.Run();
 }
 
 class MyGame : Game
 {
-	this(string title)
-	{
-		super(new SDLGameWindow(title, new Rectangle(0, 0, 0, 0), false));
+	this() {
+
 	}
 
 	public override void Init()
 	{
 		// Enable/Disable VSync.
-		Surface.VSync = VSyncState.VSync;
+		Window.VSync = VSyncState.VSync;
 	}
 
 	public override void LoadContent() {
@@ -75,7 +74,6 @@ class MyGame : Game
 	public override void Draw(GameTimes game_time)
 	{
 		Renderer.ClearColor(Color.CornflowerBlue);
-		world.Draw(game_time, sprite_batch);
 	}
 }
 

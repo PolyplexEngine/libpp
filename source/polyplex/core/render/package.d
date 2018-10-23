@@ -7,7 +7,7 @@ import polyplex.core.render.simplefont;
 import polyplex.core.content;
 import polyplex.core.color;
 import polyplex.core.content;
-import polyplex.core.rendersurface;
+static import win = polyplex.core.window;
 import polyplex.math;
 import derelict.sdl2.sdl;
 import polyplex.math;
@@ -22,15 +22,15 @@ public enum VSyncState {
 
 public class Renderer {
 	private static BackendRenderer BGRend;
-	public static RenderSurface Surface;
+	public static win.Window Window;
 
 	/**
 		Backend function, run automatically, no need to invoke it manually. c:
 	*/
-	public static void AssignRenderer(RenderSurface parent) {
+	public static void AssignRenderer(win.Window parent) {
 		BGRend = CreateBackendRenderer(parent);
 		BGRend.Init();
-		Surface = parent;
+		Window = parent;
 	}
 
 	public static void ClearColor(Color color) {
@@ -69,10 +69,10 @@ public class Renderer {
 
 public class BackendRenderer {
 	public SpriteBatch Batch;
-	public RenderSurface Surface;
+	public win.Window Window;
 
-	this(RenderSurface parent) {
-		this.Surface = parent;
+	this(win.Window parent) {
+		this.Window = parent;
 	}
 
 	public abstract void Init();
@@ -225,6 +225,6 @@ class ShaderCode {
 	}
 }
 
-public BackendRenderer CreateBackendRenderer(RenderSurface parent) {
+public BackendRenderer CreateBackendRenderer(win.Window parent) {
 	return new GlRenderer(parent);
 }

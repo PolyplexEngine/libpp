@@ -2,7 +2,7 @@ module polyplex.core.render.gl;
 public import polyplex.core.render.gl.batch;
 public import polyplex.core.render.gl.debug2d;
 import polyplex.core.render;
-import polyplex.core.rendersurface;
+static import win = polyplex.core.window;
 import polyplex.core.color;
 import polyplex.utils;
 import polyplex.math;
@@ -20,15 +20,15 @@ public import polyplex.core.render.gl.shader;
 
 public class GlRenderer : BackendRenderer {
 
-	this(RenderSurface parent) { super(parent); }
+	this(win.Window parent) { super(parent); }
 
 	~this() {
-		Surface.DestroyContext();
+		Window.DestroyContext();
 	}
 
 	public override void Init() {
 		// Create the neccesary rendering backend.
-		Surface.CreateContext(GraphicsBackend.OpenGL);
+		Window.CreateContext(GraphicsBackend.OpenGL);
 
 		GlSpriteBatch.InitializeSpritebatch();
 		GlDebugging2D.PrepDebugging();
@@ -50,15 +50,15 @@ public class GlRenderer : BackendRenderer {
 	}
 	
 	public override @property VSyncState VSync() {
-		return Surface.VSync;
+		return Window.VSync;
 	}
 
 	public override @property void VSync(VSyncState state) {
-		Surface.VSync = state;
+		Window.VSync = state;
 	}
 
 	public override void AdjustViewport() {
-		glViewport(0, 0, Surface.ClientBounds.Width, Surface.ClientBounds.Height);
+		glViewport(0, 0, Window.ClientBounds.Width, Window.ClientBounds.Height);
 	}
 
 	public override void ClearColor(Color color) {
@@ -72,7 +72,7 @@ public class GlRenderer : BackendRenderer {
 	}
 
 	public override void SwapBuffers() {
-		Surface.SwapBuffers();
+		Window.SwapBuffers();
 	}
 
 	public override Shader CreateShader(ShaderCode code) {

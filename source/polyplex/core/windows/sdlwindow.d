@@ -1,5 +1,5 @@
-module polyplex.core.surfaces.sdlwindow;
-import polyplex.core.rendersurface;
+module polyplex.core.windows.sdlwindow;
+import polyplex.core.window;
 import polyplex;
 import polyplex.utils.sdlbool;
 public import polyplex.core.render;
@@ -19,12 +19,14 @@ public enum WindowPosition {
 	Undefined = 0
 }
 
-public class SDLGameWindow : RenderSurface {
+public class SDLGameWindow : Window {
 	private string start_title;
 	private int width;
 	private int height;
     private SDL_Window* window;
 	private Rectangle start_bounds;
+
+	private Rectangle curr_bounds;
 
 	public @property int Width() { return this.width; }
 	public @property int Height() { return this.height; }
@@ -35,11 +37,11 @@ public class SDLGameWindow : RenderSurface {
     public override @property bool Visible() { return (this.window !is null); }
 
 	// Resizing
-	public @property bool AllowResizing() {
+	public override @property bool AllowResizing() {
 		SDL_WindowFlags flags = SDL_GetWindowFlags(window);
 		return ((flags & SDL_WINDOW_RESIZABLE) > 0);
 	}
-	public @property void AllowResizing(bool allow) { SDL_SetWindowResizable(this.window, ToSDL(allow)); }
+	public override @property void AllowResizing(bool allow) { SDL_SetWindowResizable(this.window, ToSDL(allow)); }
 
 	// VSync
 	public override @property VSyncState VSync() {
@@ -52,11 +54,11 @@ public class SDLGameWindow : RenderSurface {
 	}
 
 	// Borderless
-	public @property bool Borderless() {
+	public override @property bool Borderless() {
 		SDL_WindowFlags flags = SDL_GetWindowFlags(window);
 		return ((flags & SDL_WINDOW_BORDERLESS) > 0);
 	}
-	public @property void Borderless(bool i) { SDL_SetWindowBordered(this.window, ToSDL(!i)); }
+	public override @property void Borderless(bool i) { SDL_SetWindowBordered(this.window, ToSDL(!i)); }
 
 	// Title
 	public override @property string Title() { return to!string(SDL_GetWindowTitle(this.window)); }
@@ -67,12 +69,12 @@ public class SDLGameWindow : RenderSurface {
 	public @property void Brightness(float b) { SDL_SetWindowBrightness(this.window, b); }
 
 	//Fullscreen
-	public @property bool Fullscreen() {
+	public override @property bool Fullscreen() {
 		SDL_WindowFlags flags = SDL_GetWindowFlags(window);
 		return ((flags & (SDL_WINDOW_FULLSCREEN | SDL_WINDOW_FULLSCREEN_DESKTOP)) > 0);
 	}
 
-	public @property void Fullscreen(bool i) {
+	public override @property void Fullscreen(bool i) {
 		if (!i) {
 			//Windowed.
 			SDL_SetWindowFullscreen(this.window, 0);
@@ -92,9 +94,7 @@ public class SDLGameWindow : RenderSurface {
 		Use RealPlacement if you want your application to be dpi aware.
 	*/
 	public override @property Rectangle ClientBounds() {
-		int x, y;
-		SDL_GetWindowPosition(this.window, &x, &y);
-		return new Rectangle(x, y, width, height);
+		return curr_bounds;
 	}
 
 	/**
@@ -175,7 +175,14 @@ public class SDLGameWindow : RenderSurface {
 		Triggers an window info update.
 	*/
 	override void UpdateState() {
+		int x, y;
+		SDL_GetWindowPosition(this.window, &x, &y);
 		SDL_GetWindowSize(this.window, &this.width, &this.height);
+		if (curr_bounds is null) curr_bounds = new Rectangle();
+		curr_bounds.X = x;
+		curr_bounds.Y = y;
+		curr_bounds.Width = this.width;
+		curr_bounds.Height = this.height; 
 	}
 
 	/**
@@ -190,7 +197,7 @@ public class SDLGameWindow : RenderSurface {
 	/**
 		Puts the window in focus (ONLY WORKS ON SOME PLATFORMS!)
 	*/
-	void Focus() {
+	override void Focus() {
 		SDL_RaiseWindow(this.window);
 	}
 
@@ -198,7 +205,7 @@ public class SDLGameWindow : RenderSurface {
 		TODO
 		Sets the icon for the window.
 	*/
-	void SetIcon() {
+	override void SetIcon() {
 		//TODO: When rendering is there, set icon.
 	}
 

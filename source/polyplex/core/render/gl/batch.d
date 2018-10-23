@@ -148,8 +148,8 @@ public class GlSpriteBatch : SpriteBatch {
 
 	private Matrix4x4 mult_matrices() {
 		if (this.project_state == ProjectionState.Perspective)
-			return this.default_cam.ProjectPerspective(Renderer.Surface.ClientBounds.Width, 90f, Renderer.Surface.ClientBounds.Height) * this.view_project;
-		return this.default_cam.ProjectOrthographic(Renderer.Surface.ClientBounds.Width, Renderer.Surface.ClientBounds.Height) * this.view_project;
+			return this.default_cam.ProjectPerspective(Renderer.Window.ClientBounds.Width, 90f, Renderer.Window.ClientBounds.Height) * this.view_project;
+		return this.default_cam.ProjectOrthographic(Renderer.Window.ClientBounds.Width, Renderer.Window.ClientBounds.Height) * this.view_project;
 	}
 
 	public override void Begin() {
@@ -256,7 +256,7 @@ public class GlSpriteBatch : SpriteBatch {
 		(Temporary) Sets the Scissor rectangle
 	*/
 	public void SetScissorRect(Rectangle rect) {
-		glScissor(rect.X, Renderer.Surface.ClientBounds.Height-rect.Y, rect.Width, rect.Height);
+		glScissor(rect.X, Renderer.Window.ClientBounds.Height-rect.Y, rect.Width, rect.Height);
 	}
 
 	/**
