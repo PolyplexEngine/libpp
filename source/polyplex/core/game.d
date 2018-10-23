@@ -171,6 +171,8 @@ public abstract class Game {
 	}
 
 	public void Run() {
+		import polyplex;
+		InitLibraries();
 		surface.Show();
 		do_update();
 	}

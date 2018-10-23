@@ -32,7 +32,53 @@ From libpp it can be accessed via `ContentManager.Load<Type>("my_file")`
 ## libpp
 Example of simple polyplex application:
 ```d
-// Most of this is being restructured, old example is obsolete, a new one will be here soon :)
+module example;
+import std.stdio;
+import polyplex;
+import polyplex.math;
+
+void main(string[] args)
+{
+	arg = args[1..$];
+
+	// Enable info and debug logs.
+	LogLevel |= LogType.Info;
+	LogLevel |= LogType.Debug;
+
+	// Create game instance and start game.
+	MyGame game = new MyGame("Example Game");
+	game.Run();
+}
+
+class MyGame : Game
+{
+	this(string title)
+	{
+		super(new SDLGameWindow(title, new Rectangle(0, 0, 0, 0), false));
+	}
+
+	public override void Init()
+	{
+		// Enable/Disable VSync.
+		Surface.VSync = VSyncState.VSync;
+	}
+
+	public override void LoadContent() {
+		// Load textures, sound, shaders, etc. here
+	}	
+
+	public override void Update(GameTimes game_time)
+	{
+		world.Update(game_time);
+	}
+
+	public override void Draw(GameTimes game_time)
+	{
+		Renderer.ClearColor(Color.CornflowerBlue);
+		world.Draw(game_time, sprite_batch);
+	}
+}
+
 ```
 
 You can also check out [example_game](http://git.pplex.org/Polyplex/example_game), which is used as a testbed for new libpp features/fixes.

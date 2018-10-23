@@ -38,16 +38,9 @@ public class BasicGameLauncher
 
 	private static void do_launch(Game game) {
 		ChosenBackend = GraphicsBackend.OpenGL;
-		InitLibraries();
 		game.Run();
 	}
-
-	public static void InitSDL() {
-		ChosenBackend = GraphicsBackend.OpenGL;
-		InitLibraries();
-	}
-
-	public static void LaunchGame(Game g, string[] args) {
+	public static void LaunchGame(Game g, string[] args = []) {
 		Logger.Debug("Launching {0} with args {1}...", g.Surface.Title, args);
 		launch(g, args);
 	}
