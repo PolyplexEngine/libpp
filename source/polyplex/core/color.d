@@ -4718,6 +4718,9 @@ public class Color {
 	/// Color named MonoGame Orange, with hex: #E73C000
 	public static @property Color MonoGameOrange() { return new Color(0xE73C00FF); }
 
+	/// Color named Kerbal, with hex: #E73C000
+	public static @property Color Kerbal() { return new Color(0xB4D455FF); }
+
 
 	/// Color named Transparent, with hex: A68B5B
 	public static @property Color Transparent() { return new Color(0x00000000); }
