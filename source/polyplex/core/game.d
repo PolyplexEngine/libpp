@@ -156,13 +156,10 @@ public abstract class Game {
 
 	this(RenderSurface plane, bool audio = true) {
 		surface = plane;
-		events = new GameEventSystem();
 		enable_audio = audio;
 	}
 
 	this(bool audio = true) {
-		surface = new SDLGameWindow(new Rectangle(0, 0, 0, 0), false);
-		events = new GameEventSystem();
 		enable_audio = audio;
 	}
 
@@ -173,6 +170,12 @@ public abstract class Game {
 	public void Run() {
 		import polyplex;
 		InitLibraries();
+		
+		events = new GameEventSystem();
+
+		if (surface is null) {
+			surface = new SDLGameWindow(new Rectangle(0, 0, 0, 0), false);
+		}
 		surface.Show();
 		do_update();
 	}
