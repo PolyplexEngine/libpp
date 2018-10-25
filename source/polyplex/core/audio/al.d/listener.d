@@ -1,4 +1,4 @@
-module polyplex.core.audio.listener;
+module polyplex.core.audio.al.listener;
 import derelict.openal;
 import polyplex.math;
 

@@ -1,5 +1,5 @@
-module polyplex.core.audio.source;
-import polyplex.core.audio;
+module polyplex.core.audio.al.source;
+import polyplex.core.audio.al;
 import derelict.openal;
 import polyplex.math;
 

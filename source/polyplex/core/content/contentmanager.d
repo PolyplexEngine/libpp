@@ -6,7 +6,7 @@ import polyplex.core.content.font;
 import polyplex.core.content.data;
 import polyplex.utils.logging;
 import polyplex.utils.strutils;
-import polyplex.core.audio;
+import polyplex.core.audio.al;
 
 static import ppc;
 

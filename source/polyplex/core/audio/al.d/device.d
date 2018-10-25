@@ -1,5 +1,5 @@
-module polyplex.core.audio.device;
-import polyplex.core.audio;
+module polyplex.core.audio.al.device;
+import polyplex.core.audio.al;
 import ppc.audio;
 import derelict.openal;
 
