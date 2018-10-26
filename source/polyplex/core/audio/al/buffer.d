@@ -107,6 +107,11 @@ public class ALBuffer {
 		}
 	}
 
+	public void FirstUpdate(ALuint audioSourceId) {
+		// Queue buffers.
+		alSourceQueueBuffers(audioSourceId, count, buff.ptr);
+	}
+
 	public void Update(ALuint audioSourceId, size_t pcmout = 16384) {
 		// Update stream count.
 		alGetSourcei(audioSourceId, AL_BUFFERS_PROCESSED, &count);
@@ -124,6 +129,10 @@ public class ALBuffer {
 
 		// Queue buffers.
 		alSourceQueueBuffers(audioSourceId, count, released.ptr);
+	}
+
+	public void Rewind() {
+
 	}
 
 	~this() {
