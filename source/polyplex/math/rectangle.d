@@ -26,6 +26,21 @@ class Rectangle {
 		this.height = height;
 	}
 
+	import std.traits;
+	public @trusted Rectangle opBinary(string op, T)(T other) if (isNumeric!(T)) {
+		import std.format;
+		mixin(q{
+			return new Rectangle(X %s other, Y %s other, Width %s other, Height %s other);
+		}.format(op, op, op, op));
+	}
+
+	public @trusted Rectangle opBinary(string op, T)(T other) if (is(T : Rectangle)) {
+		import std.format;
+		mixin(q{
+			return new Rectangle(X %s other.X, Y %s other.Y, Width %s other.Width, Height %s other.Height);
+		}.format(op, op, op, op));
+	}
+
 	public @property int X() { return this.x; }
 	public @property void X(int x) { this.x = x; }
 
