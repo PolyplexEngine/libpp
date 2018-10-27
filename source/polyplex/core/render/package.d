@@ -140,6 +140,8 @@ public enum SpriteFlip {
 }
 
 public abstract class SpriteBatch {
+	public bool OffsetOrigin = true;
+	
 	public abstract void Begin();
 	public abstract void Begin(SpriteSorting sort_mode, Blending blend_state, Sampling sample_state, RasterizerState raster_state, Shader s, Matrix4x4 matrix);
 	public abstract void Begin(SpriteSorting sort_mode, Blending blend_state, Sampling sample_State, RasterizerState raster_state, Shader s, Camera camera);

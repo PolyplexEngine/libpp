@@ -56,8 +56,6 @@ public class GlSpriteBatch : SpriteBatch {
 	private bool has_begun = false;
 	private bool swap = false;
 
-	public bool OffsetOrigin = true;
-
 	this(int size = 1000) {
 		InitializeSpritebatch();
 		this.size = size;
