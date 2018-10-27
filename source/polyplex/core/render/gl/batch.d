@@ -56,6 +56,8 @@ public class GlSpriteBatch : SpriteBatch {
 	private bool has_begun = false;
 	private bool swap = false;
 
+	public bool OffsetOrigin = true;
+
 	this(int size = 1000) {
 		InitializeSpritebatch();
 		this.size = size;
@@ -269,7 +271,7 @@ public class GlSpriteBatch : SpriteBatch {
 	/**
 		Draw draws a texture.
 	*/
-	public override void Draw(Texture2D texture, Rectangle pos, Rectangle cutout, float rotation, Vector2 Origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0) {
+	public override void Draw(Texture2D texture, Rectangle pos, Rectangle cutout, float rotation, Vector2 Origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0, bool offsetOrigin) {
 		check_flush(texture);
 		float x1, y1;
 		float x2, y2;
@@ -303,7 +305,10 @@ public class GlSpriteBatch : SpriteBatch {
 			//Rotation sine and co-sine
 			float cos = std.math.cos(rotation);
 			float sin = std.math.sin(rotation);
-
+			if (!OffsetOrigin) {
+				cx = 0;
+				cy = 0;
+			}
 			x1 = pos.X + (cos * p1x - sin * p1y) + cx;
 			y1 = pos.Y + (sin * p1x + cos * p1y) + cy;
 
