@@ -277,12 +277,12 @@ public class GlSpriteBatch : SpriteBatch {
 		float x4, y4;
 
 		static import std.math;
+		float scaleX = pos.Width/texture.Width;
+		float scaleY = pos.Height/texture.Height;
+		float cx = Origin.X*scaleX;
+		float cy = Origin.Y*scaleY;
 
 		if (rotation != 0) {
-			float scaleX = pos.Width/texture.Width;
-			float scaleY = pos.Height/texture.Height;
-			float cx = Origin.X*scaleX;
-			float cy = Origin.Y*scaleY;
 
 			//top left
 			float p1x = -cx;
@@ -319,18 +319,19 @@ public class GlSpriteBatch : SpriteBatch {
 			x4 = pos.X + (cos * p4x - sin * p4y) + cx;
 			y4 = pos.Y + (sin * p4x + cos * p4y) + cy;
 		} else {
-			x1 = pos.X;
-			y1 = pos.Y;
+			x1 = pos.X-cx;
+			y1 = pos.Y-cy;
 
-			x2 = pos.X+pos.Width;
-			y2 = pos.Y;
+			x2 = pos.X+pos.Width-cx;
+			y2 = pos.Y-cy;
 			
-			x3 = pos.X+pos.Width;
-			y3 = pos.Y+pos.Height;
+			x3 = pos.X+pos.Width-cx;
+			y3 = pos.Y+pos.Height-cy;
 
-			x4 = pos.X;
-			y4 = pos.Y+pos.Height;
+			x4 = pos.X-cx;
+			y4 = pos.Y+pos.Height-cy;
 		}
+		// Remove any edges in spritesheets/atlases by cutting a tiiiiiny portion away
 		float pxx = 0.2f/cast(float)texture.Width;
 		float pxy = 0.2f/cast(float)texture.Height;
 
