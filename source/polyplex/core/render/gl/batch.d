@@ -271,7 +271,7 @@ public class GlSpriteBatch : SpriteBatch {
 	/**
 		Draw draws a texture.
 	*/
-	public override void Draw(Texture2D texture, Rectangle pos, Rectangle cutout, float rotation, Vector2 Origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0, bool offsetOrigin) {
+	public override void Draw(Texture2D texture, Rectangle pos, Rectangle cutout, float rotation, Vector2 Origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0) {
 		check_flush(texture);
 		float x1, y1;
 		float x2, y2;
