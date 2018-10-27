@@ -303,10 +303,6 @@ public class GlSpriteBatch : SpriteBatch {
 			//Rotation sine and co-sine
 			float cos = std.math.cos(rotation);
 			float sin = std.math.sin(rotation);
-			if (!OffsetOrigin) {
-				cx = 0;
-				cy = 0;
-			}
 			x1 = pos.X + (cos * p1x - sin * p1y) + cx;
 			y1 = pos.Y + (sin * p1x + cos * p1y) + cy;
 
@@ -319,6 +315,11 @@ public class GlSpriteBatch : SpriteBatch {
 			x4 = pos.X + (cos * p4x - sin * p4y) + cx;
 			y4 = pos.Y + (sin * p4x + cos * p4y) + cy;
 		} else {
+
+			if (!OffsetOrigin) {
+				cx = 0;
+				cy = 0;
+			}
 			x1 = pos.X-cx;
 			y1 = pos.Y-cy;
 
