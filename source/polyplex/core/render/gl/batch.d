@@ -322,7 +322,7 @@ public class GlSpriteBatch : SpriteBatch {
 			y4 = pos.Y + (sin * p4x + cos * p4y) + cy;
 		} else {
 			// Respect OffsetOrigin
-			if (!OffsetOrigin) {
+			if (OffsetOrigin) {
 				cx = 0;
 				cy = 0;
 			}
