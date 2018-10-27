@@ -116,6 +116,11 @@ public struct Vector2T(T) if (isNumeric!(T)) {
 		return o;
 	}
 
+	/// Dot product of a vector.
+	public @trusted nothrow T Dot(GVector other) {
+		return (this.X*other.X)+(this.Y*other.Y);
+	}
+
 	/**
 		Returns:
 			Initial (zero) state of this vector.
@@ -274,6 +279,11 @@ public struct Vector3T(T) if (isNumeric!T) {
 			o.data[i] = this.data[i]/len;
 		}
 		return o;
+	}
+
+	/// Dot product of a vector.
+	public @trusted nothrow T Dot(GVector other) {
+		return (this.X*other.X)+(this.Y*other.Y)+(this.Z*other.Z);
 	}
 
 	/**
@@ -450,6 +460,11 @@ public struct Vector4T(T) if (isNumeric!(T)) {
 			o.data[i] = this.data[i]/len;
 		}
 		return o;
+	}
+
+	/// Dot product of a vector.
+	public @trusted nothrow T Dot(GVector other) {
+		return (this.X*other.X)+(this.Y*other.Y)+(this.Z*other.Z)+(this.W*other.W);
 	}
 
 	/**
