@@ -96,10 +96,7 @@ public struct Vector2T(T) if (isNumeric!(T)) {
 			The length/magnitude of this vector.
 	**/
 	public @trusted nothrow T Length() {
-		T len;
-		static foreach(i; 0 .. Dimensions) {
-			len += this.data[i] * this.data[i];
-		}
+		T len = (X*X)+(Y*Y);
 		return cast(T)Mathf.Sqrt(cast(float)len);
 	}
 
@@ -110,9 +107,8 @@ public struct Vector2T(T) if (isNumeric!(T)) {
 	public @trusted nothrow GVector Normalize() {
 		GVector o;
 		T len = Length();
-		static foreach(i; 0 .. Dimensions) {
-			o.data[i] = this.data[i]/len;
-		}
+		o.X = this.X/len;
+		o.Y = this.Y/len;
 		return o;
 	}
 
@@ -261,10 +257,7 @@ public struct Vector3T(T) if (isNumeric!T) {
 			The length/magnitude of this vector.
 	**/
 	public @trusted nothrow T Length() {
-		T len;
-		static foreach(i; 0 .. Dimensions) {
-			len += this.data[i] * this.data[i];
-		}
+		T len = (X*X)+(Y*Y)+(Z*Z);
 		return cast(T)Mathf.Sqrt(cast(float)len);
 	}
 
@@ -442,10 +435,7 @@ public struct Vector4T(T) if (isNumeric!(T)) {
 			The length/magnitude of this vector.
 	**/
 	public @trusted nothrow T Length() {
-		T len;
-		static foreach(i; 0 .. Dimensions) {
-			len += this.data[i] * this.data[i];
-		}
+		T len = (X*X)+(Y*Y)+(Z*Z)+(W*W);
 		return cast(T)Mathf.Sqrt(cast(float)len);
 	}
 
