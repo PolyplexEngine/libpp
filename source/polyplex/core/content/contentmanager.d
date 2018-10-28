@@ -39,7 +39,7 @@ public abstract class ContentManager {
 	}
 
 	public abstract Texture2D LoadTexture(string name);
-	public abstract Data LoadText(string name);
+	public abstract string LoadText(string name);
 	public abstract Font LoadFont(string name);
 	public abstract ALBuffer LoadSound(string name);
 	//public abstract Music LoadMusic(string name);
@@ -66,8 +66,8 @@ public class PPCContentManager : ContentManager {
 		}
 	}
 
-	public override Data LoadText(string name) {
-		return null;
+	public override string LoadText(string name) {
+		return cast(string)(cast(ppc.RawContent)ppc.ContentManager.Load(this.ContentRoot~name~".ppc")).Data;
 	}
 	
 	public override Font LoadFont(string name) {
@@ -109,7 +109,7 @@ public class RawContentManager : ContentManager {
 		throw new Exception("Loading textures via RawContentManger is unsupported currently.");
 	}
 
-	public override Data LoadText(string name) {
+	public override string LoadText(string name) {
 		return null;
 	}
 	
