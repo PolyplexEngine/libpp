@@ -17,12 +17,32 @@ public struct Matrix4x4 {
 		return dat;
 	}
 
+	float opIndex(size_t x, size_t y) {
+		return data[y][x];
+	}
+
+	float opIndex(int x, int y) {
+		return data[y][x];
+	}
+
+	void opIndexAssign(float value, size_t x, size_t y) {
+		data[y][x] = value;
+	}
+
+	void opIndex(float value, int x, int y) {
+		data[y][x] = value;
+	}
+
 	public static Matrix4x4 Identity() {
 		float[4][4] data = clear(0);
 		foreach ( i; 0 .. 4 ) {
 			data[i][i] = 1f;
 		}
 		return Matrix4x4(data);
+	}
+
+	public Vector3 ToScaling() {
+		return Vector3(this[0,0], this[1,1], this[2,2]);
 	}
 
 	public static Matrix4x4 Scaling(Vector3 scale_vec) {
@@ -73,21 +93,37 @@ public struct Matrix4x4 {
 	}
 
 	public static Matrix4x4 FromQuaternion(Quaternion quat) {
-		float qx = quat.X;
-		float qy = quat.Y;
-		float qz = quat.Z;
-		float qw = quat.W;
-		float n = 2f/(qx*qx+qy*qy+qz*qz+qw*qw);
-		qx *= n;
-		qy *= n;
-		qz *= n;
-		qw *= n;
-		return Matrix4x4([
-			[1.0f - n*qy*qy - n*qz*qz, n*qx*qy - n*qz*qw, n*qx*qz + n*qy*qw, 0f],
-			[n*qx*qy + n*qz*qw, 1f - n*qx*qx - n*qz*qz, n*qy*qz - n*qx*qw, 0f],
-			[n*qx*qz - n*qy*qw, n*qy*qz + n*qx*qw, 1f - n*qx*qx - n*qy*qy, 0f],
-			[0f, 0f, 0f, 1f]
-		]);
+		float sqx = quat.X*quat.X;
+		float sqy = quat.Y*quat.Y;
+		float sqz = quat.Z*quat.Z;
+		float sqw = quat.W*quat.W;
+		float n = 1f/(sqx+sqy+sqz+sqw);
+
+		Matrix4x4 mat;
+	
+		mat[0,0] = ( sqx - sqy - sqz + sqw) * n;
+		mat[1,1] = (-sqx + sqy - sqz + sqw) * n;
+		mat[2,2] = (-sqx - sqy + sqz + sqw) * n;
+
+		double tx = quat.X*quat.Y;
+		double ty = quat.Z*quat.W;
+		mat[1,0] = 2.0 * (tx + ty) * n;
+		mat[0,1] = 2.0 * (tx - ty) * n;
+
+		tx = quat.X*quat.Z;
+		ty = quat.Y*quat.W;
+		mat[2,0] = 2.0 * (tx - ty) * n;
+		mat[0,2] = 2.0 * (tx + ty) * n;
+
+		tx = quat.Y*quat.Z;
+		ty = quat.X*quat.W;
+		mat[2,1] = 2.0 * (tx + ty) * n;
+		mat[1,2] = 2.0 * (tx - ty) * n;
+
+		return mat;
+	}
+	public Vector3 ToTranslation() {
+		return Vector3(this[3,0], this[3,1], this[3,2]);
 	}
 
 	public static Matrix4x4 Translation(Vector3 trans_vec) {		

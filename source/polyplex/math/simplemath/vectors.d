@@ -127,6 +127,38 @@ public struct Vector2T(T) if (isNumeric!(T)) {
 	
 	/**
 		Returns:
+			Up unit vector
+	**/
+	public static GVector Up() {
+		return GVector(0, -1);
+	}
+
+	/**
+		Returns:
+			Down unit vector
+	**/
+	public static GVector Down() {
+		return GVector(0, 1);
+	}
+
+	/**
+		Returns:
+			Left unit vector
+	**/
+	public static GVector Left() {
+		return GVector(0, -1);
+	}
+
+	/**
+		Returns:
+			Right unit vector
+	**/
+	public static GVector Right() {
+		return GVector(0, 1);
+	}
+
+	/**
+		Returns:
 			String representation of the array.
 	**/
 	public string ToString() {
@@ -279,12 +311,68 @@ public struct Vector3T(T) if (isNumeric!T) {
 		return (this.X*other.X)+(this.Y*other.Y)+(this.Z*other.Z);
 	}
 
+	/// Cross product of a vector.
+	public @trusted nothrow GVector Cross(GVector other) {
+		return GVector(
+			(this.Y*other.Z)-(this.Z*other.Y),
+			(this.Z*other.X)-(this.X*other.Z),
+			(this.X*other.Y)-(this.Y*other.X));
+	}
+
 	/**
 		Returns:
 			Initial (zero) state of this vector.
 	**/
 	public static Vector3T!(T) Zero() {
 		return Vector3T!(T)(0, 0, 0);
+	}
+
+	/**
+		Returns:
+			Up unit vector
+	**/
+	public static GVector Up() {
+		return GVector(0, -1, 0);
+	}
+
+	/**
+		Returns:
+			Down unit vector
+	**/
+	public static GVector Down() {
+		return GVector(0, 1, 0);
+	}
+
+	/**
+		Returns:
+			Left unit vector
+	**/
+	public static GVector Left() {
+		return GVector(0, -1, 0);
+	}
+
+	/**
+		Returns:
+			Right unit vector
+	**/
+	public static GVector Right() {
+		return GVector(0, 1, 0);
+	}
+
+	/**
+		Returns:
+			Left unit vector
+	**/
+	public static GVector Forward() {
+		return GVector(0, 0, -1);
+	}
+
+	/**
+		Returns:
+			Right unit vector
+	**/
+	public static GVector Back() {
+		return GVector(0, 0, 1);
 	}
 
 	/**

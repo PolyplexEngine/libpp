@@ -277,8 +277,8 @@ public class GlSpriteBatch : SpriteBatch {
 		float x4, y4;
 
 		static import std.math;
-		float scaleX = pos.Width/texture.Width;
-		float scaleY = pos.Height/texture.Height;
+		float scaleX = cast(float)pos.Width/cast(float)texture.Width;
+		float scaleY = cast(float)pos.Height/cast(float)texture.Height;
 		float cx = Origin.X*scaleX;
 		float cy = Origin.Y*scaleY;
 
