@@ -43,23 +43,25 @@ public class Transform {
 		return Matrix4x4.Translation(LocalPosition);
 	}
 
-	private Matrix4x4 trs() {
-		return ltrans * lrot * lscale;
+	public Matrix4x4 TRS() {
+		if (Parent is null) 
+			return (ltrans * lrot * lscale);
+		return Parent.TRS*(ltrans * lrot * lscale);
 	}
 
 	public Vector3 Scale() {
 		if (Parent is null) return LocalScale;
-		return (Parent.trs*trs).ToScaling();
+		return (TRS).ToScaling();
 	}
 
 	public Quaternion Rotation() {
 		if (Parent is null) return LocalRotation;
-		return Rotation.FromMatrix(Parent.trs*trs);
+		return Rotation.FromMatrix(TRS);
 	}
 
 	public Vector3 Position() {
 		if (Parent is null) return LocalPosition;
-		return (Parent.trs*trs).ToTranslation();
+		return TRS.ToTranslation();
 	}
 
 	public Vector3 Up() {
@@ -123,19 +125,17 @@ public class Transform2D {
 	}
 
 	private Matrix4x4 lrot() {
-		return Matrix4x4.RotationZ(LocalRotation);
+		return Matrix4x4.RotationZ(this.LocalRotation);
 	}
 
 	private Matrix4x4 ltrans() {
 		return Matrix4x4.Translation(Vector3(LocalPosition));
 	}
 
-	private Matrix4x4 trs() {
-		return ltrans * lrot * lscale;
-	}
-
-	public Matrix4x4 Matrix() {
-		return trs;
+	public Matrix4x4 TRS() {
+		if (Parent is null) 
+			return (ltrans * lrot * lscale);
+		return Parent.TRS*(ltrans * lrot * lscale);
 	}
 
 	public Matrix4x4 MatrixScale() {
@@ -152,7 +152,7 @@ public class Transform2D {
 
 	public Vector2 Scale() {
 		if (Parent is null) return LocalScale;
-		return Vector2((Parent.trs*trs).ToScaling());
+		return Vector2(TRS.ToScaling());
 	}
 
 	public float Rotation() {
@@ -162,7 +162,7 @@ public class Transform2D {
 
 	public Vector2 Position() {
 		if (Parent is null) return LocalPosition;
-		return Vector2((Parent.trs*trs).ToTranslation());
+		return Vector2(TRS.ToTranslation());
 	}
 
 	public void Rotate(float amount) {

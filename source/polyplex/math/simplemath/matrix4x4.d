@@ -41,16 +41,20 @@ public struct Matrix4x4 {
 		return Matrix4x4(data);
 	}
 
+	public Vector3 Column(int index) {
+		return Vector3(this[0,index], this[1,index], this[2,index]);
+	}
+
 	public Vector3 ToScaling() {
-		return Vector3(this[0,0], this[1,1], this[2,2]);
+		return Vector3(Column(0).Length, Column(1).Length, Column(2).Length);
 	}
 
 	public static Matrix4x4 Scaling(Vector3 scale_vec) {
-		Matrix4x4 i = Matrix4x4.Identity;
-		i.data[0][0] = scale_vec.X;
-		i.data[1][1] = scale_vec.Y;
-		i.data[2][2] = scale_vec.Z;
-		return i;
+		Matrix4x4 dims = Matrix4x4.Identity;
+		dims[0,0] = scale_vec.X;
+		dims[1,1] = scale_vec.Y;
+		dims[2,2] = scale_vec.Z;
+		return dims;
 	}
 
 	/*public static Matrix4x4 Scaling(Vector3 scale_vec) {
@@ -66,30 +70,30 @@ public struct Matrix4x4 {
 	}*/
 
 	public static Matrix4x4 RotationX(float x_rot) {
-		float[4][4] dims = Matrix4x4.Identity.data;
-		dims[1][1] = Mathf.Cos(x_rot);
-		dims[1][2] = Mathf.Sin(x_rot);
-		dims[2][1] = -Mathf.Sin(x_rot);
-		dims[2][2] = Mathf.Cos(x_rot);
-		return Matrix4x4(dims);
+		Matrix4x4 dims = Matrix4x4.Identity;
+		dims[1,1] = Mathf.Cos(x_rot);
+		dims[1,2] = Mathf.Sin(x_rot);
+		dims[2,1] = -Mathf.Sin(x_rot);
+		dims[2,2] = Mathf.Cos(x_rot);
+		return dims;
 	}
 
 	public static Matrix4x4 RotationY(float y_rot) {
-		float[4][4] dims = Matrix4x4.Identity.data;
-		dims[0][0] = Mathf.Cos(y_rot);
-		dims[0][2] = -Mathf.Sin(y_rot);
-		dims[2][0] = Mathf.Sin(y_rot);
-		dims[2][2] = Mathf.Cos(y_rot);
-		return Matrix4x4(dims);
+		Matrix4x4 dims = Matrix4x4.Identity;
+		dims[0,0] = Mathf.Cos(y_rot);
+		dims[2,0] = Mathf.Sin(y_rot);
+		dims[0,2] = -Mathf.Sin(y_rot);
+		dims[2,2] = Mathf.Cos(y_rot);
+		return dims;
 	}
 
 	public static Matrix4x4 RotationZ(float z_rot) {
-		float[4][4] dims = Matrix4x4.Identity.data;
-		dims[0][0] = Mathf.Cos(z_rot);
-		dims[1][0] = Mathf.Sin(z_rot);
-		dims[0][1] = -Mathf.Sin(z_rot);
-		dims[1][1] = Mathf.Cos(z_rot);
-		return Matrix4x4(dims);
+		Matrix4x4 dims = Matrix4x4.Identity;
+		dims[0,0] = Mathf.Cos(z_rot);
+		dims[1,0] = -Mathf.Sin(z_rot);
+		dims[0,1] = Mathf.Sin(z_rot);
+		dims[1,1] = Mathf.Cos(z_rot);
+		return dims;
 	}
 
 	public static Matrix4x4 FromQuaternion(Quaternion quat) {
