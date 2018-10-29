@@ -44,6 +44,16 @@ public struct Vector2T(T) if (isNumeric!(T)) {
 		this.Y = y;
 	}
 
+	this(Vector3T!T vec) {
+		this.X = vec.X;
+		this.Y = vec.Y;
+	}
+
+	this(Vector4T!T vec) {
+		this.X = vec.X;
+		this.Y = vec.Y;
+	}
+
 	/**
 		Pointer to the underlying array data.
 	*/
@@ -228,6 +238,19 @@ public struct Vector3T(T) if (isNumeric!T) {
 		this.X = x;
 		this.Y = y;
 		this.Z = z;
+	}
+
+
+	this(Vector2T!T vec) {
+		this.X = vec.X;
+		this.Y = vec.Y;
+		this.Z = 0;
+	}
+
+	this(Vector4T!T vec) {
+		this.X = vec.X;
+		this.Y = vec.Y;
+		this.Z = vec.Z;
 	}
 
 	/**
@@ -461,6 +484,20 @@ public struct Vector4T(T) if (isNumeric!(T)) {
 		this.Y = y;
 		this.Z = z;
 		this.W = w;
+	}
+
+	this(Vector2T!T vec) {
+		this.X = vec.X;
+		this.Y = vec.Y;
+		this.Z = 0;
+		this.W = 0;
+	}
+
+	this(Vector3T!T vec) {
+		this.X = vec.X;
+		this.Y = vec.Y;
+		this.Z = vec.Z;
+		this.W = 0;
 	}
 
 	/**

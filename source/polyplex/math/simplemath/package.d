@@ -5,6 +5,7 @@ public import polyplex.math.simplemath.matrix2x2;
 public import polyplex.math.simplemath.matrix3x3;
 public import polyplex.math.simplemath.matrix4x4;
 public import polyplex.math.simplemath.quaternion;
+public import polyplex.math.simplemath.transform;
 
 // Unit tests
 unittest {
