@@ -76,7 +76,41 @@ public struct Quaternion {
 		this.W = angle;
 	}
 
-	public Vector3 Rotate(T)(Vector3 axis, T angle) {
+	public Vector3 ForwardDirection() {
+		return Vector3(
+			2 * (X*Z + W*Y), 
+			2 * (Y*Z - W*X),
+			1 - 2 * (X*X + Y*Y));
+	}
+
+	public Vector3 UpDirection() {
+		return Vector3(
+			2 * (X*Y + W*Z), 
+			1 - 2 * (X*X + Z*Z),
+			2 * (Y*Z - W*X));
+	}
+
+	public Vector3 LeftDirection() {
+		return Vector3(
+			1 - 2 * (Y*Y + Z*Z), 
+			2 * (X*Y + W*Z),
+			2 * (X*Z - W*Y));
+	}
+
+	public void Rotate(T)(Vector3 axis, T theta) {
+		X = Mathf.Sin(cast(real)theta/2) * axis.X;
+		Y = Mathf.Sin(cast(real)theta/2) * axis.Y;
+		Z = Mathf.Sin(cast(real)theta/2) * axis.Z;
+		W = Mathf.Cos(cast(real)theta/2);
+	}
+
+	public static Quaternion Rotated(T)(Vector3 axis, T theta) {
+		Quaternion q;
+		q.Rotate(axis, theta);
+		return q;
+	}
+
+	/*public Vector3 Rotate(T)(Vector3 axis, T angle) {
 		Vector3 vec;
 		vec.X = X;
 		vec.Y = Y;
@@ -95,7 +129,7 @@ public struct Quaternion {
 		vcv.Z *= vc;
 
 		return vdv * adv + vcv ;
-	}
+	}*/
 
 	public static Quaternion EulerToQuaternion(Vector3 euler) {
 		Quaternion quat;
@@ -151,7 +185,7 @@ public struct Quaternion {
 			qt.W = (mat[0,2] + mat[2,0]) / S;
 			return qt;
 		}
-		
+
 		float S = Mathf.Sqrt(1.0 + mat[2,2] - mat[0,0] - mat[1,1]) * 2;
 		qt.X = (mat[0,2] + mat[2,0]) / S;
 		qt.Y = (mat[1,2] - mat[2,1]) / S;

@@ -9,11 +9,22 @@ public class Transform {
 	public Quaternion LocalRotation;
 	public Vector3 LocalPosition;
 
+	public Transform LocalTransform() {
+		return new Transform(LocalScale, LocalRotation, LocalPosition);
+	}
+
 	this(Transform parent) {
 		this.parent = parent;
 		LocalScale = Vector3.Zero;
 		LocalRotation = Quaternion.Identity;
 		LocalPosition = Vector3.Zero;
+	}
+
+	this(Vector3 scale, Quaternion rotation, Vector3 position) {
+		this(null);
+		LocalScale = scale;
+		LocalRotation = rotation;
+		LocalPosition = position;
 	}
 
 	this() {
@@ -52,27 +63,30 @@ public class Transform {
 	}
 
 	public Vector3 Up() {
-		return Rotation.Rotate(Vector3.Up, 0);
+		return Rotation.UpDirection;
 	}
 
 	public Vector3 Down() {
-		return Rotation.Rotate(Vector3.Down, 0);
+		Vector3 up = Up;
+		return Vector3(-up.X, -up.Y, -up.Z);
 	}
 
 	public Vector3 Forward() {
-		return Rotation.Rotate(Vector3.Forward, 0);
+		return Rotation.ForwardDirection;
 	}
 	
 	public Vector3 Back() {
-		return Rotation.Rotate(Vector3.Back, 0);
+		Vector3 forward = Forward;
+		return Vector3(-forward.X, -forward.Y, -forward.Z);
 	}
 
 	public Vector3 Left() {
-		return Rotation.Rotate(Vector3.Left, 0);
+		return Rotation.LeftDirection;
 	}
 	
 	public Vector3 Right() {
-		return Rotation.Rotate(Vector3.Right, 0);
+		Vector3 left = Left;
+		return Vector3(-left.X, -left.Y, -left.Z);
 	}
 }
 
@@ -82,11 +96,22 @@ public class Transform2D {
 	public Quaternion LocalRotation;
 	public Vector2 LocalPosition;
 
+	public Transform2D LocalTransform() {
+		return new Transform2D(LocalScale, LocalRotation, LocalPosition);
+	}
+
 	this(Transform2D parent) {
 		this.parent = parent;
 		LocalScale = Vector2.Zero;
 		LocalRotation = Quaternion.Identity;
 		LocalPosition = Vector2.Zero;
+	}
+
+
+	this(Vector2 scale, Quaternion rotation, Vector2 position) {
+		LocalScale = scale;
+		LocalRotation = rotation;
+		LocalPosition = position;
 	}
 
 	this() {
@@ -129,18 +154,20 @@ public class Transform2D {
 	}
 
 	public Vector2 Up() {
-		return Vector2(Rotation.Rotate(Vector3.Up, 0));
+		return Vector2(Rotation.UpDirection);
 	}
 
 	public Vector2 Down() {
-		return Vector2(Rotation.Rotate(Vector3.Down, 0));
+		Vector2 up = Up;
+		return Vector2(-up.X, -up.Y);
 	}
 
 	public Vector2 Left() {
-		return Vector2(Rotation.Rotate(Vector3.Left, 0));;
+		return Vector2(Rotation.LeftDirection);
 	}
 	
 	public Vector2 Right() {
-		return Vector2(Rotation.Rotate(Vector3.Right, 0));
+		Vector2 left = Left;
+		return Vector2(-left.X, -left.Y);
 	}
 }
