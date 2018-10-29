@@ -156,7 +156,7 @@ public struct Quaternion {
 	}
 
 	public static Quaternion FromMatrix(Matrix4x4 mat) {
-		Quaternion qt;
+		Quaternion qt = Quaternion.Identity;
 		float tr = mat[0,0] + mat[1,1] + mat[2,2];
 
 		if (tr > 0) {
@@ -215,5 +215,10 @@ public struct Quaternion {
 
 	public static Quaternion Identity() {
 		return Quaternion(0f, 0f, 0f, 0f);
+	}
+
+	public string toString() {
+		import polyplex.utils.strutils;
+		return "<{0}, {1}, {2}, {3}>".Format(X, Y, Z, W);
 	}
 }

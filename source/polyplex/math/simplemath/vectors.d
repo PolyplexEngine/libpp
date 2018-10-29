@@ -134,6 +134,14 @@ public struct Vector2T(T) if (isNumeric!(T)) {
 	public static GVector Zero() {
 		return GVector(0, 0);
 	}
+
+	/**
+		Returns:
+			Initial (one) state of this vector.
+	**/
+	public static GVector One() {
+		return GVector(1, 1);
+	}
 	
 	/**
 		Returns:
@@ -348,6 +356,14 @@ public struct Vector3T(T) if (isNumeric!T) {
 	**/
 	public static Vector3T!(T) Zero() {
 		return Vector3T!(T)(0, 0, 0);
+	}
+
+	/**
+		Returns:
+			Initial (one) state of this vector.
+	**/
+	public static GVector One() {
+		return GVector(1, 1, 1);
 	}
 
 	/**
@@ -588,6 +604,14 @@ public struct Vector4T(T) if (isNumeric!(T)) {
 	**/
 	public static GVector Zero() {
 		return GVector(0, 0, 0, 0);
+	}
+
+	/**
+		Returns:
+			Initial (one) state of this vector.
+	**/
+	public static GVector One() {
+		return GVector(1, 1, 1, 1);
 	}
 
 	/**

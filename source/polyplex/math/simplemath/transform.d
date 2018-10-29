@@ -15,7 +15,7 @@ public class Transform {
 
 	this(Transform parent) {
 		this.parent = parent;
-		LocalScale = Vector3.Zero;
+		LocalScale = Vector3.One;
 		LocalRotation = Quaternion.Identity;
 		LocalPosition = Vector3.Zero;
 	}
@@ -102,7 +102,7 @@ public class Transform2D {
 
 	this(Transform2D parent) {
 		this.parent = parent;
-		LocalScale = Vector2.Zero;
+		LocalScale = Vector2.One;
 		LocalRotation = Quaternion.Identity;
 		LocalPosition = Vector2.Zero;
 	}
@@ -134,6 +134,22 @@ public class Transform2D {
 		return ltrans * lrot * lscale;
 	}
 
+	public Matrix4x4 Matrix() {
+		return trs;
+	}
+
+	public Matrix4x4 MatrixScale() {
+		return lscale;
+	}
+
+	public Matrix4x4 MatrixRotation() {
+		return lrot;
+	}
+
+	public Matrix4x4 MatrixPosition() {
+		return ltrans;
+	}
+
 	public Vector2 Scale() {
 		if (parent is null) return LocalScale;
 		return Vector2((parent.trs*trs).ToScaling());
@@ -141,7 +157,7 @@ public class Transform2D {
 
 	public Quaternion Rotation() {
 		if (parent is null) return LocalRotation;
-		return Rotation.FromMatrix(parent.trs*trs);
+		return Quaternion.FromMatrix(parent.trs*trs);
 	}
 
 	public Vector2 Position() {

@@ -99,7 +99,10 @@ public struct Matrix4x4 {
 		float sqw = quat.W*quat.W;
 		float n = 1f/(sqx+sqy+sqz+sqw);
 
-		Matrix4x4 mat;
+		Matrix4x4 mat = Matrix4x4.Identity;
+
+		if (sqx == 0 && sqy == 0 && sqz == 0 && sqw == 0) 
+			return mat;
 	
 		mat[0,0] = ( sqx - sqy - sqz + sqw) * n;
 		mat[1,1] = (-sqx + sqy - sqz + sqw) * n;
