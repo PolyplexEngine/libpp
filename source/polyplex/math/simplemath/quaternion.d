@@ -97,6 +97,30 @@ public struct Quaternion {
 		return vdv * adv + vcv ;
 	}
 
+	public static Quaternion EulerToQuaternion(Vector3 euler) {
+		Quaternion quat;
+
+		// pitch
+		double cp = Mathf.Cos(euler.X * 0.5);
+		double sp = Mathf.Cos(euler.X * 0.5);
+
+		// roll
+		double cr = Mathf.Cos(euler.Y * 0.5);
+		double sr = Mathf.Cos(euler.Y * 0.5);
+
+		// yaw
+		double cy = Mathf.Cos(euler.Z * 0.5);
+		double sy = Mathf.Cos(euler.Z * 0.5);
+
+
+		// convert to quaternion.
+		quat.X = cy * sr * cp - sy * cr * sp;
+		quat.Y = cy * cr * sp + sy * sr * cp;
+		quat.Z = sy * cr * cp - cy * sr * sp;
+		quat.W = cy * cr * cp + sy * sr * sp;
+		return quat;
+	}
+
 	public static Quaternion FromMatrix(Matrix4x4 mat) {
 		Quaternion qt;
 		float tr = mat[0,0] + mat[1,1] + mat[2,2];
@@ -127,6 +151,7 @@ public struct Quaternion {
 			qt.W = (mat[0,2] + mat[2,0]) / S;
 			return qt;
 		}
+		
 		float S = Mathf.Sqrt(1.0 + mat[2,2] - mat[0,0] - mat[1,1]) * 2;
 		qt.X = (mat[0,2] + mat[2,0]) / S;
 		qt.Y = (mat[1,2] - mat[2,1]) / S;

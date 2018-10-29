@@ -124,6 +124,10 @@ public class Transform2D {
 		return Vector2((parent.trs*trs).ToTranslation());
 	}
 
+	public void Rotate(float amount) {
+		LocalRotation.Rotate(Vector3.Forward, amount);
+	}
+
 	public Vector2 Up() {
 		return Vector2(Rotation.Rotate(Vector3.Up, 0));
 	}
