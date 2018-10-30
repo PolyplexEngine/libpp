@@ -133,6 +133,22 @@ public struct Matrix4x4 {
 		return Vector3(this[3,0], this[3,1], this[3,2]);
 	}
 
+	public float XComponent() {
+		return this[3, 0];
+	}
+
+	public float YComponent() {
+		return this[3, 1];
+	}
+
+	public float ZComponent() {
+		return this[3, 2];
+	}
+
+	public Vector3 TranslatedVector() {
+		return Vector3(XComponent, YComponent, ZComponent);
+	}
+
 	public static Matrix4x4 Translation(Vector3 trans_vec) {		
 		return Matrix4x4([
 			[1f, 0f, 0f, trans_vec.X],
@@ -149,6 +165,16 @@ public struct Matrix4x4 {
 			[0f, 0f, -2/(zfar-znear), -(zfar+znear)/(zfar-znear)],
 			[0f, 0f, 0f, 1f]
 		]);
+	}
+
+	public Matrix4x4 Inverse() {
+		Matrix4x4 mat;
+		foreach(x; 0 .. 4) {
+			foreach(y; 0 .. 4) {
+				mat[x,y] = this[y,x];
+			}
+		}
+		return mat;
 	}
 
 	public static Matrix4x4 OrthographicInverse(float left, float right, float bottom, float top, float znear, float zfar) {

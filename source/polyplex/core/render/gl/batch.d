@@ -146,7 +146,7 @@ public class GlSpriteBatch : SpriteBatch {
 		}
 	}
 
-	private Matrix4x4 mult_matrices() {
+	public override Matrix4x4 MultMatrices() {
 		if (this.project_state == ProjectionState.Perspective)
 			return this.default_cam.ProjectPerspective(Renderer.Window.ClientBounds.Width, 90f, Renderer.Window.ClientBounds.Height) * this.view_project;
 		return this.default_cam.ProjectOrthographic(Renderer.Window.ClientBounds.Width, Renderer.Window.ClientBounds.Height) * this.view_project;
@@ -237,7 +237,7 @@ public class GlSpriteBatch : SpriteBatch {
 		if (!(current_texture is null)) current_texture.Bind(0, this.shader);
 		set_sampler_state(sample_state);
 		set_blend_state(blend_state);
-		this.shader.SetUniform(this.shader.GetUniform(uniform_prj_name), mult_matrices());
+		this.shader.SetUniform(this.shader.GetUniform(uniform_prj_name), MultMatrices);
 		
 		// Draw.
 		render_object.Draw(queued*6);
