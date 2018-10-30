@@ -148,7 +148,7 @@ public struct Vector2T(T) if (isNumeric!(T)) {
 			Up unit vector
 	**/
 	public static GVector Up() {
-		return GVector(0, -1);
+		return GVector(0, 1);
 	}
 
 	/**
@@ -156,7 +156,7 @@ public struct Vector2T(T) if (isNumeric!(T)) {
 			Down unit vector
 	**/
 	public static GVector Down() {
-		return GVector(0, 1);
+		return GVector(0, -1);
 	}
 
 	/**

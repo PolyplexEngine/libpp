@@ -172,7 +172,7 @@ public class Transform2D {
 	public Vector2 Up() {
 		return Vector2(
 			Vector2.Up.X * Mathf.Cos(Rotation) - Vector2.Up.Y * Mathf.Sin(Rotation),
-			Vector2.Up.X * Mathf.Sin(Rotation) - Vector2.Up.Y * Mathf.Cos(Rotation)
+			Vector2.Up.X * Mathf.Sin(Rotation) + Vector2.Up.Y * Mathf.Cos(Rotation)
 		);
 	}
 
@@ -184,7 +184,7 @@ public class Transform2D {
 	public Vector2 Left() {
 		return Vector2(
 			Vector2.Left.X * Mathf.Cos(Rotation) - Vector2.Left.Y * Mathf.Sin(Rotation),
-			Vector2.Left.X * Mathf.Sin(Rotation) - Vector2.Left.Y * Mathf.Cos(Rotation)
+			Vector2.Left.X * Mathf.Sin(Rotation) + Vector2.Left.Y * Mathf.Cos(Rotation)
 		);
 	}
 	
