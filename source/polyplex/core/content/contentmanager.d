@@ -58,7 +58,7 @@ public class PPCContentManager : ContentManager {
 		try {
 			ppc.Image i = cast(ppc.Image)ppc.ContentManager.Load(this.ContentRoot~name~".ppc");
 			if (i is null) throw new Exception("Could not find "~this.ContentRoot~name~".ppc");
-			TextureImg img = new TextureImg(cast(int)i.Width, cast(int)i.Height, i.Colors);
+			TextureImg img = new TextureImg(cast(int)i.Width, cast(int)i.Height, i.Colors, name);
 			return new GlTexture2D(img);
 		} catch (Exception ex) {
 			Logger.Err("Failed loading texture: {0}", ex.message);

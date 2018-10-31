@@ -201,6 +201,7 @@ public class GlSpriteBatch : SpriteBatch {
 	*/
 	public override void Flush() {
 		render();
+		current_texture = null;
 		last_queued = queued;
 		queued = 0;
 	}
@@ -224,6 +225,7 @@ public class GlSpriteBatch : SpriteBatch {
 	}
 
 	private void render() {
+		if (queued == 0) return;
 		// Buffer the data
 		this.render_object.Bind();
 		if ((queued*6) < last_queued) render_object.UpdateSubData(0, 0, (queued*6));

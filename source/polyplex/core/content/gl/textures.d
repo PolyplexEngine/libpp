@@ -12,9 +12,14 @@ import std.stdio;
 public class GlTexture2D : Texture2D {
 	private GLuint id;
 
+	public override uint Id() {
+		return id;
+	}
+
 	private static int MAX_TEX_UNITS = -1;
 
 	this(TextureImg img) {
+		Logger.VerboseDebug("Created GL Texture from image: {0}", img.InternalName);
 		super(img);
 	}
 
@@ -72,5 +77,6 @@ public class GlTexture2D : Texture2D {
 			glGetIntegerv(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, &MAX_TEX_UNITS);
 			Logger.Info("Set max texture units to: {0}", MAX_TEX_UNITS);
 		}
+		Logger.VerboseDebug("Bound texture id {0}", id);
 	}
 }

@@ -12,15 +12,18 @@ public class TextureImg {
 	private int width;
 	private int height;
 	private ubyte[] pixels;
+	private string i_name;
 
 	public @property int Width() { return width; }
 	public @property int Height() { return height; }
 	public @property ubyte[] Pixels() { return pixels; }
+	public @property string InternalName() { return i_name; }
 
-	this(int width, int height, ubyte[] pixels) {
+	this(int width, int height, ubyte[] pixels, string iname = "unnamed") {
 		this.width = width;
 		this.height = height;
 		this.pixels = pixels;
+		this.i_name = iname;
 	}
 }
 
@@ -271,6 +274,7 @@ public class Texture2DEffectors {
 
 public abstract class Texture2D {
 	protected TextureImg image;
+	public abstract uint Id();
 	public @property int Width() { return image.Width; }
 	public @property int Height() { return image.Height; }
 	public @property Color[][] Pixels() {
