@@ -20,6 +20,8 @@ public import polyplex.core.render.gl.shader;
 
 public class GlRenderer : BackendRenderer {
 
+	private Rectangle scissorRect;
+
 	this(win.Window parent) { super(parent); }
 
 	~this() {
@@ -49,6 +51,15 @@ public class GlRenderer : BackendRenderer {
 		Logger.Info("OpenGL initialized...");
 	}
 	
+	public override @property Rectangle ScissorRectangle() {
+		return scissorRect;
+	}
+
+	public override @property void ScissorRectangle(Rectangle rect) {
+		scissorRect = rect;
+		glScissor(Renderer.Window.ClientBounds.X-scissorRect.X, Renderer.Window.ClientBounds.Y-scissorRect.Y, scissorRect.Width, scissorRect.Height);
+	}
+
 	public override @property VSyncState VSync() {
 		return Window.VSync;
 	}

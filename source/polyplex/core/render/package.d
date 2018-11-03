@@ -61,6 +61,14 @@ public class Renderer {
 		BGRend.VSync = state;
 	}
 
+	public static @property Rectangle ScissorRectangle() {
+		return BGRend.ScissorRectangle;
+	}
+
+	public static @property void ScissorRectangle(Rectangle rect) {
+		BGRend.ScissorRectangle = rect;
+	}
+
 	public static SpriteBatch NewBatcher() {
 		return new GlSpriteBatch();
 	}
@@ -85,6 +93,9 @@ public class BackendRenderer {
 
 	public abstract @property VSyncState VSync();
 	public abstract @property void VSync(VSyncState state);
+
+	public abstract @property Rectangle ScissorRectangle();
+	public abstract @property void ScissorRectangle(Rectangle rect);
 }
 
 public enum Blending {

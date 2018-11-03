@@ -255,13 +255,6 @@ public class GlSpriteBatch : SpriteBatch {
 	}
 
 	/**
-		(Temporary) Sets the Scissor rectangle
-	*/
-	public void SetScissorRect(Rectangle rect) {
-		glScissor(rect.X, Renderer.Window.ClientBounds.Height-rect.Y, rect.Width, rect.Height);
-	}
-
-	/**
 		Draw draws a texture.
 	*/
 	public override void Draw(Texture2D texture, Rectangle pos, Rectangle cutout, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f) {
