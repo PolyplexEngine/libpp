@@ -57,7 +57,7 @@ public class GlRenderer : BackendRenderer {
 
 	public override @property void ScissorRectangle(Rectangle rect) {
 		scissorRect = rect;
-		glScissor(Renderer.Window.ClientBounds.X-scissorRect.X, Renderer.Window.ClientBounds.Y-scissorRect.Y, scissorRect.Width, scissorRect.Height);
+		glScissor(scissorRect.X, scissorRect.Y, scissorRect.Width, scissorRect.Height);
 	}
 
 	public override @property VSyncState VSync() {
