@@ -8,20 +8,19 @@ import polyplex.utils.logging;
 import polyplex.utils.strutils;
 import polyplex.core.audio.al;
 
-static import ppc;
+static import ppct = ppc.types;
+import ppc.backend.loaders.ppc;
+public import ppc.types.audio : Audio;
 
 import derelict.sdl2.image;
 import derelict.sdl2.mixer;
 import derelict.sdl2.sdl;
 
 public enum SupportedAudio {
-	FLAC,
-	MOD,
-	MP3,
 	OGG
 }
 
-public abstract class ContentManager {
+public class ContentManager {
 	private static bool content_init = false;
 	protected SupportedAudio supported_audio;
 
@@ -38,105 +37,39 @@ public abstract class ContentManager {
 		}
 	}
 
-	public abstract Texture2D LoadTexture(string name);
-	public abstract string LoadText(string name);
-	public abstract Font LoadFont(string name);
-	public abstract ALBuffer LoadSound(string name);
-	//public abstract Music LoadMusic(string name);
-	//public abstract Audio LoadAudio(string name);
-}
-
-public class PPCContentManager : ContentManager {
-
-	this() {
-		super();
-		// Setup PPC content factories.
-		ppc.SetupBaseFactories();
+	public T Load(T)(string name) if (is(T : Audio)) {
+		Logger.Debug("Loading {0}...", name);
+		PPC ppc = PPC(this.ContentRoot~name~".ppc");
+		return ppct.Audio(ppc.data);
 	}
 
-	public override Texture2D LoadTexture(string name) {
-		try {
-			ppc.Image i = cast(ppc.Image)ppc.ContentManager.Load(this.ContentRoot~name~".ppc");
-			if (i is null) throw new Exception("Could not find "~this.ContentRoot~name~".ppc");
-			TextureImg img = new TextureImg(cast(int)i.Width, cast(int)i.Height, i.Colors, name);
-			return new GlTexture2D(img);
-		} catch (Exception ex) {
-			Logger.Err("Failed loading texture: {0}", ex.message);
-			return null;
+	public T Load(T)(string name) if (is(T : Texture2D)) {
+		Logger.VerboseDebug("Loading {0}...", name);
+		PPC ppc = PPC(this.ContentRoot~name~".ppc");
+		auto imgd = ppct.Image(ppc.data);
+		TextureImg img = new TextureImg(cast(int)imgd.width, cast(int)imgd.height, imgd.pixelData, name);
+		return new GlTexture2D(img);
+	}
+
+	import polyplex.core.render.gl.shader;
+	import polyplex.core.render : ShaderCode;
+
+	public T Load(T)(string name) if (is(T : GLShader)) {
+		Logger.Debug("Loading {0}...", name);
+		PPC ppc = PPC(this.ContentRoot~name~".ppc");
+		auto shd = ppct.Shader(ppc.data);
+		ShaderCode sc = new ShaderCode();
+		foreach(k, v; shd.shaders) {
+			if (k == ppct.ShaderType.Vertex) {
+				sc.Vertex = v.toString;
+			}
+			if (k == ppct.ShaderType.Fragment) {
+				sc.Fragment = v.toString;
+			}
+			if (k == ppct.ShaderType.Geometry) {
+				sc.Geometry = g.toString;
+			}
 		}
+		return new GLShader(sc);
 	}
-
-	public override string LoadText(string name) {
-		return cast(string)(cast(ppc.RawContent)ppc.ContentManager.Load(this.ContentRoot~name~".ppc")).Data;
-	}
-	
-	public override Font LoadFont(string name) {
-		throw new Exception("Fonts not implemented in libppc yet!");
-	}
-
-	public override ALBuffer LoadSound(string name) {
-		try {
-			ppc.Audio i = cast(ppc.Audio)ppc.ContentManager.Load(this.ContentRoot~name~".ppc");
-			if (i is null) throw new Exception("Could not find "~this.ContentRoot~name~".ppc");
-			return new ALBuffer(i);
-		} catch (Exception ex) {
-			Logger.Err("Failed loading sound: {0}", ex.message);
-			return null;
-		}
-	}
-	/*
-	public override Music LoadMusic(string name) {
-		throw new Exception("Audio not implemented in libppc yet!");
-	}
-
-	public override Audio LoadAudio(string name) {
-		throw new Exception("Audio not implemented in libppc yet!");
-	}*/
-}
-
-public class RawContentManager : ContentManager {
-
-	this() {
-		super();
-	}
-
-	public override Texture2D LoadTexture(string name) {
-		/*auto f = IMG_Load((this.ContentRoot~name).ptr);
-		if (f is null) throw new Exception("Could not load " ~ name);
-		TextureImg img = new TextureImg(f);
-		//TODO: Return VkTexture2D when vulkan support is implemented.
-		return new GlTexture2D(img);*/
-		throw new Exception("Loading textures via RawContentManger is unsupported currently.");
-	}
-
-	public override string LoadText(string name) {
-		return null;
-	}
-	
-	public override Font LoadFont(string name) {
-		return null;
-	}
-
-	public override ALBuffer LoadSound(string name) {
-		throw new Exception("Audio not implemented in libppc yet!");
-	}
-
-	/*
-	public override Music LoadMusic(string name) {
-		Mix_Music* m = Mix_LoadMUS((this.ContentRoot~name).ptr);
-		if (m is null) {
-			const(char)* err = Mix_GetError();
-			throw new Exception(Format("{0}", err));
-		}
-		return new Music(m);
-	}
-
-	public override Audio LoadAudio(string name) {
-		Mix_Chunk* m = Mix_LoadWAV((this.ContentRoot~name).ptr);
-		if (m is null) {
-			const(char)* err = Mix_GetError();
-			throw new Exception(Format("{0}", err));
-		}
-		return null;
-	}*/
 }

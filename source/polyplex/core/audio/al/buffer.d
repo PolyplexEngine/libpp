@@ -1,6 +1,6 @@
 module polyplex.core.audio.al.buffer;
 import polyplex.core.audio.al;
-import ppc.audio;
+import ppc.types.audio;
 import derelict.openal;
 
 import std.stdio;
@@ -38,7 +38,7 @@ public class ALBuffer {
 	public byte[] PCMOut;
 
 	/// Reference to stream
-	private OGGAudioStream stream;
+	private Audio stream;
 
 	/// The audio device hosting this buffer.
 	public AudioDevice HostDevice;
@@ -48,6 +48,8 @@ public class ALBuffer {
 	this(Audio aud, AudioRenderFormats format = AudioRenderFormats.Auto) {
 		//Clear any present errors.
 		alGetError();
+
+		this.stream = aud;
 		
 		// Generate buffer.
 		alGenBuffers(1, buff.ptr);
@@ -56,12 +58,13 @@ public class ALBuffer {
 
 		// Buffer data from audio source.
 		if (format == AudioRenderFormats.Auto) {
-			if (aud.Stream.Channels == 1) f_format = AudioRenderFormats.Mono16;
-			else if (aud.Stream.Channels == 2) f_format = AudioRenderFormats.Stereo16;
-			else throw new Exception("Unsupported amount of channels!");
+			import std.conv;
+			if (aud.info.channels == 1) f_format = AudioRenderFormats.Mono16;
+			else if (aud.info.channels == 2) f_format = AudioRenderFormats.Stereo16;
+			else throw new Exception("Unsupported amount of channels! " ~ aud.info.channels.to!string);
 		}
 
-		alBufferData(this.buff[0], f_format, aud.Stream.ReadAll().ptr, cast(int)aud.Stream.Length, cast(int)aud.Stream.SampleRate);
+		alBufferData(this.buff[0], f_format, aud.readAll.ptr, cast(int)aud.info.pcmLength, cast(int)aud.info.bitrate);
 	}
 
 	this(RawBuffer buff, AudioRenderFormats format) {
@@ -75,7 +78,7 @@ public class ALBuffer {
 		alBufferData(this.buff[0], format, buff.Data.ptr, buff.Length, buff.SampleRate);
 	}
 
-	this(OGGAudioStream stream, AudioRenderFormats format = AudioRenderFormats.Auto, size_t pcmout = 16384) {
+	this(Audio stream, AudioRenderFormats format = AudioRenderFormats.Auto, size_t pcmout = 16384) {
 		this.stream = stream;
 
 		//Clear any present errors.
@@ -88,8 +91,8 @@ public class ALBuffer {
 
 		// Buffer data from audio source.
 		if (format == AudioRenderFormats.Auto) {
-			if (stream.Channels == 1) f_format = AudioRenderFormats.Mono16;
-			else if (stream.Channels == 2) f_format = AudioRenderFormats.Stereo16;
+			if (stream.info.channels == 1) f_format = AudioRenderFormats.Mono16;
+			else if (stream.info.channels == 2) f_format = AudioRenderFormats.Stereo16;
 			else throw new Exception("Unsupported amount of channels!");
 		}
 
@@ -100,10 +103,11 @@ public class ALBuffer {
 		foreach(i; 0 .. CBufferSize) {
 			long pos = 0;
 			while(pos < PCMOut.sizeof) {
-				byte[] data = stream.ReadFrame(cast(uint)pcmout);
+				byte[] data;
+				stream.read(data.ptr, pcmout);
 				PCMOut[pos..pos+data.length] = data;
 			}
-			alBufferData(released[i], f_format, PCMOut.ptr, cast(int)pos, stream.SampleRate);
+			alBufferData(released[i], f_format, PCMOut.ptr, cast(int)pos, cast(int)stream.info.bitrate);
 		}
 	}
 
@@ -121,10 +125,11 @@ public class ALBuffer {
 		foreach(i; 0 .. count) {
 			long pos = 0;
 			while(pos < PCMOut.sizeof) {
-				byte[] data = stream.ReadFrame(cast(uint)pcmout);
+				byte[] data;
+				stream.read(data.ptr, pcmout);
 				(PCMOut[pos..pos+data.length]) = data;
 			}
-			alBufferData(released[i], f_format, PCMOut.ptr, cast(int)pos, stream.SampleRate);
+			alBufferData(released[i], f_format, PCMOut.ptr, cast(int)pos, cast(int)stream.info.bitrate);
 		}
 
 		// Queue buffers.

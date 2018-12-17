@@ -1,6 +1,7 @@
 {
 	"fileVersion": 1,
 	"versions": {
+		"arsd-official": "2.1.3",
 		"colorize": "1.0.5",
 		"imageformats": "6.1.3",
 		"ppc": "~master",

@@ -15,14 +15,14 @@ public class SpriteFontSimple {
 	this(SpriteBatch batcher, ContentManager man, string font_name, Vector2i font_split = Vector2i(10, 10)) {
 		this.sprite_batch = batcher;
 		this.manager = man;
-		this.font_texture = manager.LoadTexture(font_name);
+		this.font_texture = manager.Load!Texture2D(font_name);
 		this.font_split = font_split;
 		if (rng is null) rng = new Random();
 	}
 
 	this(ContentManager man, string font_name, Vector2i font_split = Vector2i(10, 10)) {
 		this.manager = man;
-		this.font_texture = manager.LoadTexture(font_name);
+		this.font_texture = manager.Load!Texture2D(font_name);
 		this.font_split = font_split;
 		if (rng is null) rng = new Random();
 	}

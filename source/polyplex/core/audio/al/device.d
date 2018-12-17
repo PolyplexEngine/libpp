@@ -1,6 +1,6 @@
 module polyplex.core.audio.al.device;
 import polyplex.core.audio.al;
-import ppc.audio;
+import ppc.types.audio;
 import derelict.openal;
 
 public enum ALExtensionSupport {
@@ -18,6 +18,37 @@ public enum ALExtensionSupport {
 
 public static AudioDevice DefaultAudioDevice;
 
+//TODO: remove this
+enum ErrCodes : ALCenum {
+	ALC_FREQUENCY           = 0x1007,
+    ALC_REFRESH             = 0x1008,
+    ALC_SYNC                = 0x1009,
+
+    ALC_MONO_SOURCES        = 0x1010,
+    ALC_STEREO_SOURCES      = 0x1011,
+
+    ALC_NO_ERROR            = ALC_FALSE,
+    ALC_INVALID_DEVICE      = 0xA001,
+    ALC_INVALID_CONTEXT     = 0xA002,
+    ALC_INVALID_ENUM        = 0xA003,
+    ALC_INVALID_VALUE       = 0xA004,
+    ALC_OUT_OF_MEMORY       = 0xA005,
+
+    ALC_DEFAULT_DEVICE_SPECIFIER        = 0x1004,
+    ALC_DEVICE_SPECIFIER                = 0x1005,
+    ALC_EXTENSIONS                      = 0x1006,
+
+    ALC_MAJOR_VERSION                   = 0x1000,
+    ALC_MINOR_VERSION                   = 0x1001,
+
+    ALC_ATTRIBUTES_SIZE                 = 0x1002,
+    ALC_ALL_ATTRIBUTES                  = 0x1003,
+
+    ALC_CAPTURE_DEVICE_SPECIFIER            = 0x310,
+    ALC_CAPTURE_DEFAULT_DEVICE_SPECIFIER    = 0x311,
+    ALC_CAPTURE_SAMPLES                     = 0x312,
+}
+
 public class AudioDevice {
 	public ALCdevice* ALDevice;
 	public ALCcontext* ALContext;
@@ -32,7 +63,9 @@ public class AudioDevice {
 			ALContext = alcCreateContext(dev, null);
 			alcMakeContextCurrent(ALContext);
 		} else {
-			throw new Exception("Could not create device!");
+			import std.conv;
+			import std.stdio;
+			throw new Exception("Could not create device! " ~ (cast(ErrCodes)alcGetError(dev)).to!string);
 		}
 		
 		// If EAX 2.0 is supported, flag it as supported.

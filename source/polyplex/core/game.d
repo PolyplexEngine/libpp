@@ -201,7 +201,7 @@ public abstract class Game {
 
 		// Init sprite batch
 		this.sprite_batch = Renderer.NewBatcher();
-		this.Content = new PPCContentManager();
+		this.Content = new ContentManager();
 
 		if (enable_audio) DefaultAudioDevice = new AudioDevice();
 		
