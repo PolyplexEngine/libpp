@@ -1,23 +1,11 @@
 module polyplex.core.audio.al.buffer;
 import polyplex.core.audio.al;
+import polyplex.core.audio;
 import ppc.types.audio;
 import derelict.openal;
 
 import std.stdio;
 
-public enum AudioRenderFormats : int {
-	/**
-		Auto detect (only available for PPC Audio streams)
-	*/
-	Auto = 0,
-	Mono8 = AL_FORMAT_MONO8,
-	Mono16 = AL_FORMAT_MONO16,
-	MonoFloat = AL_FORMAT_MONO_FLOAT32,
-
-	Stereo8 = AL_FORMAT_STEREO8,
-	Stereo16 = AL_FORMAT_STEREO16,
-	StereoFloat = AL_FORMAT_STEREO_FLOAT32,
-}
 
 public struct RawBuffer {
 	public ubyte[] Data;
