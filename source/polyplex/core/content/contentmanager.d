@@ -8,6 +8,9 @@ import polyplex.utils.logging;
 import polyplex.utils.strutils;
 import polyplex.core.audio;
 
+import polyplex.core.render.gl.shader;
+import polyplex.core.render : ShaderCode;
+
 static import ppct = ppc.types;
 import ppc.backend.loaders.ppc;
 import ppc.backend.cfile;
@@ -37,22 +40,41 @@ public class ContentManager {
 		}
 	}
 
+	T loadLocal(T)(string name) if (is(T : SoundEffect)) {
+		return new SoundEffect(ppct.Audio(loadFile(name)));
+	}
+
 	public T Load(T)(string name) if (is(T : SoundEffect)) {
+		// Load raw file if instructed to.
+		if (name[0] == '!') return loadLocal!T(name[1..$]);
+
+		// Otherwise load PPC file
 		PPC ppc = PPC(loadFile(this.ContentRoot~name~".ppc"));
 		return new SoundEffect(ppct.Audio(ppc.data));
 	}
 
+	T loadLocal(T)(string name) if (is(T : Texture2D)) {
+		auto imgd = ppct.Image(loadFile(name));
+		TextureImg img = new TextureImg(cast(int)imgd.width, cast(int)imgd.height, imgd.pixelData, name);
+		return new GlTexture2D(img);
+	}
+
 	public T Load(T)(string name) if (is(T : Texture2D)) {
+		// Load raw file if instructed to.
+		if (name[0] == '!') return loadLocal!T(name[1..$]);
+
+		// Otherwise load PPC file
 		PPC ppc = PPC(this.ContentRoot~name~".ppc");
 		auto imgd = ppct.Image(ppc.data);
 		TextureImg img = new TextureImg(cast(int)imgd.width, cast(int)imgd.height, imgd.pixelData, name);
 		return new GlTexture2D(img);
 	}
 
-	import polyplex.core.render.gl.shader;
-	import polyplex.core.render : ShaderCode;
-
 	public T Load(T)(string name) if (is(T : GLShader)) {
+		// Shaders can't be loaded locally
+		if (name[0] == '!') throw new Exception("Shaders cannot be loaded rawly, please use ppcc to convert to PSGL");
+
+		// Otherwise load PPC file
 		Logger.Debug("Loading {0}...", name);
 		PPC ppc = PPC(this.ContentRoot~name~".ppc");
 		auto shd = ppct.Shader(ppc.data);
