@@ -27,7 +27,7 @@ Polyplex packages textures, sounds, etc. into files with the extension ppc. To c
 ## PPCC
 `ppcc -c (or --convert) my_file.(extension)` output will be put in `my_file.ppc`.
 
-From libpp it can be accessed via `ContentManager.Load<Type>("my_file")`
+From libpp it can be accessed via `ContentManager.Load!Type("my_file")`
 
 ## libpp
 Example of simple polyplex application:
