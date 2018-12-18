@@ -10,6 +10,7 @@ import polyplex.core.audio;
 
 static import ppct = ppc.types;
 import ppc.backend.loaders.ppc;
+import ppc.backend.cfile;
 
 import derelict.sdl2.image;
 import derelict.sdl2.mixer;
@@ -37,13 +38,11 @@ public class ContentManager {
 	}
 
 	public T Load(T)(string name) if (is(T : SoundEffect)) {
-		Logger.Debug("Loading {0}...", name);
-		PPC ppc = PPC(this.ContentRoot~name~".ppc");
+		PPC ppc = PPC(loadFile(this.ContentRoot~name~".ppc"));
 		return new SoundEffect(ppct.Audio(ppc.data));
 	}
 
 	public T Load(T)(string name) if (is(T : Texture2D)) {
-		Logger.VerboseDebug("Loading {0}...", name);
 		PPC ppc = PPC(this.ContentRoot~name~".ppc");
 		auto imgd = ppct.Image(ppc.data);
 		TextureImg img = new TextureImg(cast(int)imgd.width, cast(int)imgd.height, imgd.pixelData, name);

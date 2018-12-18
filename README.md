@@ -52,6 +52,7 @@ void main(string[] args)
 
 class MyGame : Game
 {
+	Texture2D myTexture;
 	this() {
 
 	}
@@ -64,6 +65,9 @@ class MyGame : Game
 
 	public override void LoadContent() {
 		// Load textures, sound, shaders, etc. here
+
+		//Example:
+		myTexture = Content.Load!Texture2D("myTexture");
 	}	
 
 	public override void Update(GameTimes game_time)

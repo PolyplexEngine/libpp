@@ -85,8 +85,4 @@ public class AudioDevice {
 	public void MakeCurrent() {
 		alcMakeContextCurrent(ALContext);
 	}
-
-	public ALBuffer GenerateBuffer(Audio aud) {
-		return new ALBuffer(aud);
-	}
 }
