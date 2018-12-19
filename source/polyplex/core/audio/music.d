@@ -89,7 +89,8 @@ private:
 
 public:
 
-    // Constructs a Music via an Audio source.
+    /// Constructs a Music via an Audio source.
+    // TODO: Optimize enough so that we can have fewer buffers
     this(Audio audio, AudioRenderFormats format = AudioRenderFormats.Auto, int buffers = 16) {
         stream = audio;
 		
