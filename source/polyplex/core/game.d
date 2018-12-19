@@ -173,6 +173,9 @@ public abstract class Game {
 		}
 		window.Show();
 		InitLibraries();
+
+		import polyplex.core.audio.music;
+		
 		do_update();
 	}
 

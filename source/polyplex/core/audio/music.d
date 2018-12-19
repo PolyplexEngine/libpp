@@ -12,32 +12,18 @@ import core.time;
 import core.sync.mutex;
 
 protected 	__gshared bool shouldStop;
-private     __gshared playback[] playbackThreads;
-private		__gshared bool started;
 
-struct playback {
-    private 	__gshared Music iMusPtr;
-    private 	__gshared size_t totalProcessed;
-    private 	__gshared Tid musicThread;
-    private		__gshared bool started;
-}
-
-protected void MusicHandlerThread(int channel) {
-	int buffersProcessed;
-    bool songEnded;
-    ALuint deqBuff;
-    ALint state;
-    byte[] streamBuffer = new byte[playbackThreads[channel].iMusPtr.bufferSize];
+protected void MusicHandlerThread(Music iMus) {
     try {
-	    while (!shouldStop) {
+		int buffersProcessed;
+		ALuint deqBuff;
+		ALint state;
+		byte[] streamBuffer = new byte[iMus.bufferSize];
+	    while (!shouldStop && !iMus.shouldStopInternal) {
             Thread.sleep(10.msecs);
 
-            Music iMus = playbackThreads[channel].iMusPtr;
-            if (iMus is null) continue;
-			streamBuffer.length = iMus.bufferSize;
-
             alGetSourcei(iMus.source, AL_BUFFERS_PROCESSED, &buffersProcessed);
-            playbackThreads[channel].totalProcessed += buffersProcessed;
+            iMus.totalProcessed += buffersProcessed;
 
             while(buffersProcessed > 0) {
                 deqBuff = 0;
@@ -46,12 +32,9 @@ protected void MusicHandlerThread(int channel) {
                 // Read audio from stream in
                 size_t readData = iMus.stream.read(streamBuffer.ptr, iMus.bufferSize);
                 if (readData == 0) {
-                    if (iMus.looping) {
-                        iMus.stream.seek;
-                        readData = iMus.stream.read(streamBuffer.ptr, iMus.bufferSize);
-                    } else {
-                        songEnded = true;
-                    }
+                    if (!iMus.looping) return; 
+					iMus.stream.seek;
+					readData = iMus.stream.read(streamBuffer.ptr, iMus.bufferSize);
                 }
 
                 // Send to OpenAL
@@ -63,11 +46,6 @@ protected void MusicHandlerThread(int channel) {
 
             alGetSourcei(iMus.source, AL_SOURCE_STATE, &state);
             if (state != AL_PLAYING) {
-                if (songEnded) {
-                    iMus = null;
-                    songEnded = false;
-                    continue;
-                }
                 Logger.Warn("Music buffer X-run!");
                 alSourcePlay(iMus.source);
             }
@@ -77,16 +55,12 @@ protected void MusicHandlerThread(int channel) {
     }
 }
 
-protected void spawnMusicHandler() {
-    if (started) return;
-	started = true;
-    playback pb;
-    pb.musicThread = spawn(&MusicHandlerThread, 0);
-    playbackThreads ~= pb;
-}
-
 public class Music {
 private:
+    size_t totalProcessed;
+    Thread musicThread;
+    bool shouldStopInternal;
+
     // Buffer
     Audio stream;
     ALuint[] buffer;
@@ -95,7 +69,9 @@ private:
     int bufferSize;
     int buffers;
 
-    private bool looping;
+    bool looping;
+
+	int boundChannel = -1;
 
     // Source
     ALuint source;
@@ -104,7 +80,7 @@ public:
 
     this(Audio audio, AudioRenderFormats format = AudioRenderFormats.Auto, int buffers = 16) {
         stream = audio;
-
+		
         // Select format if told to.
 		if (format == AudioRenderFormats.Auto) {
 			import std.conv;
@@ -130,8 +106,6 @@ public:
         prestream();
 
         Logger.VerboseDebug("Created new Music! source={3} buffers={0} bufferSize={1} ids={2}", buffers, bufferSize, buffer, source);
-
-		if (!started) spawnMusicHandler();
     }
 
     ~this() {
@@ -153,34 +127,51 @@ public:
 			alSourceQueueBuffers(source, 1, &buffer[i]);
         }
     }
-    
-	public @property bool Looping() {
-		return looping;
+
+	private void spawnHandler() {
+		if (musicThread !is null && musicThread.isRunning) return;
+
+		musicThread = new Thread({
+			MusicHandlerThread(this);
+		});
+		musicThread.start();
 	}
-	public @property void Looping(bool val) { looping = val; }
 
     void Play() {
 		synchronized {
-			if (playbackThreads[0].iMusPtr !is null) playbackThreads[0].iMusPtr.Stop();
-			playbackThreads[0].iMusPtr = this;
+			if (musicThread is null || !musicThread.isRunning) spawnHandler();
 			alSourcePlay(source);
 		}
     }
 
     void Stop() {
 		synchronized {
-			playbackThreads[0].iMusPtr = null;
+			if (musicThread is null) return;
+
+			// Tell thread to die, repeatedly until it does.
+			while(musicThread.isRunning) shouldStopInternal = true;
+
+			// Stop source and prepare for playing again
 			alSourceStop(source);
 			stream.seek();
 			prestream();
 		}
     }
 
+	void Pause() {
+		alSourcePause(source);
+	}
+
     size_t Tell() {
 		synchronized { 
 			return stream.tell;
 		}
     }
+
+	public @property bool Looping() {
+		return looping;
+	}
+	public @property void Looping(bool val) { looping = val; }
 	
 	/*
 		PITCH
