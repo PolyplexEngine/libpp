@@ -169,8 +169,19 @@ public:
     }
 
     void Seek(size_t position = 0) {
-        if (position > Length) position = Length-1;
+        if (position >= Length) position = Length-1;
+        // Pause stream
+        Pause();
+
+        // Unqueue everything
+        alSourceUnqueueBuffers(source, buffers, buffer.ptr);
+
+        // Refill buffers
         stream.seekSample(position);
+        prestream();
+
+        // Resume
+        alSourcePlay(source);
     }
 
     size_t Length() {
