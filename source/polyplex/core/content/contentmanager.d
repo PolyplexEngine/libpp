@@ -53,6 +53,19 @@ public class ContentManager {
 		return new SoundEffect(ppct.Audio(ppc.data));
 	}
 
+	T loadLocal(T)(string name) if (is(T : Music)) {
+		return new Music(ppct.Audio(loadFile(name)));
+	}
+
+	public T Load(T)(string name) if (is(T : Music)) {
+		// Load raw file if instructed to.
+		if (name[0] == '!') return loadLocal!T(name[1..$]);
+
+		// Otherwise load PPC file
+		PPC ppc = PPC(loadFile(this.ContentRoot~name~".ppc"));
+		return new Music(ppct.Audio(ppc.data));
+	}
+
 	T loadLocal(T)(string name) if (is(T : Texture2D)) {
 		auto imgd = ppct.Image(loadFile(name));
 		TextureImg img = new TextureImg(cast(int)imgd.width, cast(int)imgd.height, imgd.pixelData, name);

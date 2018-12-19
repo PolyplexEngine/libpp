@@ -254,9 +254,11 @@ public abstract class Game {
 				avg_fps = t;
 			}
 		}
+		import polyplex.core.audio.music;
+		shouldStop = true;
 		destroy(DefaultAudioDevice);
 		Logger.Success("~~~ GAME ENDED ~~~\nHave a nice day! c:");
-    	}
+	}
 
 	public void Quit() {
 		this.window.Close();

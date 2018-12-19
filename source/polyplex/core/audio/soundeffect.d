@@ -43,7 +43,6 @@ public:
         // Create audio source
         alGenSources(1, &source);
         alSourcei(source, AL_BUFFER, buffer);
-        writeln(streamBuffer.ptr, " ", streamBuffer.length);
     }
 
     ~this() {
