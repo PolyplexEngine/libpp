@@ -148,7 +148,7 @@ public:
 		synchronized {
 			if (musicThread is null) return;
 
-			// Tell thread to die, repeatedly until it does.
+			// Tell thread to die repeatedly, until it does.
 			while(musicThread.isRunning) shouldStopInternal = true;
 
 			// Stop source and prepare for playing again
@@ -166,6 +166,15 @@ public:
 		synchronized { 
 			return stream.tell;
 		}
+    }
+
+    void Seek(size_t position = 0) {
+        if (position > Length) position = Length-1;
+        stream.seekSample(position);
+    }
+
+    size_t Length() {
+        return stream.info.pcmLength;
     }
 
 	public @property bool Looping() {
