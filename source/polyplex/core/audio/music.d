@@ -11,6 +11,7 @@ import core.thread;
 import core.time;
 import core.sync.mutex;
 
+// This is set to true on application close, so that threads know to quit.
 protected 	__gshared bool shouldStop;
 
 protected void MusicHandlerThread(Music iMus) {
@@ -19,13 +20,19 @@ protected void MusicHandlerThread(Music iMus) {
 		ALuint deqBuff;
 		ALint state;
 		byte[] streamBuffer = new byte[iMus.bufferSize];
+
+        // Stop thread if requested.
 	    while (!shouldStop && !iMus.shouldStopInternal) {
+
+            // Sleep needed to make the CPU NOT run at 100% at all times
             Thread.sleep(10.msecs);
 
+            // Check if we have any buffers to fill
             alGetSourcei(iMus.source, AL_BUFFERS_PROCESSED, &buffersProcessed);
             iMus.totalProcessed += buffersProcessed;
-
             while(buffersProcessed > 0) {
+
+                // Find the ID of the buffer to fill
                 deqBuff = 0;
                 alSourceUnqueueBuffers(iMus.source, 1, &deqBuff);
 
@@ -44,6 +51,8 @@ protected void MusicHandlerThread(Music iMus) {
                 buffersProcessed--;
             }
 
+            // OpenAL will stop the stream if it runs out of buffers
+            // Ensure that if OpenAL stops, we start it again.
             alGetSourcei(iMus.source, AL_SOURCE_STATE, &state);
             if (state != AL_PLAYING) {
                 Logger.Warn("Music buffer X-run!");
@@ -57,6 +66,7 @@ protected void MusicHandlerThread(Music iMus) {
 
 public class Music {
 private:
+    // Internal thread-communication data.
     size_t totalProcessed;
     Thread musicThread;
     bool shouldStopInternal;
@@ -66,18 +76,20 @@ private:
     ALuint[] buffer;
     AudioRenderFormats fFormat;
 
+    // Buffer sizing
     int bufferSize;
     int buffers;
 
+    // Settings
     bool looping;
-
-	int boundChannel = -1;
+    bool paused;
 
     // Source
     ALuint source;
 
 public:
 
+    // Constructs a Music via an Audio source.
     this(Audio audio, AudioRenderFormats format = AudioRenderFormats.Auto, int buffers = 16) {
         stream = audio;
 		
@@ -119,15 +131,18 @@ public:
 
         // Pre-read some data.
         foreach (i; 0 .. buffers) {
+
 			// Read audio from stream in
 			size_t read = stream.read(streamBuffer.ptr, bufferSize);
 
 			// Send to OpenAL
 			alBufferData(buffer[i], this.fFormat, streamBuffer.ptr, cast(int)read, cast(int)stream.info.bitrate);
 			alSourceQueueBuffers(source, 1, &buffer[i]);
+
         }
     }
 
+    // Spawns player thread.
 	private void spawnHandler() {
 		if (musicThread !is null && musicThread.isRunning) return;
 
@@ -137,13 +152,17 @@ public:
 		musicThread.start();
 	}
 
-    void Play() {
+    /// Play music
+    void Play(bool isLooping = false) {
 		synchronized {
 			if (musicThread is null || !musicThread.isRunning) spawnHandler();
-			alSourcePlay(source);
+            alSourcePlay(source);
+            paused = false;
 		}
     }
 
+    /// Stop playing music
+    /// Does nothing if music isn't playing.
     void Stop() {
 		synchronized {
 			if (musicThread is null) return;
@@ -158,34 +177,48 @@ public:
 		}
     }
 
+    /// Pause music
 	void Pause() {
-		alSourcePause(source);
+        synchronized {
+		    alSourcePause(source);
+            paused = true;
+        }
 	}
 
+    /// Gets the current position in the music stream (in samples)
     size_t Tell() {
 		synchronized { 
 			return stream.tell;
 		}
     }
 
+    /// Seeks the music stream (in samples)
     void Seek(size_t position = 0) {
-        if (position >= Length) position = Length-1;
-        // Pause stream
-        Pause();
+        synchronized {
+            if (position >= Length) position = Length-1;
+            // Pause stream
+            Pause();
 
-        // Unqueue everything
-        alSourceUnqueueBuffers(source, buffers, buffer.ptr);
+            // Unqueue everything
+            alSourceUnqueueBuffers(source, buffers, buffer.ptr);
 
-        // Refill buffers
-        stream.seekSample(position);
-        prestream();
+            // Refill buffers
+            stream.seekSample(position);
+            prestream();
 
-        // Resume
-        alSourcePlay(source);
+            // Resume
+            alSourcePlay(source);
+        }
     }
 
+    /// Gets length of music (in samples)
     size_t Length() {
         return stream.info.pcmLength;
+    }
+
+    /// Gets wether the music is paused.
+    public bool Paused() {
+        return paused;
     }
 
 	public @property bool Looping() {
