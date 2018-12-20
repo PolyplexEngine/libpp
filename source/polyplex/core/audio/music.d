@@ -42,6 +42,7 @@ protected void MusicHandlerThread(Music iMus) {
 				if (startBufferSize != Music.BufferSize) {
 					streamBuffer.length = Music.BufferSize;
 					startBufferSize = Music.BufferSize;
+					iMus.bufferSize = cast(int)Music.BufferSize;
 				}
 
                 // Read audio from stream in
