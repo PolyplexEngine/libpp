@@ -5,76 +5,65 @@ import polyplex.math;
 /// Params:
 /// type = all values get stored as this type
 class Rectangle {
-	private int x = 0;
-	private int y = 0;
-	private int width = 0;
-	private int height = 0;
+public:
+	int X = 0;
+	int Y = 0;
+	int Width = 0;
+	int Height = 0;
 
 	this() { }
 
 	this(int width, int height) {
-		this.x = 0;
-		this.y = 0;
-		this.width = width;
-		this.height = height;
+		this.X = 0;
+		this.Y = 0;
+		this.Width = width;
+		this.Height = height;
 	}
 
 	this(int x, int y, int width, int height) {
-		this.x = x;
-		this.y = y;
-		this.width = width;
-		this.height = height;
+		this.X = x;
+		this.Y = y;
+		this.Width = width;
+		this.Height = height;
 	}
 
 	import std.traits;
-	public @trusted Rectangle opBinary(string op, T)(T other) if (isNumeric!(T)) {
+	@trusted Rectangle opBinary(string op, T)(T other) if (isNumeric!(T)) {
 		import std.format;
 		mixin(q{
 			return new Rectangle(X %s other, Y %s other, Width %s other, Height %s other);
 		}.format(op, op, op, op));
 	}
 
-	public @trusted Rectangle opBinary(string op, T)(T other) if (is(T : Rectangle)) {
+	@trusted Rectangle opBinary(string op, T)(T other) if (is(T : Rectangle)) {
 		import std.format;
 		mixin(q{
 			return new Rectangle(X %s other.X, Y %s other.Y, Width %s other.Width, Height %s other.Height);
 		}.format(op, op, op, op));
 	}
 
-	public @property int X() { return this.x; }
-	public @property void X(int x) { this.x = x; }
+	int Left() { return this.X; }
+	int Right() { return this.X + this.Width; }
+	int Top() { return this.Y; }
+	int Bottom() { return this.Y + this.Height; }
+	Vector2 Center() { return Vector2(this.X + (this.Width/2), this.Y + (this.Height/2)); }
 
-	public @property int Y() { return this.y; }
-	public @property void Y(int y) { this.y = y; }
-
-	public @property int Width() { return this.width; }
-	public @property void Width(int width) { this.width = width; }
-
-	public @property int Height() { return this.height; }
-	public @property void Height(int height) { this.height = height; }
-
-	public int Left() { return this.x; }
-	public int Right() { return this.x + this.width; }
-	public int Top() { return this.y; }
-	public int Bottom() { return this.y + this.height; }
-	public Vector2 Center() { return Vector2(this.x + (this.width/2), this.y + (this.height/2)); }
-
-	public bool Intersects(Rectangle other) {
+	bool Intersects(Rectangle other) {
 		if (other is null) return false;
 		bool v = (other.Left > this.Right || other.Right < this.Left || other.Top > this.Bottom || other.Bottom < this.Top);
 		return !v;
 	}
 
-	public bool Intersects(Vector2 other) {
+	bool Intersects(Vector2 other) {
 		bool v = (other.X > this.Right || other.X < this.Left || other.Y > this.Bottom || other.Y < this.Top);
 		return !v;
 	}
 
-	public Rectangle Displace(int x, int y) {
-		return new Rectangle(this.X+x, this.Y+y, this.width, this.height);
+	Rectangle Displace(int x, int y) {
+		return new Rectangle(this.X+x, this.Y+y, this.Width, this.Height);
 	}
 
-	public Rectangle Expand(int x, int y) {
-		return new Rectangle(this.X-x, this.Y-y, this.width+x, this.height+y);
+	Rectangle Expand(int x, int y) {
+		return new Rectangle(this.X-x, this.Y-y, this.Width+x, this.Height+y);
 	}
 }
