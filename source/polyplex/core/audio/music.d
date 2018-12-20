@@ -21,6 +21,8 @@ protected void MusicHandlerThread(Music iMus) {
 		ALint state;
 		byte[] streamBuffer = new byte[iMus.bufferSize];
 
+		size_t startBufferSize = Music.BufferSize;
+
         // Stop thread if requested.
 	    while (!shouldStop && !iMus.shouldStopInternal) {
 
@@ -35,6 +37,12 @@ protected void MusicHandlerThread(Music iMus) {
                 // Find the ID of the buffer to fill
                 deqBuff = 0;
                 alSourceUnqueueBuffers(iMus.source, 1, &deqBuff);
+
+				// Resize buffers if needed
+				if (startBufferSize != Music.BufferSize) {
+					streamBuffer.length = Music.BufferSize;
+					startBufferSize = Music.BufferSize;
+				}
 
                 // Read audio from stream in
                 size_t readData = iMus.stream.read(streamBuffer.ptr, iMus.bufferSize);
@@ -96,9 +104,17 @@ private:
 
 public:
 
+	/// Changes the size of the buffers for music playback.
+	/// Changes take effect immidiately
+	static size_t BufferSize = 48_000;
+
+	/// Amount of buffers to provision per audio track
+	/// Takes effect on new audio load.
+	static size_t BufferCount = 16;
+
     /// Constructs a Music via an Audio source.
     // TODO: Optimize enough so that we can have fewer buffers
-    this(Audio audio, AudioRenderFormats format = AudioRenderFormats.Auto, int buffers = 16) {
+    this(Audio audio, AudioRenderFormats format = AudioRenderFormats.Auto) {
         stream = audio;
 		
         // Select format if told to.
@@ -113,10 +129,10 @@ public:
         alGetError();
 
         // Prepare buffer arrays
-        this.buffers = buffers;
+        this.buffers = BufferCount;
         buffer = new ALuint[buffers];
 
-        this.bufferSize = cast(int)stream.info.bitrate*stream.info.channels;
+        this.bufferSize = BufferSize*stream.info.channels;
 
         alGenBuffers(buffers, buffer.ptr);
 
