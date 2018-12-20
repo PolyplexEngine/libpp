@@ -13,9 +13,23 @@ import core.sync.mutex;
 
 // This is set to true on application close, so that threads know to quit.
 protected 	__gshared bool shouldStop;
+protected 	__gshared int openMusicChannels;
+
+private void iHandlerLaunch() {
+	synchronized {
+		openMusicChannels++;
+	}
+}
+
+private void iHandlerStop() {
+	synchronized {
+		openMusicChannels--;
+	}
+}
 
 protected void MusicHandlerThread(Music iMus) {
     try {
+		iHandlerLaunch;
 		int buffersProcessed;
 		ALuint deqBuff;
 		ALint state;
@@ -24,7 +38,7 @@ protected void MusicHandlerThread(Music iMus) {
 		size_t startBufferSize = Music.BufferSize;
 
         // Stop thread if requested.
-	    while (!shouldStop && !iMus.shouldStopInternal) {
+	    while (iMus !is null && &shouldStop !is null && !shouldStop && !iMus.shouldStopInternal) {
 
             // Sleep needed to make the CPU NOT run at 100% at all times
             Thread.sleep(10.msecs);
@@ -73,8 +87,14 @@ protected void MusicHandlerThread(Music iMus) {
             }
 	    }   
     } catch(Exception ex) {
-        Logger.Err("{0}", ex.message);
-    }
+        Logger.Err("MusicHandlerException: {0}", ex.message);
+    } catch (Error err) {
+        Logger.Err("MusicHandlerError: {0}", err.message);
+	}
+	iHandlerStop;
+	if (shouldStop) {
+		destroy(iMus);
+	}
 }
 
 public class Music {

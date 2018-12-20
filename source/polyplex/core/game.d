@@ -159,6 +159,7 @@ public abstract class Game {
 	}
 
 	~this() {
+		UnloadContent();
 		destroy(window);
 	}
 
@@ -259,7 +260,13 @@ public abstract class Game {
 		}
 		import polyplex.core.audio.music;
 		shouldStop = true;
+
+		Logger.Info("Cleaning up music threads... {0}", openMusicChannels);
+		while (openMusicChannels > 0) {}
+		Logger.Success("Cleanup completed...");
+
 		destroy(DefaultAudioDevice);
+
 		Logger.Success("~~~ GAME ENDED ~~~\nHave a nice day! c:");
 	}
 
@@ -269,6 +276,7 @@ public abstract class Game {
 
 	public abstract void Init();
 	public abstract void LoadContent();
+	public abstract void UnloadContent();
 	public abstract void Update(GameTimes game_time);
 	public abstract void Draw(GameTimes game_time);
 }
