@@ -129,10 +129,10 @@ public:
         alGetError();
 
         // Prepare buffer arrays
-        this.buffers = BufferCount;
+        this.buffers = cast(int)BufferCount;
         buffer = new ALuint[buffers];
 
-        this.bufferSize = BufferSize*stream.info.channels;
+        this.bufferSize = (cast(int)BufferSize)*stream.info.channels;
 
         alGenBuffers(buffers, buffer.ptr);
 
