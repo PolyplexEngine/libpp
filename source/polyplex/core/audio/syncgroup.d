@@ -37,7 +37,7 @@ public:
     }
 
     /// Call every frame to make sure that XRuns are handled.
-    void Update(G) {
+    void Update() {
         // If Xruns have been unhandled.
         if (group[syncSource].XRuns > 0)
             Resync();
