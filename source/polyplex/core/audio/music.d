@@ -230,12 +230,16 @@ public:
 
 	/// Get amount of unhandled XRuns that has happened.
 	int XRuns() {
-		return xruns;
+		synchronized {
+			return xruns;
+		}
 	}
 
-	/// Mark XRun has handled.
+	/// Mark XRuns as handled.
 	void HandledXRun() {
-		xruns--;
+		synchronized {
+			xruns = 0;
+		}
 	}
 
     /// Gets wether the music is paused.

@@ -36,9 +36,9 @@ public:
         }
     }
 
-    /// Updates the synchronization clock
-    void UpdateSyncTimings(GameTimes gameTime) {
-        // If game counts as lagging, resync.
+    /// Call every frame to make sure that XRuns are handled.
+    void Update(G) {
+        // If Xruns have been unhandled.
         if (group[syncSource].XRuns > 0)
             Resync();
     }
@@ -47,6 +47,7 @@ public:
     void Resync() {
         size_t sourceTell = group[syncSource].Tell;
         foreach(track; group) {
+            if (track.Playing) track.Stop();
             track.Seek(sourceTell);
             track.HandledXRun();
         }
