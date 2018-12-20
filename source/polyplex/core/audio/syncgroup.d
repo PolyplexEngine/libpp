@@ -21,7 +21,6 @@ public:
     */
     this(Music[] group) {
         this.group = group;
-        this.msLagTiming = msLagTiming;
     }
 
     /// Sets the synchronization source
