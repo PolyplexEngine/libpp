@@ -8,6 +8,7 @@ public import polyplex.core.input;
 public import polyplex.core.content;
 public import polyplex.core.color;
 public import polyplex.core.windows;
+public import polyplex.core.audio;
 
 import polyplex;
 import polyplex.utils;

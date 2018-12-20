@@ -39,7 +39,10 @@ protected void MusicHandlerThread(Music iMus) {
                 // Read audio from stream in
                 size_t readData = iMus.stream.read(streamBuffer.ptr, iMus.bufferSize);
                 if (readData == 0) {
-                    if (!iMus.looping) return; 
+                    if (!iMus.looping) {
+						iMus.playing = false;
+						return; 
+					}
 					iMus.stream.seek;
 					readData = iMus.stream.read(streamBuffer.ptr, iMus.bufferSize);
                 }
@@ -83,6 +86,7 @@ private:
     // Settings
     bool looping;
     bool paused;
+	bool playing;
 
     // Source
     ALuint source;
@@ -159,6 +163,7 @@ public:
 			if (musicThread is null || !musicThread.isRunning) spawnHandler();
             alSourcePlay(source);
             paused = false;
+			playing = true;
 		}
     }
 
@@ -175,6 +180,8 @@ public:
 			alSourceStop(source);
 			stream.seek();
 			prestream();
+
+			playing = false;
 		}
     }
 
@@ -183,6 +190,7 @@ public:
         synchronized {
 		    alSourcePause(source);
             paused = true;
+			playing = false;
         }
 	}
 
@@ -197,8 +205,8 @@ public:
     void Seek(size_t position = 0) {
         synchronized {
             if (position >= Length) position = Length-1;
-            // Pause stream
-            Pause();
+            // Stop stream
+            alSourceStop(source);
 
             // Unqueue everything
             alSourceUnqueueBuffers(source, buffers, buffer.ptr);
@@ -208,7 +216,7 @@ public:
             prestream();
 
             // Resume
-            alSourcePlay(source);
+            if (playing) alSourcePlay(source);
         }
     }
 
@@ -221,6 +229,11 @@ public:
     public bool Paused() {
         return paused;
     }
+
+	/// Gets wether the music is playing
+	public bool Playing() {
+		return playing;
+	}
 
 	public @property bool Looping() {
 		return looping;

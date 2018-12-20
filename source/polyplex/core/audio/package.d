@@ -2,6 +2,7 @@ module polyplex.core.audio;
 import derelict.openal;
 public import polyplex.core.audio.soundeffect;
 public import polyplex.core.audio.music;
+public import polyplex.core.audio.syncgroup;
 
 public enum AudioRenderFormats : int {
 	/**
