@@ -1,6 +1,7 @@
 module polyplex.core.audio.syncgroup;
 import polyplex.core.audio;
 import polyplex.core;
+import polyplex.utils.logging;
 
 /**
     SyncGroup is a rudementary and naive form of audio synchronization for music channels.
@@ -38,7 +39,7 @@ public:
     /// Updates the synchronization clock
     void UpdateSyncTimings(GameTimes gameTime) {
         // If game counts as lagging, resync.
-        if (gameTime.DeltaTime.Milliseconds >= msLagTiming) 
+        if (group[syncSource].XRuns > 0)
             Resync();
     }
 
@@ -46,12 +47,13 @@ public:
     void Resync() {
         size_t sourceTell = group[syncSource].Tell;
         foreach(track; group) {
-            track.Stop();
             track.Seek(sourceTell);
+            track.HandledXRun();
         }
 
         // Once resynced, start again.
         foreach(track; group) track.Play();
+        Logger.Debug("Resynced SyncGroup...");
     }
 
     /// Play all audio tracks in the sync group

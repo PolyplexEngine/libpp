@@ -58,6 +58,7 @@ protected void MusicHandlerThread(Music iMus) {
             // Ensure that if OpenAL stops, we start it again.
             alGetSourcei(iMus.source, AL_SOURCE_STATE, &state);
             if (state != AL_PLAYING) {
+				iMus.xruns++;
                 Logger.Warn("Music buffer X-run!");
                 alSourcePlay(iMus.source);
             }
@@ -87,6 +88,8 @@ private:
     bool looping;
     bool paused;
 	bool playing;
+
+	int xruns;
 
     // Source
     ALuint source;
@@ -224,6 +227,16 @@ public:
     size_t Length() {
         return stream.info.pcmLength;
     }
+
+	/// Get amount of unhandled XRuns that has happened.
+	int XRuns() {
+		return xruns;
+	}
+
+	/// Mark XRun has handled.
+	void HandledXRun() {
+		xruns--;
+	}
 
     /// Gets wether the music is paused.
     bool Paused() {
