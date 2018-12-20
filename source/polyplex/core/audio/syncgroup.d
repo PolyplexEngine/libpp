@@ -72,7 +72,7 @@ public:
     /*
 		PITCH
 	*/
-	@property void Pitch(float val) { 
+    @property void Pitch(float val) { 
         foreach(track; group) 
             track.Pitch = val; 
     }
@@ -80,7 +80,7 @@ public:
 	/*
 		GAIN
 	*/
-	@property void Gain(float val) { 
+    @property void Gain(float val) { 
         foreach(track; group) 
             track.Gain = val; 
     }
