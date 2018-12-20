@@ -1,4 +1,4 @@
-module polyplex.core.audio.soundeffect;
+module polyplex.core.audio.syncgroup;
 import polyplex.core.audio;
 import polyplex.core;
 
@@ -10,7 +10,7 @@ import polyplex.core;
 public class SyncGroup {
 private:
     Music[] group;
-    uint msLaggTiming;
+    uint msLagTiming;
     size_t syncSource;
 
 public:
@@ -24,6 +24,7 @@ public:
     */
     this(Music[] group, uint msLagTiming = 500) {
         this.group = group;
+        this.msLagTiming = msLagTiming;
     }
 
     /// Sets the synchronization clock.
