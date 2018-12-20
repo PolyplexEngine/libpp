@@ -13,6 +13,7 @@ private:
     Music[] group;
     uint msLagTiming;
     size_t syncSource;
+    size_t combinedXruns;
 
 public:
     /**
@@ -39,8 +40,11 @@ public:
     /// Call every frame to make sure that XRuns are handled.
     void Update() {
         // If Xruns have been unhandled.
-        if (group[syncSource].XRuns > 0)
+        if (combinedXruns > 0)
             Resync();
+        
+        combinedXruns = 0;
+        foreach(audio; group) combinedXruns += audio.XRuns;
     }
 
     /// Resyncronizes audio tracks
