@@ -114,6 +114,5 @@ public void InitLibraries() {
 	
 	DerelictGL3.load();
 	gl_init = true;
-	Logger.Info("Initialized OpenGL bindings...");
 	
 }
