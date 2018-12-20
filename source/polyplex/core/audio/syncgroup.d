@@ -11,25 +11,20 @@ import polyplex.utils.logging;
 public class SyncGroup {
 private:
     Music[] group;
-    uint msLagTiming;
     size_t syncSource;
     size_t combinedXruns;
 
 public:
     /**
         Creates a new SyncGroup which keeps Music instances synchronized.
-        set msLagTiming to the timing you expect to be counting as lagg
-        (as reference, 16 ms is 60 FPS)
-        (default 500 (2 FPS))
-
         The first track in the group is the one that will be the sync source by default.
     */
-    this(Music[] group, uint msLagTiming = 500) {
+    this(Music[] group) {
         this.group = group;
         this.msLagTiming = msLagTiming;
     }
 
-    /// Sets the synchronization clock.
+    /// Sets the synchronization source
     void SetSyncSource(Music mus) {
         foreach(i; 0 .. group.length) {
             if (group[i] == mus) 
