@@ -24,10 +24,6 @@ public class GlRenderer : BackendRenderer {
 
 	this(win.Window parent) { super(parent); }
 
-	~this() {
-		Window.DestroyContext();
-	}
-
 	public override void Init() {
 		// Create the neccesary rendering backend.
 		Window.CreateContext(GraphicsBackend.OpenGL);

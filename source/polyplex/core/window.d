@@ -14,6 +14,10 @@ public class Window {
 		this.SurfaceName = name;
 	}
 
+	public ~this() {
+		DestroyContext();
+	}
+
 	// Allow Resizing
 	public abstract @property bool AllowResizing();
 	public abstract @property void AllowResizing(bool allow);

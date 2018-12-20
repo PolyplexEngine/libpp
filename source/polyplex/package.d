@@ -77,6 +77,16 @@ private string trimexe(string input) {
 	}
 }
 
+/**
+	De-init libraries
+*/
+public void UnInitLibraries() {
+	DerelictSDL2.unload();
+	DerelictGL3.unload();
+	DerelictAL.unload();
+	core_init = false;
+}
+
 /*
 	InitLibraries loads the Derelict libraries for Vulkan, SDL and OpenGL
 */
@@ -114,5 +124,4 @@ public void InitLibraries() {
 	
 	DerelictGL3.load();
 	gl_init = true;
-	
 }

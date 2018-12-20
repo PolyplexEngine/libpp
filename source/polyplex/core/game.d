@@ -21,6 +21,8 @@ import std.typecons;
 import std.stdio;
 import std.conv;
 
+import core.memory;
+
 public class GameTime {
 	private ulong ticks;
 
@@ -178,6 +180,8 @@ public abstract class Game {
 		import polyplex.core.audio.music;
 		
 		do_update();
+		
+		UnInitLibraries();
 	}
 
     private void do_update() {
@@ -263,11 +267,18 @@ public abstract class Game {
 
 		Logger.Info("Cleaning up music threads... {0}", openMusicChannels);
 		while (openMusicChannels > 0) {}
-		Logger.Success("Cleanup completed...");
+
+		Logger.Info("Cleaning up resources...");
+		UnloadContent();
 
 		destroy(DefaultAudioDevice);
+		destroy(window);
 
-		Logger.Success("~~~ GAME ENDED ~~~\nHave a nice day! c:");
+		GC.collect();
+
+		Logger.Success("Cleanup completed...");
+
+		Logger.Success("~~~ GAME ENDED ~~~");
 	}
 
 	public void Quit() {

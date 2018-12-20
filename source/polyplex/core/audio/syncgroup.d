@@ -23,6 +23,10 @@ public:
         this.group = group;
     }
 
+    ~this() {
+        destroy(group);
+    }
+
     /// Sets the synchronization source
     void SetSyncSource(Music mus) {
         foreach(i; 0 .. group.length) {

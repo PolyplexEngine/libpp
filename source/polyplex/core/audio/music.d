@@ -92,9 +92,6 @@ protected void MusicHandlerThread(Music iMus) {
         Logger.Err("MusicHandlerError: {0}", err.message);
 	}
 	iHandlerStop;
-	if (shouldStop) {
-		destroy(iMus);
-	}
 }
 
 public class Music {
@@ -166,10 +163,14 @@ public:
     }
 
     ~this() {
+        cleanup();
+    }
+
+	private void cleanup() {
         // Cleanup procedure
         alDeleteSources(1, &source);
         alDeleteBuffers(buffers, buffer.ptr);
-    }
+	}
 
     private void prestream() {
 		byte[] streamBuffer = new byte[bufferSize];
