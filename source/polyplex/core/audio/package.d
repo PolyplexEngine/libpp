@@ -80,7 +80,7 @@ public class AudioDevice {
 	*/
 	this(string device = null) {
 		ALint[] attribs = null;
-		
+
 		Logger.Info("Initializing OpenAL device...");
 		ALCdevice* dev = alcOpenDevice(device.ptr);
 		
@@ -103,7 +103,7 @@ public class AudioDevice {
 		}
 
 		if (dev) {
-			ALContext = alcCreateContext(dev, attribs);
+			ALContext = alcCreateContext(dev, attribs.ptr);
 			alcMakeContextCurrent(ALContext);
 		} else {
 			import std.conv;
