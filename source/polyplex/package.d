@@ -1,11 +1,10 @@
 module polyplex;
-import derelict.sdl2.sdl;
-import derelict.sdl2.image;
-import derelict.sdl2.mixer;
-import derelict.sdl2.ttf;
 import derelict.vulkan.vulkan;
-import derelict.opengl;
-import derelict.openal;
+
+import bindbc.sdl;
+import bindbc.opengl;
+import openal;
+
 import polyplex.utils.logging;
 import std.stdio;
 import std.conv;
@@ -81,9 +80,9 @@ private string trimexe(string input) {
 	De-init libraries
 */
 public void UnInitLibraries() {
-	DerelictSDL2.unload();
-	DerelictGL3.unload();
-	DerelictAL.unload();
+	unloadSDL();
+	unloadOpenGL();
+	unloadOAL();
 	core_init = false;
 }
 
@@ -106,13 +105,13 @@ public void InitLibraries() {
 			path_begin = trimexe(path_begin);
 			std.process.environment["PATH"] = path_begin ~ "libs" ~ sys_sep ~ get_arch() ~ path_sep ~ path;
 			Logger.Debug("Updated PATH to {0}", std.process.environment["PATH"]);
-			DerelictSDL2.load(get_system_lib("SDL2"));
+			loadSDL(get_system_lib("SDL2").dup.ptr);
 		} else {
 			// Load system libraries
 			Logger.Info("Binding to system libraries....");
-			DerelictSDL2.load();
+			loadSDL();
 		}
-		DerelictAL.load();
+		loadOAL();
 		SDL_version linked;
 		SDL_version compiled;
 		SDL_GetVersion(&linked);
@@ -122,6 +121,6 @@ public void InitLibraries() {
 		core_init = true;
 	}
 	
-	DerelictGL3.load();
+	loadOpenGL();
 	gl_init = true;
 }

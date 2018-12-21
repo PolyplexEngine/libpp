@@ -1,11 +1,11 @@
 module polyplex.core.input.mouse;
 import polyplex.core.events;
-import derelict.sdl2.sdl;
+import bindbc.sdl;
 import polyplex.math;
 
 import std.stdio;
 
-enum MouseButton {
+enum MouseButton : ubyte {
 
 	//Left Mouse Button
 	Left = SDL_BUTTON_LEFT,
@@ -27,11 +27,15 @@ public class MouseState {
 		this.btn_mask = btn_mask;
 	}
 
+	ubyte SDLButton(ubyte x) {
+		return cast(ubyte)(1 << (x-1));
+	}
+
 	/**
 		Returns true if the specified MouseButton is pressed.
 	*/
 	public bool IsButtonPressed(MouseButton button) {
-		if (btn_mask & SDL_BUTTON(button)) return true;
+		if (btn_mask & SDLButton(button)) return true;
 		return false;
 	}
 

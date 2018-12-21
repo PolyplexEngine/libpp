@@ -1,0 +1,6 @@
+name "openal"
+description "An BindBC binding to OpenAL"
+authors "Clipsey"
+copyright "Copyright © 2018, Clipsey"
+license "BSL-1.0"
+dependency "bindbc-loader" version="~>0.1.1"

@@ -14,10 +14,7 @@ import polyplex.core.render : ShaderCode;
 static import ppct = ppc.types;
 import ppc.backend.loaders.ppc;
 import ppc.backend.cfile;
-
-import derelict.sdl2.image;
-import derelict.sdl2.mixer;
-import derelict.sdl2.sdl;
+import bindbc.sdl;
 
 public enum SupportedAudio {
 	OGG

@@ -18,41 +18,12 @@
 			"importPaths": [ "modules/pp-derelict-util/source" ]
 		},
 		{
-			"name": "derelict-sdl2",
-			"description": "Dynamic bindings to SDL2, SDL2_image, SDL2_mixer, SDL2_ttf and SDL2_net.",
-			"authors": ["Mike Parker", "Polyplex Developers"],
-			"license": "Boost",
-			"targetPath": "lib",
+			"name": "openal",
+			"sourcePaths": [ "modules/openal/source" ],
+			"importPaths": [ "modules/openal/source" ],
 			"dependencies": {
-				"pp:derelict-util": "*"
-			},
-			"sourcePaths": [ "modules/pp-derelict-sdl2/source" ],
-			"importPaths": [ "modules/pp-derelict-sdl2/source" ]
-		},
-		{
-			"name": "derelict-gl3",
-			"description": "A dynamic binding to the OpenGL library.",
-			"authors": ["Mike Parker", "Polyplex Developers"],
-			"license": "Boost",
-			"targetPath": "lib",
-			"dependencies": {
-				"pp:derelict-util": "*"
-			},
-			"sourcePaths": [ "modules/pp-derelict-gl3/source" ],
-			"importPaths": [ "modules/pp-derelict-gl3/source" ]
-		},
-		{
-			"name": "derelict-al",
-			"description": "A dynamic binding to the OpenAL api.",
-			"copyright": "Copyright © 2016, Mike Parker",
-			"authors": ["Mike Parker", "Polyplex Developers"],
-			"license": "BSL-1.0",
-			"targetPath": "lib",
-			"dependencies": {
-				"pp:derelict-util": "*"
-			},
-			"sourcePaths": [ "modules/pp-derelict-al/source" ],
-			"importPaths": [ "modules/pp-derelict-al/source" ]
+				"bindbc-loader": "~>0.1.1"
+			}
 		},
 		{
 			"name": "derelict-vulkan",
@@ -71,6 +42,7 @@
 			"importPaths": [ "modules/pp-derelict-vulkan/source" ]
 		}
 	],
+	"versions": ["SDL_209", "GL_32"],
 	"configurations": [
 		{
 			"name": "simplemath",
@@ -86,10 +58,15 @@
 		"sharpevents": "~>1.0.0",
 		"ppc": "~master",
 
+		"bindbc-loader": "~>0.1.1",
+
+		"bindbc-opengl": "~>0.5.0",
+
+		"bindbc-sdl": "~>0.5.1",
+		
+		"pp:openal": "*",
+
 		"pp:derelict-util": "*",
-		"pp:derelict-sdl2": "*",
-		"pp:derelict-gl3": "*",
-		"pp:derelict-al": "*",
 		"pp:derelict-vulkan": "*"
 	}
 }

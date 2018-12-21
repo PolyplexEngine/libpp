@@ -1,7 +1,7 @@
 module polyplex.core.audio.al.device;
 import polyplex.core.audio.al;
 import ppc.types.audio;
-import derelict.openal;
+import openal;
 
 public enum ALExtensionSupport {
 	/**

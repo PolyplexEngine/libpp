@@ -9,7 +9,7 @@ import polyplex.core.color;
 import polyplex.core.content;
 static import win = polyplex.core.window;
 import polyplex.math;
-import derelict.sdl2.sdl;
+import bindbc.sdl;
 import polyplex.math;
 import polyplex;
 import std.stdio;

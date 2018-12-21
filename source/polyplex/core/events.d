@@ -1,6 +1,6 @@
 module polyplex.core.events;
 import polyplex.core.input;
-import derelict.sdl2.sdl;
+import bindbc.sdl;
 import std.stdio;
 import sev.event;
 

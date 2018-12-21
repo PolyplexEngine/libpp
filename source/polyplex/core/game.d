@@ -12,7 +12,7 @@ import polyplex.utils.logging;
 
 import polyplex.utils.strutils;
 
-import derelict.sdl2.sdl;
+import bindbc.sdl;
 import sev.event;
 
 import std.math;

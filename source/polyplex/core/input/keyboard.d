@@ -1,5 +1,5 @@
 module polyplex.core.input.keyboard;
-import derelict.sdl2.sdl;
+import bindbc.sdl;
 import std.stdio;
 import std.conv;
 

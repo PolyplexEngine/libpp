@@ -1,7 +1,7 @@
 module polyplex.core.content.gl.textures;
 import polyplex.core.content.textures;
-import derelict.opengl;
-import derelict.opengl.gl;
+import bindbc.opengl;
+import bindbc.opengl.gl;
 import polyplex.utils.logging;
 import polyplex.core.render;
 import polyplex.core.render.gl.shader;

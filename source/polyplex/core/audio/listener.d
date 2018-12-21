@@ -1,5 +1,5 @@
 module polyplex.core.audio.al.listener;
-import derelict.openal;
+import openal;
 import polyplex.math;
 
 public class Listener {

@@ -1,5 +1,5 @@
 module polyplex.core.content.textures;
-import derelict.sdl2.sdl;
+import bindbc.sdl;
 import polyplex.core.color;
 import polyplex.utils.logging;
 import polyplex.utils.strutils;

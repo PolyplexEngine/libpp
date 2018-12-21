@@ -1,0 +1,14 @@
+.dub
+docs.json
+__dummy.html
+docs/
+pp-oal.so
+pp-oal.dylib
+pp-oal.dll
+pp-oal.a
+pp-oal.lib
+pp-oal-test-*
+*.exe
+*.o
+*.obj
+*.lst

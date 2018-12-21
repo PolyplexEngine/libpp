@@ -1,5 +1,5 @@
 module polyplex.core.audio;
-import derelict.openal;
+import openal;
 public import polyplex.core.audio.soundeffect;
 public import polyplex.core.audio.music;
 public import polyplex.core.audio.syncgroup;

@@ -3,9 +3,9 @@ import polyplex.core.render.shapes;
 import polyplex.core.color;
 import polyplex.math;
 
-import derelict.sdl2.sdl;
-import derelict.opengl;
-import derelict.opengl.gl;
+import bindbc.sdl;
+import bindbc.opengl;
+import bindbc.opengl.gl;
 import polyplex.utils.logging;
 import polyplex.utils.strutils;
 import std.stdio;

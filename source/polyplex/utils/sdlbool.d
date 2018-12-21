@@ -1,5 +1,5 @@
 module polyplex.utils.sdlbool;
-import derelict.sdl2.sdl;
+import bindbc.sdl;
 
 /**
 	Converts an SDL_bool boolean in to an D boolean.

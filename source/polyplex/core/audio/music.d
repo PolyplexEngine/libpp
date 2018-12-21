@@ -1,7 +1,7 @@
 module polyplex.core.audio.music;
 import polyplex.core.audio;
 import ppc.types.audio;
-import derelict.openal;
+import openal;
 import ppc.backend.cfile;
 import polyplex.math;
 import std.concurrency;

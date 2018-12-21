@@ -5,8 +5,8 @@ import polyplex.utils.sdlbool;
 public import polyplex.core.render;
 static import polyplex;
 
-import derelict.sdl2.sdl;
-import derelict.opengl;
+import bindbc.sdl;
+import bindbc.opengl;
 import polyplex.math;
 import polyplex.utils.logging;
 import std.stdio;
@@ -152,7 +152,6 @@ public class SDLGameWindow : Window {
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
 		SDL_GLContext context = SDL_GL_CreateContext(this.window);
-		DerelictGL3.reload();
 		if (context == null) throw new Error(to!string(SDL_GetError()));
 		ActiveContext = GraphicsContext(context);
 		return ActiveContext;

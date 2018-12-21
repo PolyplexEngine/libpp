@@ -1,7 +1,7 @@
 module polyplex.core.render.gl.shader;
 import polyplex.core.render;
-import derelict.sdl2.sdl;
-import derelict.opengl;
+import bindbc.sdl;
+import bindbc.opengl;
 import polyplex.math;
 import polyplex.utils.logging;
 import std.conv;

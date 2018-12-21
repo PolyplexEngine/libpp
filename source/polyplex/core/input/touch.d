@@ -1,6 +1,6 @@
 module polyplex.core.input.touch;
 import polyplex.math;
-import derelict.sdl2.sdl;
+import bindbc.sdl;
 
 
 public struct FingerState {
