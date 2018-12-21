@@ -80,7 +80,10 @@ public class AudioDevice {
 	*/
 	this(string device = null) {
 		ALint[] attribs = null;
+		
 		Logger.Info("Initializing OpenAL device...");
+		ALCdevice* dev = alcOpenDevice(device.ptr);
+		
 		// If EAX 2.0 is supported, flag it as supported.
 		bool supex = cast(bool)alIsExtensionPresent("EAX2.0");
 		if (supex) {
@@ -99,7 +102,6 @@ public class AudioDevice {
 			attribs[1] = MixerSize;
 		}
 
-		ALCdevice* dev = alcOpenDevice(device.ptr);
 		if (dev) {
 			ALContext = alcCreateContext(dev, attribs);
 			alcMakeContextCurrent(ALContext);
@@ -108,10 +110,12 @@ public class AudioDevice {
 			import std.stdio;
 			throw new Exception("Could not create device! " ~ (cast(ErrCodes)alcGetError(dev)).to!string);
 		}
-		ALint sourceMax;
-		alcGetIntegerv(dev, ALC_MAX_AUXILIARY_SENDS, 1, &sourceMax);
+		if (supex) {
+			ALint sourceMax;
+			alcGetIntegerv(dev, ALC_MAX_AUXILIARY_SENDS, 1, &sourceMax);
 
-		Logger.Info("Audio AUX max sends per Source={0}", sourceMax);
+			Logger.Info("Audio AUX max sends per Source={0}", sourceMax);
+		}
 	}
 
 	~this() {

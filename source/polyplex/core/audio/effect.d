@@ -1,7 +1,8 @@
 module polyplex.core.audio.effect;
+import openal;
 
 public class AudioEffect {
-private:
+protected:
     ALuint id;
 
 public:
