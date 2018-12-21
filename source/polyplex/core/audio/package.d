@@ -99,7 +99,7 @@ public class AudioDevice {
 			Logger.Success("EFX audio effect extensions are supported!");
 		}
 		ALint sourceMax;
-		alGetIntegerv(dev, ALC_MAX_AUXILIARY_SENDS, 1, &sourceMax);
+		alcGetIntegerv(dev, ALC_MAX_AUXILIARY_SENDS, 1, &sourceMax);
 
 		Logger.Info("Audio AUX max sends per Source={0}", sourceMax);
 	}
