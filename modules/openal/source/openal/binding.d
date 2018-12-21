@@ -125,6 +125,46 @@ extern(C) @nogc nothrow {
     alias alcCaptureStopFunc            = void function(ALCdevice*);
     alias alcCaptureSamplesFunc         = void function(ALCdevice*, ALCvoid*, ALCsizei);
 
+    //EFX
+
+    // Effects
+    alias alGenEffectsFunc              = void function(ALsizei, ALuint*);
+    alias alDeleteEffectsFunc           = void function(ALsizei, const(ALuint)*);
+    alias alIsEffectFunc                = ALboolean function(ALuint);
+    alias alEffectiFunc                 = void function(ALuint, ALenum, ALint);
+    alias alEffectivFunc                = void function(ALuint, ALenum, const(ALint)*);
+    alias alEffectfFunc                 = void function(ALuint, ALenum, ALfloat);
+    alias alEffectfvFunc                = void function(ALuint, ALenum, const(ALfloat)*);
+    alias alGetEffectiFunc              = void function(ALuint, ALenum, ALint);
+    alias alGetEffectivFunc             = void function(ALuint, ALenum, ALint*);
+    alias alGetEffectfFunc              = void function(ALuint, ALenum, ALfloat);
+    alias alGetEffectfvFunc             = void function(ALuint, ALenum, ALfloat*);
+
+    // Filters
+    alias alGenFiltersFunc              = void function(ALsizei, ALuint*);
+    alias alDeleteFiltersFunc           = void function(ALsizei, const(ALuint)*);
+    alias alIsFilterFunc                = ALboolean function(ALuint);
+    alias alFilteriFunc                 = void function(ALuint, ALenum, ALint);
+    alias alFilterivFunc                = void function(ALuint, ALenum, const(ALint)*);
+    alias alFilterfFunc                 = void function(ALuint, ALenum, ALfloat);
+    alias alFilterfvFunc                = void function(ALuint, ALenum, const(ALfloat)*);
+    alias alGetFilteriFunc              = void function(ALuint, ALenum, ALint);
+    alias alGetFilterivFunc             = void function(ALuint, ALenum, ALint*);
+    alias alGetFilterfFunc              = void function(ALuint, ALenum, ALfloat);
+    alias alGetFilterfvFunc             = void function(ALuint, ALenum, ALfloat*);
+
+    // Filters
+    alias alGenAuxiliaryEffectSlotsFunc                 = void function(ALsizei, ALuint*);
+    alias alDeleteAuxiliaryEffectSlotFunc               = void function(ALsizei, const(ALuint)*);
+    alias alIsAuxiliaryEffectSlotFunc                   = ALboolean function(ALuint);
+    alias alAuxiliaryEffectSlotiFunc                    = void function(ALuint, ALenum, ALint);
+    alias alAuxiliaryEffectSlotivFunc                   = void function(ALuint, ALenum, const(ALint)*);
+    alias alAuxiliaryEffectSlotfFunc                    = void function(ALuint, ALenum, ALfloat);
+    alias alAuxiliaryEffectSlotfvFunc                   = void function(ALuint, ALenum, const(ALfloat)*);
+    alias alGetAuxiliaryEffectSlotiFunc                 = void function(ALuint, ALenum, ALint);
+    alias alGetAuxiliaryEffectSlotivFunc                = void function(ALuint, ALenum, ALint*);
+    alias alGetAuxiliaryEffectSlotfFunc                 = void function(ALuint, ALenum, ALfloat);
+    alias alGetAuxiliaryEffectSlotfvFunc                = void function(ALuint, ALenum, ALfloat*);
 }
 
 __gshared {
@@ -223,6 +263,47 @@ __gshared {
     alcCaptureStartFunc				    alcCaptureStart;
     alcCaptureStopFunc				    alcCaptureStop;
     alcCaptureSamplesFunc               alcCaptureSamples;
+
+    // EFX
+
+    // Effects
+    alGenEffectsFunc                    alGenEffects;
+    alDeleteEffectsFunc                 alDeleteEffects;
+    alIsEffectFunc                      alIsEffect;
+    alEffectiFunc                       alEffecti;
+    alEffectivFunc                      alEffectiv;
+    alEffectfFunc                       alEffectf;
+    alEffectfvFunc                      alEffectfv;
+    alGetEffectiFunc                    alGetEffecti;
+    alGetEffectivFunc                   alGetEffectiv;
+    alGetEffectfFunc                    alGetEffectf;
+    alGetEffectfvFunc                   alGetEffectfv;
+
+    // Filters
+    alGenFiltersFunc                    alGenFilters;
+    alDeleteFiltersFunc                 alDeleteFilters;
+    alIsFilterFunc                      alIsFilter;
+    alFilteriFunc                       alFilteri;
+    alFilterivFunc                      alFilteriv;
+    alFilterfFunc                       alFilterf;
+    alFilterfvFunc                      alFilterfv;
+    alGetFilteriFunc                    alGetFilteri;
+    alGetFilterivFunc                   alGetFilteriv;
+    alGetFilterfFunc                    alGetFilterf;
+    alGetFilterfvFunc                   alGetFilterfv;
+
+    // Auxiliary Effect Slots
+    alGenAuxiliaryEffectSlotsFunc       alGenAuxiliaryEffectSlots;
+    alDeleteAuxiliaryEffectSlotFunc     alDeleteAuxiliaryEffectSlots;
+    alIsAuxiliaryEffectSlotFunc         alIsAuxiliaryEffectSlot;
+    alAuxiliaryEffectSlotiFunc          alAuxiliaryEffectSloti;
+    alAuxiliaryEffectSlotivFunc         alAuxiliaryEffectSlotiv;
+    alAuxiliaryEffectSlotfFunc          alAuxiliaryEffectSlotf;
+    alAuxiliaryEffectSlotfvFunc         alAuxiliaryEffectSlotfv;
+    alGetAuxiliaryEffectSlotiFunc       alGetAuxiliaryEffectSloti;
+    alGetAuxiliaryEffectSlotivFunc      alGetAuxiliaryEffectSlotiv;
+    alGetAuxiliaryEffectSlotfFunc       alGetAuxiliaryEffectSlotf;
+    alGetAuxiliaryEffectSlotfvFunc      alGetAuxiliaryEffectSlotfv;            
 }
 
 private {
@@ -354,6 +435,48 @@ bool loadOAL(const(char)* libName) {
     lib.bindSymbol(cast(void**)&alcCaptureStart, "alcCaptureStart");
     lib.bindSymbol(cast(void**)&alcCaptureStop, "alcCaptureStop");
     lib.bindSymbol(cast(void**)&alcCaptureSamples, "alcCaptureSamples");
+
+    // EFX
+
+    // Effects
+    lib.bindSymbol(cast(void**)&alGenEffects,       "alGenEffects");
+    lib.bindSymbol(cast(void**)&alDeleteEffects,    "alDeleteEffects");
+    lib.bindSymbol(cast(void**)&alIsEffect,         "alIsEffect");
+    lib.bindSymbol(cast(void**)&alEffecti,          "alEffecti");
+    lib.bindSymbol(cast(void**)&alEffectiv,         "alEffectiv");
+    lib.bindSymbol(cast(void**)&alEffectf,          "alEffectf");
+    lib.bindSymbol(cast(void**)&alEffectfv,         "alEffectfv");
+    lib.bindSymbol(cast(void**)&alGetEffecti,       "alGetEffecti");
+    lib.bindSymbol(cast(void**)&alGetEffectiv,      "alGetEffectiv");
+    lib.bindSymbol(cast(void**)&alGetEffectf,       "alGetEffectf");
+    lib.bindSymbol(cast(void**)&alGetEffectfv,      "alGetEffectfv");
+
+    // Filters
+    lib.bindSymbol(cast(void**)&alGenFilters,       "alGenFilters");
+    lib.bindSymbol(cast(void**)&alDeleteFilters,    "alDeleteFilters");
+    lib.bindSymbol(cast(void**)&alIsFilter,         "alIsFilter");
+    lib.bindSymbol(cast(void**)&alFilteri,          "alFilteri");
+    lib.bindSymbol(cast(void**)&alFilteriv,         "alFilteriv");
+    lib.bindSymbol(cast(void**)&alFilterf,          "alFilterf");
+    lib.bindSymbol(cast(void**)&alFilterfv,         "alFilterfv");
+    lib.bindSymbol(cast(void**)&alGetFilteri,       "alGetFilteri");
+    lib.bindSymbol(cast(void**)&alGetFilteriv,      "alGetFilteriv");
+    lib.bindSymbol(cast(void**)&alGetFilterf,       "alGetFilterf");
+    lib.bindSymbol(cast(void**)&alGetFilterfv,      "alGetFilterfv");
+
+    // Filters
+    lib.bindSymbol(cast(void**)&alGenAuxiliaryEffectSlots,      "alGenAuxiliaryEffectSlots");
+    lib.bindSymbol(cast(void**)&alDeleteAuxiliaryEffectSlots,   "alDeleteAuxiliaryEffectSlots");
+    lib.bindSymbol(cast(void**)&alIsAuxiliaryEffectSlot,        "alIsAuxiliaryEffectSlot");
+    lib.bindSymbol(cast(void**)&alAuxiliaryEffectSloti,         "alAuxiliaryEffectSloti");
+    lib.bindSymbol(cast(void**)&alAuxiliaryEffectSlotiv,        "alAuxiliaryEffectSlotiv");
+    lib.bindSymbol(cast(void**)&alAuxiliaryEffectSlotf,         "alAuxiliaryEffectSlotf");
+    lib.bindSymbol(cast(void**)&alAuxiliaryEffectSlotfv,        "alAuxiliaryEffectSlotfv");
+    lib.bindSymbol(cast(void**)&alGetAuxiliaryEffectSloti,      "alGetAuxiliaryEffectSloti");
+    lib.bindSymbol(cast(void**)&alGetAuxiliaryEffectSlotiv,     "alGetAuxiliaryEffectSlotiv");
+    lib.bindSymbol(cast(void**)&alGetAuxiliaryEffectSlotf,      "alGetAuxiliaryEffectSlotf");
+    lib.bindSymbol(cast(void**)&alGetAuxiliaryEffectSlotfv,     "alGetAuxiliaryEffectSlotfv");
+
 
     return errCount == errorCount();
 }
