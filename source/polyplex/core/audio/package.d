@@ -73,30 +73,40 @@ public class AudioDevice {
 	public ALCdevice* ALDevice;
 	public ALCcontext* ALContext;
 	public static ALExtensionSupport SupportedExt;
+	public static ALint MixerSize = 10;
 
 	/**
 		Constucts an audio device, NULL for preffered device.
 	*/
 	this(string device = null) {
-		ALCdevice* dev = alcOpenDevice(device.ptr);
-		if (dev) {
-			ALContext = alcCreateContext(dev, null);
-			alcMakeContextCurrent(ALContext);
-		} else {
-			import std.conv;
-			import std.stdio;
-			throw new Exception("Could not create device! " ~ (cast(ErrCodes)alcGetError(dev)).to!string);
-		}
-		
+		ALint[] attribs = null;
+		Logger.Info("Initializing OpenAL device...");
 		// If EAX 2.0 is supported, flag it as supported.
 		bool supex = cast(bool)alIsExtensionPresent("EAX2.0");
-		if (supex) SupportedExt |= ALExtensionSupport.EAX2;
+		if (supex) {
+			Logger.Success("EAX 2.0 extensions are supported!");
+			SupportedExt |= ALExtensionSupport.EAX2;
+		}
 
 		// If EFX is supported, flag it as supported.
 		supex = cast(bool)alIsExtensionPresent("ALC_EXT_EFX");
 		if (supex) {
 			SupportedExt |= ALExtensionSupport.EFX;
-			Logger.Success("EFX audio effect extensions are supported!");
+			Logger.Success("EFX extensions are supported!");
+			Logger.Info("Setting up mixer channel count...");
+			attribs = new ALint[4];
+			attribs[0] = ALC_MAX_AUXILIARY_SENDS;
+			attribs[1] = MixerSize;
+		}
+
+		ALCdevice* dev = alcOpenDevice(device.ptr);
+		if (dev) {
+			ALContext = alcCreateContext(dev, attribs);
+			alcMakeContextCurrent(ALContext);
+		} else {
+			import std.conv;
+			import std.stdio;
+			throw new Exception("Could not create device! " ~ (cast(ErrCodes)alcGetError(dev)).to!string);
 		}
 		ALint sourceMax;
 		alcGetIntegerv(dev, ALC_MAX_AUXILIARY_SENDS, 1, &sourceMax);

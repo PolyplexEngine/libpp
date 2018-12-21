@@ -135,9 +135,9 @@ extern(C) @nogc nothrow {
     alias alEffectivFunc                = void function(ALuint, ALenum, const(ALint)*);
     alias alEffectfFunc                 = void function(ALuint, ALenum, ALfloat);
     alias alEffectfvFunc                = void function(ALuint, ALenum, const(ALfloat)*);
-    alias alGetEffectiFunc              = void function(ALuint, ALenum, ALint);
+    alias alGetEffectiFunc              = void function(ALuint, ALenum, ALint*);
     alias alGetEffectivFunc             = void function(ALuint, ALenum, ALint*);
-    alias alGetEffectfFunc              = void function(ALuint, ALenum, ALfloat);
+    alias alGetEffectfFunc              = void function(ALuint, ALenum, ALfloat*);
     alias alGetEffectfvFunc             = void function(ALuint, ALenum, ALfloat*);
 
     // Filters
@@ -148,9 +148,9 @@ extern(C) @nogc nothrow {
     alias alFilterivFunc                = void function(ALuint, ALenum, const(ALint)*);
     alias alFilterfFunc                 = void function(ALuint, ALenum, ALfloat);
     alias alFilterfvFunc                = void function(ALuint, ALenum, const(ALfloat)*);
-    alias alGetFilteriFunc              = void function(ALuint, ALenum, ALint);
+    alias alGetFilteriFunc              = void function(ALuint, ALenum, ALint*);
     alias alGetFilterivFunc             = void function(ALuint, ALenum, ALint*);
-    alias alGetFilterfFunc              = void function(ALuint, ALenum, ALfloat);
+    alias alGetFilterfFunc              = void function(ALuint, ALenum, ALfloat*);
     alias alGetFilterfvFunc             = void function(ALuint, ALenum, ALfloat*);
 
     // Filters
@@ -161,9 +161,9 @@ extern(C) @nogc nothrow {
     alias alAuxiliaryEffectSlotivFunc                   = void function(ALuint, ALenum, const(ALint)*);
     alias alAuxiliaryEffectSlotfFunc                    = void function(ALuint, ALenum, ALfloat);
     alias alAuxiliaryEffectSlotfvFunc                   = void function(ALuint, ALenum, const(ALfloat)*);
-    alias alGetAuxiliaryEffectSlotiFunc                 = void function(ALuint, ALenum, ALint);
+    alias alGetAuxiliaryEffectSlotiFunc                 = void function(ALuint, ALenum, ALint*);
     alias alGetAuxiliaryEffectSlotivFunc                = void function(ALuint, ALenum, ALint*);
-    alias alGetAuxiliaryEffectSlotfFunc                 = void function(ALuint, ALenum, ALfloat);
+    alias alGetAuxiliaryEffectSlotfFunc                 = void function(ALuint, ALenum, ALfloat*);
     alias alGetAuxiliaryEffectSlotfvFunc                = void function(ALuint, ALenum, ALfloat*);
 }
 
