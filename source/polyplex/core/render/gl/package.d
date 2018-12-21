@@ -27,6 +27,8 @@ public class GlRenderer : BackendRenderer {
 	public override void Init() {
 		// Create the neccesary rendering backend.
 		Window.CreateContext(GraphicsBackend.OpenGL);
+		
+		loadOpenGL();
 
 		GlSpriteBatch.InitializeSpritebatch();
 		GlDebugging2D.PrepDebugging();

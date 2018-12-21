@@ -120,7 +120,6 @@ public void InitLibraries() {
 		Logger.Debug("SDL (linked): {0}.{1}.{2}", to!string(linked.major), to!string(linked.minor), to!string(linked.patch));
 		core_init = true;
 	}
-	
 	loadOpenGL();
 	gl_init = true;
 }
