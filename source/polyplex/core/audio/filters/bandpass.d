@@ -10,13 +10,13 @@ public:
         super(FilterType.Bandpass);
     }
 
-    @property float FilterGain() {
+    @property float GainBase() {
         ALfloat val;
         alGetFilterf(id, AL_BANDPASS_GAIN, &val);
         return val;
     }
 
-    @property void FilterGain(ALfloat val) {
+    @property void GainBase(ALfloat val) {
         alFilterf(id, AL_BANDPASS_GAIN, val);
     }
 

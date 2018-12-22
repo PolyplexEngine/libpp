@@ -65,7 +65,8 @@ protected void MusicHandlerThread(Music iMus) {
                 if (readData == 0) {
                     if (!iMus.looping) {
 						iMus.playing = false;
-						return; 
+						iHandlerStop;
+						return;
 					}
 					iMus.stream.seek;
 					readData = iMus.stream.read(streamBuffer.ptr, iMus.bufferSize);

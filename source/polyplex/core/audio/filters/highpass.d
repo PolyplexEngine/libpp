@@ -10,23 +10,32 @@ public:
         super(FilterType.Highpass);
     }
 
-    @property float FilterGain() {
+    @property float Gain() {
+        return GainBase;
+    }
+
+    @property void Gain(ALfloat val) {
+        GainBase = val;
+        GainLF = val;
+    }
+
+    @property float GainBase() {
         ALfloat val;
         alGetFilterf(id, AL_HIGHPASS_GAIN, &val);
         return val;
     }
 
-    @property void FilterGain(ALfloat val) {
+    @property void GainBase(ALfloat val) {
         alFilterf(id, AL_HIGHPASS_GAIN, val);
     }
 
-    @property float Gain() {
+    @property float GainLF() {
         ALfloat val;
         alGetFilterf(id, AL_HIGHPASS_GAINLF, &val);
         return val;
     }
 
-    @property void Gain(ALfloat val) {
+    @property void GainLF(ALfloat val) {
         alFilterf(id, AL_HIGHPASS_GAINLF, val);
     }
 }
