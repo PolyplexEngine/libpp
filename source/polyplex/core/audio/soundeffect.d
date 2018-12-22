@@ -23,11 +23,15 @@ private:
 	AudioFilter attachedFilter;
 
 	void applyEffectsAndFilters() {
+		alGetError();
 		ALuint efId = attachedEffect !is null ? attachedEffect.Id : AL_EFFECTSLOT_NULL;
 		ALuint flId = attachedFilter !is null ? attachedFilter.Id : 0;
 
 		alSource3i(source, AL_AUXILIARY_SEND_FILTER, efId, 0, flId);
-		if (alGetError() != AL_NO_ERROR) throw new Exception("Failed to attach effect and/or filter to SoundEffect instance");
+
+		import std.conv;
+        ErrCodes err = cast(ErrCodes)alGetError();
+		if (cast(ALint)err != AL_NO_ERROR) throw new Exception("Failed to create object "~err.to!string);
 	}
 
 public:

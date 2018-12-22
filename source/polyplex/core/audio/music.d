@@ -127,7 +127,10 @@ private:
 		ALuint flId = attachedFilter !is null ? attachedFilter.Id : 0;
 
 		alSource3i(source, AL_AUXILIARY_SEND_FILTER, efId, 0, flId);
-		if (alGetError() != AL_NO_ERROR) throw new Exception("Failed to attach effect and/or filter to SoundEffect instance");
+		ErrCodes err = cast(ErrCodes)alGetError();
+		
+		import std.conv;
+		if (cast(ALint)err != AL_NO_ERROR) throw new Exception("Failed to attach effect and/or filter to SoundEffect instance "~err.to!string);
 	}
 
     // Source

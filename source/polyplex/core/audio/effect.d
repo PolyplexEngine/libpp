@@ -1,6 +1,7 @@
 module polyplex.core.audio.effect;
 public import polyplex.core.audio.effects;
 public import polyplex.core.audio.filters;
+public import polyplex.core.audio;
 import openal;
 
 enum EffectType : ALenum {
@@ -32,12 +33,22 @@ protected:
     ALuint sendId;
     EffectType effectType;
 
+    void setupDone() {
+        alAuxiliaryEffectSloti(sendId, AL_EFFECTSLOT_EFFECT, id);
+    }
+
 public:
     
     this(EffectType eType) {
         alGenEffects(1, &id);
         alGenAuxiliaryEffectSlots(1, &sendId);
         this.effectType = eType;
+
+        alEffecti(id, AL_EFFECT_TYPE, cast(ALenum)eType);
+
+		import std.conv;
+        ErrCodes err = cast(ErrCodes)alGetError();
+		if (cast(ALint)err != AL_NO_ERROR) throw new Exception("Failed to create object "~err.to!string);
     }
 
     ~this() {
@@ -67,6 +78,12 @@ public:
     this(FilterType fType) {
         alGenFilters(1, &id);
         this.filterType = fType;
+
+        alFilteri(id, AL_FILTER_TYPE, cast(ALenum)fType);
+
+		import std.conv;
+        ErrCodes err = cast(ErrCodes)alGetError();
+		if (cast(ALint)err != AL_NO_ERROR) throw new Exception("Failed to create object "~err.to!string);
     }
 
     ~this() {

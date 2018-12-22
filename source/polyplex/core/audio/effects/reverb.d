@@ -6,6 +6,7 @@ public class ReverbEffect : AudioEffect {
 public:
     this() {
         super(EffectType.Reverb);
+        setupDone();
     }
 
     @property float Decay() {
