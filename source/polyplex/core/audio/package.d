@@ -4,6 +4,7 @@ import openal;
 public import polyplex.core.audio.soundeffect;
 public import polyplex.core.audio.music;
 public import polyplex.core.audio.syncgroup;
+public import polyplex.core.audio.effect;
 
 public enum AudioRenderFormats : int {
 	/**
@@ -69,6 +70,8 @@ enum ErrCodes : ALCenum {
     ALC_CAPTURE_SAMPLES                     = 0x312,
 }
 
+protected __gshared ALint maxSlots;
+
 public class AudioDevice {
 	public ALCdevice* ALDevice;
 	public ALCcontext* ALContext;
@@ -92,7 +95,7 @@ public class AudioDevice {
 		}
 
 		// If EFX is supported, flag it as supported.
-		supex = cast(bool)alIsExtensionPresent("ALC_EXT_EFX");
+		supex = cast(bool)alcIsExtensionPresent(dev, "ALC_EXT_EFX");
 		if (supex) {
 			SupportedExt |= ALExtensionSupport.EFX;
 			Logger.Success("EFX extensions are supported!");
@@ -114,7 +117,9 @@ public class AudioDevice {
 			ALint sourceMax;
 			alcGetIntegerv(dev, ALC_MAX_AUXILIARY_SENDS, 1, &sourceMax);
 
-			Logger.Info("Audio AUX max sends per Source={0}", sourceMax);
+			maxSlots = sourceMax;
+
+			Logger.Info("Created {0} mixer sends", sourceMax);
 		}
 	}
 

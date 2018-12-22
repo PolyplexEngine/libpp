@@ -1,5 +1,6 @@
 module polyplex.core.audio.music;
 import polyplex.core.audio;
+import polyplex.core.audio.effect;
 import ppc.types.audio;
 import openal;
 import ppc.backend.cfile;
@@ -116,6 +117,18 @@ private:
 	bool playing;
 
 	int xruns;
+	
+	// Effects & filters
+	AudioEffect attachedEffect;
+	AudioFilter attachedFilter;
+
+	void applyEffectsAndFilters() {
+		ALuint efId = attachedEffect !is null ? attachedEffect.Id : AL_EFFECTSLOT_NULL;
+		ALuint flId = attachedFilter !is null ? attachedFilter.Id : 0;
+
+		alSource3i(source, AL_AUXILIARY_SEND_FILTER, efId, 0, flId);
+		if (alGetError() != AL_NO_ERROR) throw new Exception("Failed to attach effect and/or filter to SoundEffect instance");
+	}
 
     // Source
     ALuint source;
@@ -290,11 +303,47 @@ public:
 		return playing;
 	}
 
+	@property AudioEffect Effect() {
+		return this.attachedEffect;
+	}
+
+	@property void Effect(AudioEffect effect) {
+		attachedEffect = effect;
+		applyEffectsAndFilters();
+	}
+
+	@property AudioFilter Filter() {
+		return this.attachedFilter;
+	}
+
+	@property void Filter(AudioFilter filter) {
+		attachedFilter = filter;
+		applyEffectsAndFilters();
+	}
+
 	@property bool Looping() {
 		return looping;
 	}
 	@property void Looping(bool val) { looping = val; }
-	
+
+	@property int ByteOffset() {
+		int v = 0;
+		alGetSourcei(source, AL_BYTE_OFFSET, &v);
+		return v;
+	}
+
+	@property int SecondOffset() {
+		int v = 0;
+		alGetSourcei(source, AL_SEC_OFFSET, &v);
+		return v;
+	}
+
+	@property int SampleOffset() {
+		int v = 0;
+		alGetSourcei(source, AL_SAMPLE_OFFSET, &v);
+		return v;
+	}
+
 	/*
 		PITCH
 	*/

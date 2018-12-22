@@ -3,12 +3,9 @@ import polyplex.core.audio.effect;
 import openal;
 
 public class ReverbEffect : AudioEffect {
-private:
-
 public:
     this() {
-        alGenEffects(1, &id);
-        alEffecti(id, AL_EFFECT_TYPE, AL_EFFECT_REVERB);
+        super(EffectType.Reverb);
     }
 
     @property float Decay() {

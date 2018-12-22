@@ -1,5 +1,6 @@
 module polyplex.core.audio.soundeffect;
 import polyplex.core.audio;
+import polyplex.core.audio.effect;
 import ppc.types.audio;
 import openal;
 import ppc.backend.cfile;
@@ -16,6 +17,18 @@ private:
 
     // Source
     ALuint source;
+
+	// Effects & filters
+	AudioEffect attachedEffect;
+	AudioFilter attachedFilter;
+
+	void applyEffectsAndFilters() {
+		ALuint efId = attachedEffect !is null ? attachedEffect.Id : AL_EFFECTSLOT_NULL;
+		ALuint flId = attachedFilter !is null ? attachedFilter.Id : 0;
+
+		alSource3i(source, AL_AUXILIARY_SEND_FILTER, efId, 0, flId);
+		if (alGetError() != AL_NO_ERROR) throw new Exception("Failed to attach effect and/or filter to SoundEffect instance");
+	}
 
 public:
 
@@ -59,44 +72,62 @@ public:
         alSourcePlay(source);
     }
 
-	public void Pause() {
+	void Pause() {
 		alSourcePause(source);
 	}
 	
-	public void Stop() {
+	void Stop() {
 		alSourceStop(source);
 	}
 
-	public void Rewind() {
+	void Rewind() {
 		alSourceRewind(source);
 	}
 
-	public bool IsPlaying() {
+	bool IsPlaying() {
 		ALenum state;
 		alGetSourcei(source, AL_SOURCE_STATE, &state);
 		return (state == AL_PLAYING);
 	}
 
-	public @property bool Looping() {
+	@property AudioEffect Effect() {
+		return this.attachedEffect;
+	}
+
+	@property void Effect(AudioEffect effect) {
+		attachedEffect = effect;
+		applyEffectsAndFilters();
+	}
+
+	@property AudioFilter Filter() {
+		return this.attachedFilter;
+	}
+
+	@property void Filter(AudioFilter filter) {
+		attachedFilter = filter;
+		applyEffectsAndFilters();
+	}
+
+	@property bool Looping() {
 		int v = 0;
 		alGetSourcei(source, AL_LOOPING, &v);
 		return (v == 1);
 	}
-	public @property void Looping(bool val) { alSourcei(source, AL_LOOPING, cast(int)val); }
+	@property void Looping(bool val) { alSourcei(source, AL_LOOPING, cast(int)val); }
 
-	public @property int ByteOffset() {
+	@property int ByteOffset() {
 		int v = 0;
 		alGetSourcei(source, AL_BYTE_OFFSET, &v);
 		return v;
 	}
 
-	public @property int SecondOffset() {
+	@property int SecondOffset() {
 		int v = 0;
 		alGetSourcei(source, AL_SEC_OFFSET, &v);
 		return v;
 	}
 
-	public @property int SampleOffset() {
+	@property int SampleOffset() {
 		int v = 0;
 		alGetSourcei(source, AL_SAMPLE_OFFSET, &v);
 		return v;
@@ -105,131 +136,131 @@ public:
 	/*
 		PITCH
 	*/
-	public @property float Pitch() {
+	@property float Pitch() {
 		float v = 0f;
 		alGetSourcef(source, AL_PITCH, &v);
 		return v;
 	}
-	public @property void Pitch(float val) { alSourcef(source, AL_PITCH, val); }
+	@property void Pitch(float val) { alSourcef(source, AL_PITCH, val); }
 
 	/*
 		GAIN
 	*/
-	public @property float Gain() {
+	@property float Gain() {
 		float v = 0f;
 		alGetSourcef(source, AL_GAIN, &v);
 		return v;
 	}
-	public @property void Gain(float val) { alSourcef(source, AL_GAIN, val); }
+	@property void Gain(float val) { alSourcef(source, AL_GAIN, val); }
 
 	/*
 		MIN GAIN
 	*/
-	public @property float MinGain() {
+	@property float MinGain() {
 		float v = 0f;
 		alGetSourcef(source, AL_MIN_GAIN, &v);
 		return v;
 	}
-	public @property void MinGain(float val) { alSourcef(source, AL_MIN_GAIN, val); }
+	@property void MinGain(float val) { alSourcef(source, AL_MIN_GAIN, val); }
 
 	/*
 		MAX GAIN
 	*/
-	public @property float MaxGain() {
+	@property float MaxGain() {
 		float v = 0f;
 		alGetSourcef(source, AL_MAX_GAIN, &v);
 		return v;
 	}
-	public @property void MaxGain(float val) { alSourcef(source, AL_MAX_GAIN, val); }
+	@property void MaxGain(float val) { alSourcef(source, AL_MAX_GAIN, val); }
 
 	/*
 		MAX DISTANCE
 	*/
-	public @property float MaxDistance() {
+	@property float MaxDistance() {
 		float v = 0f;
 		alGetSourcef(source, AL_MAX_DISTANCE, &v);
 		return v;
 	}
-	public @property void MaxDistance(float val) { alSourcef(source, AL_MAX_DISTANCE, val); }
+	@property void MaxDistance(float val) { alSourcef(source, AL_MAX_DISTANCE, val); }
 
 	/*
 		ROLLOFF FACTOR
 	*/
-	public @property float RolloffFactor() {
+	@property float RolloffFactor() {
 		float v = 0f;
 		alGetSourcef(source, AL_ROLLOFF_FACTOR, &v);
 		return v;
 	}
-	public @property void RolloffFactor(float val) { alSourcef(source, AL_ROLLOFF_FACTOR, val); }
+	@property void RolloffFactor(float val) { alSourcef(source, AL_ROLLOFF_FACTOR, val); }
 
 	/*
 		CONE OUTER GAIN
 	*/
-	public @property float ConeOuterGain() {
+	@property float ConeOuterGain() {
 		float v = 0f;
 		alGetSourcef(source, AL_CONE_OUTER_GAIN, &v);
 		return v;
 	}
-	public @property void ConeOuterGain(float val) { alSourcef(source, AL_CONE_OUTER_GAIN, val); }
+	@property void ConeOuterGain(float val) { alSourcef(source, AL_CONE_OUTER_GAIN, val); }
 
 	/*
 		CONE INNER ANGLE
 	*/
-	public @property float ConeInnerAngle() {
+	@property float ConeInnerAngle() {
 		float v = 0f;
 		alGetSourcef(source, AL_CONE_INNER_ANGLE, &v);
 		return v;
 	}
-	public @property void ConeInnerAngle(float val) { alSourcef(source, AL_CONE_INNER_ANGLE, val); }
+	@property void ConeInnerAngle(float val) { alSourcef(source, AL_CONE_INNER_ANGLE, val); }
 
 	/*
 		CONE OUTER ANGLE
 	*/
-	public @property float ConeOuterAngle() {
+	@property float ConeOuterAngle() {
 		float v = 0f;
 		alGetSourcef(source, AL_CONE_OUTER_ANGLE, &v);
 		return v;
 	}
-	public @property void ConeOuterAngle(float val) { alSourcef(source, AL_CONE_OUTER_ANGLE, val); }
+	@property void ConeOuterAngle(float val) { alSourcef(source, AL_CONE_OUTER_ANGLE, val); }
 
 	/*
 		REFERENCE DISTANCE
 	*/
-	public @property float ReferenceDistance() {
+	@property float ReferenceDistance() {
 		float v = 0f;
 		alGetSourcef(source, AL_REFERENCE_DISTANCE, &v);
 		return v;
 	}
-	public @property void ReferenceDistance(float val) { alSourcef(source, AL_REFERENCE_DISTANCE, val); }
+	@property void ReferenceDistance(float val) { alSourcef(source, AL_REFERENCE_DISTANCE, val); }
 
 	/*
 		POSITION
 	*/
-	public @property Vector3 Position() {
+	@property Vector3 Position() {
 		Vector3 v = 0f;
 		alGetSourcefv(source, AL_POSITION, v.ptr);
 		return v;
 	}
-	public @property void Position(Vector3 val) { alSourcefv(source, AL_POSITION, val.ptr); }
+	@property void Position(Vector3 val) { alSourcefv(source, AL_POSITION, val.ptr); }
 
 	/*
 		VELOCITY
 	*/
-	public @property Vector3 Velocity() {
+	@property Vector3 Velocity() {
 		Vector3 v = 0f;
 		alGetSourcefv(source, AL_VELOCITY, v.ptr);
 		return v;
 	}
-	public @property void Velocity(Vector3 val) { alSourcefv(source, AL_VELOCITY, val.ptr); }
+	@property void Velocity(Vector3 val) { alSourcefv(source, AL_VELOCITY, val.ptr); }
 
 	/*
 		DIRECTION
 	*/
-	public @property Vector3 Direction() {
+	@property Vector3 Direction() {
 		Vector3 v = 0f;
 		alGetSourcefv(source, AL_DIRECTION, v.ptr);
 		return v;
 	}
-	public @property void Direction(Vector3 val) { alSourcefv(source, AL_DIRECTION, val.ptr); }
+	@property void Direction(Vector3 val) { alSourcefv(source, AL_DIRECTION, val.ptr); }
 
 }
