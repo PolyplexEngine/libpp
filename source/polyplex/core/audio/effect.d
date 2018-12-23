@@ -6,6 +6,7 @@ import openal;
 
 enum EffectType : ALenum {
     Nothing             = AL_EFFECT_NULL,
+    RoomDynamics        = AL_EFFECT_EAXREVERB,
     Reverb              = AL_EFFECT_REVERB,
     Chorus              = AL_EFFECT_CHORUS,
     Distortion          = AL_EFFECT_DISTORTION,

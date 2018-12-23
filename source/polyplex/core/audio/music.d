@@ -127,6 +127,8 @@ private:
 		ALuint efId = attachedEffect !is null ? attachedEffect.Id : AL_EFFECTSLOT_NULL;
 		ALuint flId = attachedFilter !is null ? attachedFilter.Id : 0;
 
+		Logger.Debug("Applying effect {0} and filter {1} on Music {2}...", efId, flId, source);
+
 		alSource3i(source, AL_AUXILIARY_SEND_FILTER, efId, 0, flId);
 		ErrCodes err = cast(ErrCodes)alGetError();
 		
