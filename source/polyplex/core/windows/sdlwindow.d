@@ -21,15 +21,8 @@ public enum WindowPosition {
 
 public class SDLGameWindow : Window {
 	private string start_title;
-	private int width;
-	private int height;
     private SDL_Window* window;
 	private Rectangle start_bounds;
-
-	private Rectangle curr_bounds;
-
-	public @property int Width() { return this.width; }
-	public @property int Height() { return this.height; }
 
 	/*
 		Gets whenever the window is visible
@@ -89,20 +82,11 @@ public class SDLGameWindow : Window {
 		SDL_SetWindowFullscreen(this.window, SDL_WINDOW_FULLSCREEN);
 	}
 
-	/*
-		Returns the raw placement of the window.
-		Use RealPlacement if you want your application to be dpi aware.
-	*/
-	public override @property Rectangle ClientBounds() {
-		return curr_bounds;
-	}
-
 	/**
 		Returns the position of the window.
 	*/
 	public @property Vector2 Position() {
-		Rectangle r = ClientBounds();
-		return Vector2(r.X, r.Y);
+		return Vector2(ClientBounds.X, ClientBounds.Y);
 	}
 
 	/**
@@ -118,11 +102,25 @@ public class SDLGameWindow : Window {
             Logger.Fatal("Initialization of SDL2 failed!...\n{0}", SDL_GetError());
         }
 
+		ClientBounds = new WindowBounds(this, bounds);
+
+		ClientBounds.windowResizeRequestEvent ~= (sender, data) {
+			BoundsEventArgs dat = cast(BoundsEventArgs)data;
+			SDL_SetWindowSize(this.window, dat.Width, dat.Height);
+		};
+
+		ClientBounds.windowPositionRequestEvent ~= (sender, data) {
+			BoundsEventArgs dat = cast(BoundsEventArgs)data;
+			SDL_SetWindowPosition(this.window, dat.X, dat.Y);
+		};
+
 		//Set info.
         this.start_bounds = bounds;
 		this.start_title = name;
 
 		this.AutoFocus = focus;
+
+
 
 		//Cap info.
 		if (this.start_bounds is null) this.start_bounds = new Rectangle(WindowPosition.Undefined, WindowPosition.Undefined, 640, 480);
@@ -174,14 +172,10 @@ public class SDLGameWindow : Window {
 		Triggers an window info update.
 	*/
 	override void UpdateState() {
-		int x, y;
+		int x, y, width, height;
 		SDL_GetWindowPosition(this.window, &x, &y);
-		SDL_GetWindowSize(this.window, &this.width, &this.height);
-		if (curr_bounds is null) curr_bounds = new Rectangle();
-		curr_bounds.X = x;
-		curr_bounds.Y = y;
-		curr_bounds.Width = this.width;
-		curr_bounds.Height = this.height; 
+		SDL_GetWindowSize(this.window, &width, &height);
+		updateBounds(new Rectangle(x, y, width, height));
 	}
 
 	/**
