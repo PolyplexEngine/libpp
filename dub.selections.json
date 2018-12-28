@@ -8,7 +8,7 @@
 		"bindbc-sdl": "0.5.1",
 		"colorize": "1.0.5",
 		"imageformats": "7.0.0",
-		"ppc": "~master",
+		"ppc": "0.2.0",
 		"sharpevents": "1.0.2"
 	}
 }
