@@ -80,6 +80,9 @@ protected:
 public:
     
     this(EffectType eType) {
+        // clear errors
+        alGetError();
+
         alGenEffects(1, &id);
         alGenAuxiliaryEffectSlots(1, &sendId);
         this.effectType = eType;

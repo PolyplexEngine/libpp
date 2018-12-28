@@ -3,7 +3,7 @@ import polyplex.core.audio.effects;
 import polyplex.core.audio.effect;
 import openal;
 
-/// A frequency shifter
+/// An automatic compressor
 public class AutoCompressorEffect : AudioEffect {
 public:
     this() {

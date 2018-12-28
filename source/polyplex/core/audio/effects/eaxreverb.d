@@ -13,7 +13,7 @@ import openal;
 public class RoomDynamicsEffect : AudioEffect {
 public:
     this() {
-        super(EffectType.Reverb);
+        super(EffectType.RoomDynamics);
         setupDone();
     }
 

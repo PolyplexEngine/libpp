@@ -3,7 +3,11 @@ import polyplex.core.audio.effects;
 import polyplex.core.audio.effect;
 import openal;
 
-/// A frequency shifter
+/**
+    A pitch shifter
+
+    MIGHT NOT WORK WITH OPENAL-SOFT
+*/ 
 public class PitchShifterEffect : AudioEffect {
 public:
     this() {

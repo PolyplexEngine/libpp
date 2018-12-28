@@ -315,7 +315,7 @@ version(Windows) {
 } else version(OSX) {
     enum libNames = "../Frameworks/OpenAL.framework/OpenAL, /Library/Frameworks/OpenAL.framework/OpenAL, /System/Library/Frameworks/OpenAL.framework/OpenAL";
 } else version(Posix) {
-    enum libNames = "libal.so,libAL.so,libopenal.so,libopenal.so.1,libopenal.so.0,liboalsoft.so";
+    enum libNames = "libopenal.so,libopenal.so.1,libopenal.so.0,liboalsoft.so,libal.so,libAL.so,";
 } else {
     enum libNames = "NOT_SUPPORTED";
 }

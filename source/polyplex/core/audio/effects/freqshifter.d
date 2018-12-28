@@ -9,7 +9,11 @@ enum FrequencyShiftDirection : ALenum {
     Off = 2
 }
 
-/// A frequency shifter
+/**
+    A frequency shifter
+
+    MIGHT NOT WORK WITH OPENAL-SOFT
+*/ 
 public class FrequencyShifterEffect : AudioEffect {
 public:
     this() {
