@@ -19,6 +19,7 @@ public enum AudioRenderFormats : int {
 	Stereo16 = AL_FORMAT_STEREO16,
 	StereoFloat = AL_FORMAT_STEREO_FLOAT32,
 }
+
 public enum ALExtensionSupport {
 	/**
 		Basic OpenAL context is supported.
@@ -33,7 +34,12 @@ public enum ALExtensionSupport {
 	/**
 		EFX is supported.
 	*/
-	EFX = 0x02
+	EFX = 0x02,
+
+	/**
+		OpenAL-Soft effect chaining
+	*/
+	EffectChaining = 0x04
 	// TODO add more extensions here.
 }
 
@@ -103,6 +109,13 @@ public class AudioDevice {
 			attribs = new ALint[4];
 			attribs[0] = ALC_MAX_AUXILIARY_SENDS;
 			attribs[1] = MixerSize;
+		}
+
+		// If Effect Chaining is supported, flag it as supported.
+		supex = cast(bool)alcIsExtensionPresent(dev, "AL_SOFTX_effect_chain");
+		if (supex) {
+			SupportedExt |= ALExtensionSupport.EffectChaining;
+			Logger.Success("Effect chains are supported!");
 		}
 
 		if (dev) {

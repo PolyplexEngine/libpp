@@ -1,4 +1,5 @@
 module polyplex.core.audio.effects.eaxreverb;
+import polyplex.core.audio.effects;
 import polyplex.core.audio.effect;
 import openal;
 
@@ -34,6 +35,16 @@ public:
 
     @property void DecayHighFreqRatio(ALfloat val) {
         alEffectf(id, AL_EAXREVERB_DECAY_HFRATIO, val);
+    }
+
+    @property float DecayLowFreqRatio() {
+        ALfloat val;
+        alGetEffectf(id, AL_EAXREVERB_DECAY_LFRATIO, &val);
+        return val;
+    }
+
+    @property void DecayLowFreqRatio(ALfloat val) {
+        alEffectf(id, AL_EAXREVERB_DECAY_LFRATIO, val);
     }
 
     @property float Density() {
@@ -76,6 +87,16 @@ public:
         alEffectf(id, AL_EAXREVERB_GAINHF, val);
     }
 
+    @property float GainLowFreq() {
+        ALfloat val;
+        alGetEffectf(id, AL_EAXREVERB_GAINLF, &val);
+        return val;
+    }
+
+    @property void GainLowFreq(ALfloat val) {
+        alEffectf(id, AL_EAXREVERB_GAINLF, val);
+    }
+
     @property float ReflectionsGain() {
         ALfloat val;
         alGetEffectf(id, AL_EAXREVERB_REFLECTIONS_GAIN, &val);
@@ -94,6 +115,56 @@ public:
 
     @property void ReflectionsDelay(ALfloat val) {
         alEffectf(id, AL_EAXREVERB_REFLECTIONS_DELAY, val);
+    }
+
+    @property float ReflectionsPan() {
+        ALfloat val;
+        alGetEffectf(id, AL_EAXREVERB_REFLECTIONS_PAN, &val);
+        return val;
+    }
+
+    @property void ReflectionsPan(ALfloat val) {
+        alEffectf(id, AL_EAXREVERB_REFLECTIONS_PAN, val);
+    }
+
+    @property float EchoTime() {
+        ALfloat val;
+        alGetEffectf(id, AL_EAXREVERB_ECHO_TIME, &val);
+        return val;
+    }
+
+    @property void EchoTime(ALfloat val) {
+        alEffectf(id, AL_EAXREVERB_ECHO_TIME, val);
+    }
+
+    @property float EchoDepth() {
+        ALfloat val;
+        alGetEffectf(id, AL_EAXREVERB_ECHO_DEPTH, &val);
+        return val;
+    }
+
+    @property void EchoDepth(ALfloat val) {
+        alEffectf(id, AL_EAXREVERB_ECHO_DEPTH, val);
+    }
+
+    @property float ModulationTime() {
+        ALfloat val;
+        alGetEffectf(id, AL_EAXREVERB_MODULATION_TIME, &val);
+        return val;
+    }
+
+    @property void ModulationTime(ALfloat val) {
+        alEffectf(id, AL_EAXREVERB_MODULATION_TIME, val);
+    }
+
+    @property float ModulationDepth() {
+        ALfloat val;
+        alGetEffectf(id, AL_EAXREVERB_MODULATION_DEPTH, &val);
+        return val;
+    }
+
+    @property void ModulationDepth(ALfloat val) {
+        alEffectf(id, AL_EAXREVERB_MODULATION_DEPTH, val);
     }
 
     @property float LateReverbGain() {
@@ -134,6 +205,26 @@ public:
 
     @property void RoomRollOffFactor(ALfloat val) {
         alEffectf(id, AL_EAXREVERB_ROOM_ROLLOFF_FACTOR, val);
+    }
+
+    @property float HighFreqReference() {
+        ALfloat val;
+        alGetEffectf(id, AL_EAXREVERB_HFREFERENCE, &val);
+        return val;
+    }
+
+    @property void HighFreqReference(ALfloat val) {
+        alEffectf(id, AL_EAXREVERB_HFREFERENCE, val);
+    }
+
+    @property float LowFreqReference() {
+        ALfloat val;
+        alGetEffectf(id, AL_EAXREVERB_LFREFERENCE, &val);
+        return val;
+    }
+
+    @property void LowFreqReference(ALfloat val) {
+        alEffectf(id, AL_EAXREVERB_LFREFERENCE, val);
     }
 
     @property float DecayHighFreqLimit() {
