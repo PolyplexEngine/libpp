@@ -1,7 +1,10 @@
 [![Polyplex Logo][logo]](http://git.pplex.org/Polyplex/ppbranding)
 
 # Polyplex Main Library (libpp)
-<a href="https://www.patreon.com/bePatron?u=10156994" data-patreon-widget-type="become-patron-button"><img class="s5qsvfm-0 fIpNGV" src="https://c5.patreon.com/external/logo/become_a_patron_button.png"></a></img> <a href='https://ko-fi.com/O4O59UGN' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://az743702.vo.msecnd.net/cdn/kofi2.png?v=0' border='0' alt='Buy Clipsey a Coffee at ko-fi.com' /></a> [Join the Discord Server](https://discord.gg/Dus5ArV) [Mastodon](https://mastodon.social/@Polyplex) [Twitter](https://twitter.com/polyplexengine)
+<a href="https://www.patreon.com/bePatron?u=10156994" data-patreon-widget-type="become-patron-button"><img class="s5qsvfm-0 fIpNGV" src="https://c5.patreon.com/external/logo/become_a_patron_button.png"></a></img> <a href='https://ko-fi.com/O4O59UGN' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://az743702.vo.msecnd.net/cdn/kofi2.png?v=0' border='0' alt='Buy Clipsey a Coffee at ko-fi.com' /></a> [Mastodon](https://mastodon.social/@Polyplex) | [Twitter](https://twitter.com/polyplexengine)
+
+[Join the Discord Server](https://discord.gg/Dus5ArV)
+
 
 libpp is an XNA like framework written in D. libpp supports OpenGL and will [in the future support Vulkan](https://git.pplex.org/Polyplex/plexrend).
 
@@ -21,6 +24,8 @@ Once added, you will need to set logging levels, choose a backend and create a w
 ### Current capabilities
 Polyplex is still very early in development, but libpp can already be used to make simple 2D games, that are relatively easy to port to other platforms.
 Polyplex packages textures, sounds, etc. into files with the extension ppc. To convert ogg, png, jpeg or tga files to .ppc, use [ppcc](https://git.pplex.org/Polyplex/ppcc)
+
+Othewise, you can use `Content.Load!(Type)(string);` by prepending `!` to the path (based on content directory) to the raw file.
 
 
 ### Examples
