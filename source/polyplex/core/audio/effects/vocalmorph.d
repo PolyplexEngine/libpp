@@ -43,6 +43,8 @@ enum Phoneme : ALenum {
 
 /**
     A 4-band formant filter, allowing to morph vocal-ish texture in to sound.
+
+    WARNING: Only few *hardware* OpenAL implementations support this currently.
 */
 public class VocalMorpherEffect : AudioEffect {
 public:
