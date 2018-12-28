@@ -128,7 +128,7 @@ public:
 
         // Unaffiliate self with previous parent when change is requested.
         if (target !is null) {
-            effect.deattachChild(this);
+            target.deattachChild(this);
         }
 
         // Bind to new effect.
