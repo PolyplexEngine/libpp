@@ -47,19 +47,6 @@ class GLShader : Shader {
 	public @property GLchar* GeoGL() { return cast(GLchar*)(shadersource.Geometry.ptr); }
 
 	/**
-		Shader Attributes.
-	*/
-	public @property GLchar*[] AttribGL() {
-		GLchar*[] attributes = new GLchar*[shadersource.Attributes.length];
-		for (int i = 0; i < attributes.length; i++) {
-			string attr = shadersource.Attributes[i];
-			char[] buffer = (attr ~ '\0').dup;
-			attributes[i] = buffer.ptr;
-		}
-		return attributes;
-	}
-
-	/**
 		Gets whenever this shader is attached.
 	*/
 	public override @property bool Attached() {
@@ -116,7 +103,6 @@ class GLShader : Shader {
 
 	//Shader linking
 	private void link_shaders() {
-		bind_attribs();
 		glLinkProgram(shaderprogram);
 		int c;
 		glGetProgramiv(shaderprogram, GL_LINK_STATUS, &c);
@@ -133,16 +119,6 @@ class GLShader : Shader {
 		}
 		//TODO: Add logging
 		//writeln("Compilation completed.");
-	}
-
-	private void bind_attribs() {
-		GLchar*[] attribs = AttribGL;
-		for (int i = 0; i < attribs.length; i++) {
-			//TODO: Add logging
-			//writeln("Binding attribute ", i, " named ", to!string(attribs[i]));
-			Logger.Debug("Binding attribute {0} named {1}...", i, attribs[i]);
-			glBindAttribLocation(shaderprogram, i, attribs[i]);
-		}
 	}
 
 	//Compilation of shaders

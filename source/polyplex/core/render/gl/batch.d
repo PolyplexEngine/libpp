@@ -70,7 +70,7 @@ public class GlSpriteBatch : SpriteBatch {
 		default_vert = import("sprite_batch.vsh");
 		default_frag = import("sprite_batch.fsh");
 
-		default_shader = new GLShader(new ShaderCode(default_vert, default_frag, ["ppPosition", "ppTexcoord", "ppColor"]));
+		default_shader = new GLShader(new ShaderCode(default_vert, default_frag));
 		default_cam = new Camera2D(Vector2(0, 0));
 		default_cam.Update();
 	}

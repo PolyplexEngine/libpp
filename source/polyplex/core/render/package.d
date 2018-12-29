@@ -213,21 +213,19 @@ class ShaderCode {
 	public string Vertex;
 	public string Fragment;
 	public string Geometry;
-	public string[] Attributes;
 
 	this() {}
 
-	this(string vertex, string fragment, string[] attribs) {
+	this(string vertex, string fragment) {
 		this.Vertex = vertex;
 		language = ShaderLang.GLSL;
 		if (this.Vertex[0..5] == "shader") {
 			language = ShaderLang.PPSL;
 		}
 		this.Fragment = fragment;
-		this.Attributes = attribs;
 	}
 
-	this(string vertex, string geometry, string fragment, string[] attribs) {
+	this(string vertex, string geometry, string fragment) {
 		this.Vertex = vertex;
 		this.Geometry = geometry;
 		language = ShaderLang.GLSL;
@@ -235,7 +233,6 @@ class ShaderCode {
 			language = ShaderLang.PPSL;
 		}
 		this.Fragment = fragment;
-		this.Attributes = attribs;
 	}
 }
 

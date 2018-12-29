@@ -29,7 +29,7 @@ public class GlDebugging2D {
 	*/
 	public static void PrepDebugging() {
 		buff = VertexBuffer!(DebugVertexLayout, Layout.Interleaved)([]);
-		shader = new GLShader(new ShaderCode(import("debug.vsh"), import("debug.fsh"), ["ppPosition", "ppColor"]));
+		shader = new GLShader(new ShaderCode(import("debug.vsh"), import("debug.fsh")));
 		matr_indx = shader.GetUniform("ppProjection");
 		cm = new Camera2D(Vector2(0, 0));
 		cm.Update();
