@@ -8,8 +8,8 @@ import polyplex.utils.logging;
 import polyplex.utils.strutils;
 import polyplex.core.audio;
 
+import polyplex.core.render : Shader, ShaderCode;
 import polyplex.core.render.gl.shader;
-import polyplex.core.render : ShaderCode;
 
 static import ppct = ppc.types;
 import ppc.backend.loaders.ppc;
@@ -80,7 +80,7 @@ public class ContentManager {
 		return new GlTexture2D(img);
 	}
 
-	public T Load(T)(string name) if (is(T : GLShader)) {
+	public T Load(T)(string name) if (is(T : Shader)) {
 		// Shaders can't be loaded locally
 		if (name[0] == '!') throw new Exception("Shaders cannot be loaded rawly, please use ppcc to convert to PSGL");
 
@@ -89,15 +89,18 @@ public class ContentManager {
 		PPC ppc = PPC(this.ContentRoot~name~".ppc");
 		auto shd = ppct.Shader(ppc.data);
 		ShaderCode sc = new ShaderCode();
+		Logger.VerboseDebug("Shader Count: {0}", shd.shaders.length);
 		foreach(k, v; shd.shaders) {
 			if (k == ppct.ShaderType.Vertex) {
 				sc.Vertex = v.toString;
+				Logger.VerboseDebug("Vertex Shader:\n{0}", sc.Vertex);
 			}
 			if (k == ppct.ShaderType.Fragment) {
 				sc.Fragment = v.toString;
+				Logger.VerboseDebug("Fragment Shader:\n{0}", sc.Fragment);
 			}
 			if (k == ppct.ShaderType.Geometry) {
-				sc.Geometry = g.toString;
+				sc.Geometry = v.toString;
 			}
 		}
 		return new GLShader(sc);
