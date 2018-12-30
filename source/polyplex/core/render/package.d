@@ -21,81 +21,85 @@ public enum VSyncState {
 }
 
 public class Renderer {
-	private static BackendRenderer BGRend;
-	public static win.Window Window;
+private:
+	static BackendRenderer BGRend;
+
+public:
+	static win.Window Window;
 
 	/**
 		Backend function, run automatically, no need to invoke it manually. c:
 	*/
-	public static void AssignRenderer(win.Window parent) {
+	static void AssignRenderer(win.Window parent) {
 		BGRend = CreateBackendRenderer(parent);
 		BGRend.Init();
 		Window = parent;
 	}
 
-	public static void ClearColor(Color color) {
+	static void ClearColor(Color color) {
 		BGRend.ClearColor(color);
 	}
 
-	public static void ClearDepth() {
+	static void ClearDepth() {
 		BGRend.ClearDepth();
 	}
 
-	public static void SwapBuffers() {
+	static void SwapBuffers() {
 		BGRend.SwapBuffers();
 	}
 
-	public static Shader CreateShader(ShaderCode code) {
+	static Shader CreateShader(ShaderCode code) {
 		return BGRend.CreateShader(code);
 	}
 
-	public static void AdjustViewport() {
+	static void AdjustViewport() {
 		BGRend.AdjustViewport();
 	}
 
-	public static @property VSyncState VSync() {
+	static @property VSyncState VSync() {
 		return BGRend.VSync;
 	}
 
-	public static @property void VSync(VSyncState state) {
+	static @property void VSync(VSyncState state) {
 		BGRend.VSync = state;
 	}
 
-	public static @property Rectangle ScissorRectangle() {
+	static @property Rectangle ScissorRectangle() {
 		return BGRend.ScissorRectangle;
 	}
 
-	public static @property void ScissorRectangle(Rectangle rect) {
+	static @property void ScissorRectangle(Rectangle rect) {
 		BGRend.ScissorRectangle = rect;
 	}
 
-	public static SpriteBatch NewBatcher() {
+	static SpriteBatch NewBatcher() {
 		return new GlSpriteBatch();
 	}
 
 }
 
 public class BackendRenderer {
-	public SpriteBatch Batch;
-	public win.Window Window;
+public:
+	SpriteBatch Batch;
+	win.Window Window;
 
 	this(win.Window parent) {
 		this.Window = parent;
 	}
 
-	public abstract void Init();
-	public abstract void ClearColor(Color color);
-	public abstract void ClearDepth();
-	public abstract void SwapBuffers();
-	public abstract Shader CreateShader(ShaderCode code);
+	abstract void Init();
+	abstract void ClearColor(Color color);
+	abstract void ClearDepth();
+	abstract void SwapBuffers();
+	abstract Shader CreateShader(ShaderCode code);
 
-	public abstract void AdjustViewport();
+	abstract void AdjustViewport();
 
-	public abstract @property VSyncState VSync();
-	public abstract @property void VSync(VSyncState state);
+	abstract @property VSyncState VSync();
+	abstract @property void VSync(VSyncState state);
 
-	public abstract @property Rectangle ScissorRectangle();
-	public abstract @property void ScissorRectangle(Rectangle rect);
+	abstract @property Rectangle ScissorRectangle();
+	abstract @property void ScissorRectangle(Rectangle rect);
 }
 
 public enum Blending {
@@ -131,13 +135,14 @@ public enum SpriteSorting {
 }
 
 public struct RasterizerState {
-	public static RasterizerState Default() {
+public:
+	static RasterizerState Default() {
 		return RasterizerState(false, false, 0f);
 	}
 
-	public bool ScissorTest;
-	public bool MSAA;
-	public float SlopeScaleBias;
+	bool ScissorTest;
+	bool MSAA;
+	float SlopeScaleBias;
 }
 
 /*
@@ -154,40 +159,43 @@ public enum SpriteFlip {
 }
 
 public abstract class SpriteBatch {
-	public bool OffsetOrigin = true;
-	
-	public abstract Matrix4x4 MultMatrices();
-	public abstract void Begin();
-	public abstract void Begin(SpriteSorting sort_mode, Blending blend_state, Sampling sample_state, RasterizerState raster_state, Shader s, Matrix4x4 matrix);
-	public abstract void Begin(SpriteSorting sort_mode, Blending blend_state, Sampling sample_State, RasterizerState raster_state, Shader s, Camera camera);
-	public abstract void Begin(SpriteSorting sort_mode, Blending blend_state, Sampling sample_State, RasterizerState raster_state, ProjectionState pstate, Shader s, Camera camera);
-	public abstract void Draw(Texture2D texture, Rectangle pos, Rectangle cutout, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f);
-	public abstract void Draw(Texture2D texture, Rectangle pos, Rectangle cutout, float rotation, Vector2 Origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f);
-	public abstract void DrawAABB(Texture2D texture, Rectangle pos_top, Rectangle pos_bottom, Rectangle cutout, Vector2 Origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f);
-	
-	public abstract void Flush();
-	public abstract void SwapChain();
-	public abstract void End();
+public:
+	bool OffsetOrigin = true;
+	abstract Matrix4x4 MultMatrices();
+	abstract void Begin();
+	abstract void Begin(SpriteSorting sort_mode, Blending blend_state, Sampling sample_state, RasterizerState raster_state, Shader s, Matrix4x4 matrix);
+	abstract void Begin(SpriteSorting sort_mode, Blending blend_state, Sampling sample_State, RasterizerState raster_state, Shader s, Camera camera);
+	abstract void Begin(SpriteSorting sort_mode, Blending blend_state, Sampling sample_State, RasterizerState raster_state, ProjectionState pstate, Shader s, Camera camera);
+	abstract void Draw(Texture2D texture, Rectangle pos, Rectangle cutout, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f);
+	abstract void Draw(Texture2D texture, Rectangle pos, Rectangle cutout, float rotation, Vector2 Origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f);
+	abstract void DrawAABB(Texture2D texture, Rectangle pos_top, Rectangle pos_bottom, Rectangle cutout, Vector2 Origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f);
+	abstract void Flush();
+	abstract void SwapChain();
+	abstract void End();
+}
+
+public abstract class Renderbuffer {
+public:
 }
 
 public abstract class Shader {
-	public abstract @property bool Attached();
-
-	public abstract void Attach();
-	public abstract void Detach();
-	public abstract void SetUniform(int location, float value);
-	public abstract void SetUniform(int location, Vector2 value);
-	public abstract void SetUniform(int location, Vector3 value);
-	public abstract void SetUniform(int location, Vector4 value);
-	public abstract void SetUniform(int location, int value);
-	public abstract void SetUniform(int location, Vector2i value);
-	public abstract void SetUniform(int location, Vector3i value);
-	public abstract void SetUniform(int location, Vector4i value);
-	public abstract void SetUniform(int location, Matrix2x2 value);
-	public abstract void SetUniform(int location, Matrix3x3 value);
-	public abstract void SetUniform(int location, Matrix4x4 value);
-	public abstract int GetUniform(string name);
-	public abstract bool HasUniform(string name);
+public:
+	abstract @property bool Attached();
+	abstract void Attach();
+	abstract void Detach();
+	abstract void SetUniform(int location, float value);
+	abstract void SetUniform(int location, Vector2 value);
+	abstract void SetUniform(int location, Vector3 value);
+	abstract void SetUniform(int location, Vector4 value);
+	abstract void SetUniform(int location, int value);
+	abstract void SetUniform(int location, Vector2i value);
+	abstract void SetUniform(int location, Vector3i value);
+	abstract void SetUniform(int location, Vector4i value);
+	abstract void SetUniform(int location, Matrix2x2 value);
+	abstract void SetUniform(int location, Matrix3x3 value);
+	abstract void SetUniform(int location, Matrix4x4 value);
+	abstract int GetUniform(string name);
+	abstract bool HasUniform(string name);
 
 }
 
@@ -210,12 +218,14 @@ enum ShaderLang {
 }
 
 class ShaderCode {
-	private ShaderLang language;
+private:
+	ShaderLang language;
 
-	public @property ShaderLang Language() { return language; }
-	public string Vertex;
-	public string Fragment;
-	public string Geometry;
+public:
+	@property ShaderLang Language() { return language; }
+	string Vertex;
+	string Fragment;
+	string Geometry;
 
 	this() {}
 
