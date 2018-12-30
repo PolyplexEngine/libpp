@@ -1,6 +1,7 @@
 module polyplex.core.render.gl.batch;
 import polyplex.core.render;
 import polyplex.core.render.gl.shader;
+import polyplex.core.render.gl.gloo;
 import polyplex.core.render.gl.objects;
 import polyplex.core.render.camera;
 import polyplex.core.content.textures;
@@ -13,259 +14,273 @@ import polyplex.utils.mathutils;
 
 import std.stdio;
 
+/// Exception messages.
+private enum : string {
+	ErrorAlreadyStarted		= "SpriteBatch.Begin called more than once! Remember to end spritebatch sessions before beginning new ones.",
+	ErrorNotStarted			= "SpriteBatch.Begin must be called before SpriteBatch.End.",
+	ErrorNullTexture		= "Texture was null, please instantiate the texture before using it."
+}
 
 private struct SprBatchData {
-	Vector2 ppPosition;
-	Vector2 ppTexcoord;
-	Vector4 ppColor;
+	Vector2 position;
+	Vector2 texCoord;
+	Vector4 color;
 }
 
 private alias SBatchVBO = VertexBuffer!(SprBatchData, Layout.Interleaved);
 
-/**
-	OpenGL implementation of a sprite batcher.
-*/
 public class GlSpriteBatch : SpriteBatch {
-	private static string uniform_tex_name = "ppTexture";
-	private static string uniform_prj_name = "ppProjection";
-	private static string default_vert;
-	private static string default_frag;
-	private static Shader default_shader;
-	private static Camera default_cam;
-	private static bool has_init;
+private:
 
-	private int size;
-	private int queued;
-	private int last_queued;
+	// Creation info
+	enum UniformProjectionName = "PROJECTION";
+	enum DefaultVert = import("sprite_batch.vsh");
+	enum DefaultFrag = import("sprite_batch.fsh");
+	static Shader defaultShader;
+	static Camera defaultCamera;
+	static bool hasInitCompleted;
 
-	private SprBatchData vector_data;
-	private VertexBuffer!(SprBatchData, Layout.Interleaved) render_object;
-	private VertexBuffer!(SprBatchData, Layout.Interleaved) render_object_2;
+	// State info
+	int queued;
+	bool hasBegun;
+	bool swap;
 
-	private SpriteSorting sort_mode; 
-	private Blending blend_state;
-	private Sampling sample_state;
-	private ProjectionState project_state;
-	private Shader shader;
-	private Matrix4x4 view_project;
-	private Texture2D current_texture;
-	private Texture2D current_texture_2;
+	// Buffer
+	VertexArray 			elementVertexArray;
+	Buffer 					elementBuffer;
+	SprBatchData[6][1000] 	elementArray;
 
-	private RasterizerState raster_state;
+	// OpenGL state info.
+	SpriteSorting sortMode;
+	Blending blendMode;
+	Sampling sampleMode;
+	RasterizerState rasterState;
+	ProjectionState projectionState;
+	Shader shader;
 
-	private bool has_begun = false;
-	private bool swap = false;
+	// Textures
+	Texture2D currentTexture;
 
-	this(int size = 1000) {
-		InitializeSpritebatch();
-		this.size = size;
-		render_object = VertexBuffer!(SprBatchData, Layout.Interleaved)([]);
-		render_object_2 = VertexBuffer!(SprBatchData, Layout.Interleaved)([]);
-	}
+	// Viewport
+	Matrix4x4 viewProjectionMatrix;
 
-	public static void InitializeSpritebatch() {
-		if (!has_init) has_init = !has_init;
-		else return;
-
-		default_vert = import("sprite_batch.vsh");
-		default_frag = import("sprite_batch.fsh");
-
-		default_shader = new GLShader(new ShaderCode(default_vert, default_frag));
-		default_cam = new Camera2D(Vector2(0, 0));
-		default_cam.Update();
-	}
-
-	private void set_blend_state(Blending state) {
-		if (state == Blending.Additive) {
-			glBlendFunc (GL_SRC_COLOR, GL_ONE);
-			glBlendFunc (GL_SRC_ALPHA, GL_ONE);
-			return;
-		}
-		if (state == Blending.AlphaBlend) {
-			glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
-			glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-			return;
-		}
-		if (state == Blending.NonPremultiplied) {
-			glBlendFunc(GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			return;
-		}
-		glBlendFunc(GL_ONE, GL_ZERO);
-		Logger.Warn("Some things are not implemented yet, noteably: DepthStencilStates, RasterizerStates and some SpriteSortModes.");
-	}
-
-	private void set_projection_state(ProjectionState state) {
-		this.project_state = state;
-	}
-
-	private void set_raster_state(RasterizerState state) {
-		if (state.ScissorTest) glEnable(GL_SCISSOR_TEST);
-		if (state.MSAA) glEnable(GL_MULTISAMPLE);
-		if (state.SlopeScaleBias > 0f) glEnable(GL_POLYGON_OFFSET_FILL);
-	}
-
-	private void reset_raster_state() {
-		glDisable(GL_MULTISAMPLE);
-		glDisable(GL_SCISSOR_TEST);
-		glDisable(GL_POLYGON_OFFSET_FILL);
-	}
-
-	private void set_sampler_state(Sampling sampling) {
-		switch (sampling) {
-			case sampling.PointWrap:
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	// Functions
+	void setBlendState(Blending state) {
+		switch(state) {
+			case Blending.Additive:
+				glBlendFunc (GL_SRC_COLOR, GL_ONE);
+				glBlendFunc (GL_SRC_ALPHA, GL_ONE);
 				break;
-			case sampling.PointClamp:
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			case Blending.AlphaBlend:
+				glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+				glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 				break;
-			case sampling.LinearWrap:
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-				break;
-			case sampling.LinearClamp:
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			case Blending.NonPremultiplied:
+				glBlendFunc(GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR);
+				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 				break;
 			default:
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+				glBlendFunc(GL_ONE, GL_ZERO);
 				break;
 		}
 	}
 
-	public override Matrix4x4 MultMatrices() {
-		if (this.project_state == ProjectionState.Perspective)
-			return this.default_cam.ProjectPerspective(Renderer.Window.ClientBounds.Width, 90f, Renderer.Window.ClientBounds.Height) * this.view_project;
-		return this.default_cam.ProjectOrthographic(Renderer.Window.ClientBounds.Width, Renderer.Window.ClientBounds.Height) * this.view_project;
+	void setProjectionState(ProjectionState state) {
+		projectionState = state;
 	}
 
-	public override void Begin() {
-		Begin(SpriteSorting.Deferred, Blending.AlphaBlend, Sampling.LinearClamp, raster_state.Default, default_shader, default_cam);
+	void setRasterizerState(RasterizerState state) {
+		if (state.ScissorTest) GL.Enable(Capability.ScissorTest);
+		if (state.MSAA) GL.Enable(Capability.Multisample);
+		if (state.SlopeScaleBias > 0) GL.Enable(Capability.PolygonOffsetFill); 
+	}
+
+	void resetRasterizerState() {
+		GL.Disable(Capability.ScissorTest);
+		GL.Disable(Capability.Multisample);
+		GL.Disable(Capability.PolygonOffsetFill);
+	}
+
+	void setSamplerState(Sampling state) {
+		switch(state) {
+			case state.PointWrap:
+				GL.SetTextureParameter(TextureType.Tex2D, TextureParameter.WrapS, GL.Repeat);
+				GL.SetTextureParameter(TextureType.Tex2D, TextureParameter.WrapT, GL.Repeat);
+				GL.SetTextureParameter(TextureType.Tex2D, TextureParameter.MagFilter, GL.Nearest);
+				GL.SetTextureParameter(TextureType.Tex2D, TextureParameter.MinFilter, GL.Nearest);
+				break;
+			case state.PointClamp:
+				GL.SetTextureParameter(TextureType.Tex2D, TextureParameter.WrapS, GL.ClampToEdge);
+				GL.SetTextureParameter(TextureType.Tex2D, TextureParameter.WrapT, GL.ClampToEdge);
+				GL.SetTextureParameter(TextureType.Tex2D, TextureParameter.MagFilter, GL.Nearest);
+				GL.SetTextureParameter(TextureType.Tex2D, TextureParameter.MinFilter, GL.Nearest);
+				break;
+			case state.PointMirror:
+				GL.SetTextureParameter(TextureType.Tex2D, TextureParameter.WrapS, GL.MirroredRepeat);
+				GL.SetTextureParameter(TextureType.Tex2D, TextureParameter.WrapT, GL.MirroredRepeat);
+				GL.SetTextureParameter(TextureType.Tex2D, TextureParameter.MagFilter, GL.Nearest);
+				GL.SetTextureParameter(TextureType.Tex2D, TextureParameter.MinFilter, GL.Nearest);
+				break;
+			case state.LinearWrap:
+				GL.SetTextureParameter(TextureType.Tex2D, TextureParameter.WrapS, GL.Repeat);
+				GL.SetTextureParameter(TextureType.Tex2D, TextureParameter.WrapT, GL.Repeat);
+				GL.SetTextureParameter(TextureType.Tex2D, TextureParameter.MagFilter, GL.Linear);
+				GL.SetTextureParameter(TextureType.Tex2D, TextureParameter.MinFilter, GL.Linear);
+				break;
+			case state.LinearClamp:
+				GL.SetTextureParameter(TextureType.Tex2D, TextureParameter.WrapS, GL.ClampToEdge);
+				GL.SetTextureParameter(TextureType.Tex2D, TextureParameter.WrapT, GL.ClampToEdge);
+				GL.SetTextureParameter(TextureType.Tex2D, TextureParameter.MagFilter, GL.Linear);
+				GL.SetTextureParameter(TextureType.Tex2D, TextureParameter.MinFilter, GL.Linear);
+				break;
+			case state.LinearMirror:
+				GL.SetTextureParameter(TextureType.Tex2D, TextureParameter.WrapS, GL.MirroredRepeat);
+				GL.SetTextureParameter(TextureType.Tex2D, TextureParameter.WrapT, GL.MirroredRepeat);
+				GL.SetTextureParameter(TextureType.Tex2D, TextureParameter.MagFilter, GL.Linear);
+				GL.SetTextureParameter(TextureType.Tex2D, TextureParameter.MinFilter, GL.Linear);
+				break;
+			default:
+				GL.SetTextureParameter(TextureType.Tex2D, TextureParameter.WrapS, GL.Repeat);
+				GL.SetTextureParameter(TextureType.Tex2D, TextureParameter.WrapT, GL.Repeat);
+				GL.SetTextureParameter(TextureType.Tex2D, TextureParameter.MagFilter, GL.Nearest);
+				GL.SetTextureParameter(TextureType.Tex2D, TextureParameter.MinFilter, GL.Nearest);
+				break;
+		}
+	}
+
+	void addVertex(int offset, float x, float y, float r, float g, float b, float a, float u, float v) {
+		this.elementArray[queued][offset].position = Vector2(x, y);
+		this.elementArray[queued][offset].texCoord = Vector2(u, v);
+		this.elementArray[queued][offset].color = Vector4(r, g, b, a);
+	}
+
+	void checkFlush(Texture2D texture) {
+
+		// Throw exception if texture isn't instantiated.
+		if (texture is null) throw new Exception(ErrorNullTexture);
+
+		// Flush batch if needed, then update texture.
+		if (texture != currentTexture || queued+1 >= elementArray.length) {
+			if (currentTexture !is null) Flush();
+
+			currentTexture = texture;
+		}
+	}
+
+	void render() {
+		// Skip out of nothing to render.
+		if (queued == 0) return;
+
+		// Bind vertex array.
+		elementVertexArray.Bind();
+
+		// Bind buffer
+		elementBuffer.Bind(BufferType.Vertex);
+
+		// Refill data
+		elementBuffer.SubData(0, SprBatchData.sizeof*(queued*6), elementArray.ptr);
+
+		// Setup attribute pointers.
+		elementVertexArray.EnableArray(0);
+		elementVertexArray.EnableArray(1);
+		elementVertexArray.EnableArray(2);
+		elementVertexArray.AttribPointer(0, 2, GL_FLOAT, GL_FALSE, SprBatchData.sizeof, cast(void*)SprBatchData.position.offsetof);
+		elementVertexArray.AttribPointer(1, 2, GL_FLOAT, GL_FALSE, SprBatchData.sizeof, cast(void*)SprBatchData.texCoord.offsetof);
+		elementVertexArray.AttribPointer(2, 4, GL_FLOAT, GL_FALSE, SprBatchData.sizeof, cast(void*)SprBatchData.color.offsetof);
+
+		// Attach everything else and render.
+		shader.Attach();
+		if (currentTexture !is null) currentTexture.Bind(0, shader);
+		setSamplerState(sampleMode);
+		setBlendState(blendMode);
+		shader.SetUniform(shader.GetUniform(UniformProjectionName), MultMatrices);
+
+		GL.DrawArrays(GL.Triangles, 0, queued*6);
+
+	}
+
+public:
+
+	this() {
+		elementVertexArray = new VertexArray();
+		elementVertexArray.Bind();
+		elementBuffer = new Buffer();
+		elementBuffer.Bind(BufferType.Vertex);
+		elementBuffer.Data(elementArray.sizeof, elementArray.ptr, BufferUsage.DynamicDraw);
+		Logger.VerboseDebug("Some OpenGL features are not implemented yet, namely DepthStencilState, RasterizerState and some SpriteSortModes.");
+	}
+
+	/// Initialize sprite batch
+	static void InitializeSpritebatch() {
+		if (!hasInitCompleted) hasInitCompleted = !hasInitCompleted;
+		else return;
+
+		defaultShader = new GLShader(new ShaderCode(DefaultVert, DefaultFrag));
+		defaultCamera = new Camera2D(Vector2(0, 0));
+		defaultCamera.Update();
+	}
+
+	/// Get matrix.
+	override Matrix4x4 MultMatrices() {
+		switch(projectionState) {
+			case ProjectionState.Perspective:
+				return defaultCamera.ProjectPerspective(Renderer.Window.ClientBounds.Width, 90f, Renderer.Window.ClientBounds.Height) * viewProjectionMatrix;
+			default:
+				return defaultCamera.ProjectOrthographic(Renderer.Window.ClientBounds.Width, Renderer.Window.ClientBounds.Height) * viewProjectionMatrix;
+		}
 	}
 
 	/**
 		Begin begins the spritebatch, setting up sorting modes, blend states and sampling.
 		Begin also attaches a custom shader (if chosen) and sets the camera/view matrix.
 	*/
-	public override void Begin(SpriteSorting sort_mode, Blending blend_state, Sampling sample_state, RasterizerState raster_state, ProjectionState pstate, Shader s, Camera camera) {
-		set_projection_state(pstate);
-		Begin(sort_mode, blend_state, sample_state, raster_state, s, camera);
+	override void Begin() {
+		Begin(SpriteSorting.Deferred, Blending.AlphaBlend, Sampling.LinearClamp, RasterizerState.Default, defaultShader, defaultCamera);
 	}
 
 	/**
 		Begin begins the spritebatch, setting up sorting modes, blend states and sampling.
 		Begin also attaches a custom shader (if chosen) and sets the camera/view matrix.
 	*/
-	public override void Begin(SpriteSorting sort_mode, Blending blend_state, Sampling sample_state, RasterizerState raster_state, Shader s, Camera camera) {
-		Camera cam = camera;
-		if (cam is null) cam = default_cam;
-		cam.Update();
-		Begin(sort_mode, blend_state, sample_state, raster_state, s, cam.Matrix);
-	}
+	override void Begin(SpriteSorting sortMode, Blending blendState, Sampling sampleState, RasterizerState rasterState, Shader shader, Matrix4x4 matrix) {
+		if (hasBegun) throw new Exception(ErrorAlreadyStarted);
+		hasBegun = true;
+		this.sortMode = sortMode;
+		this.blendMode = blendState;
+		this.sampleMode = sampleState;
+		this.blendMode = blendState;
+		this.viewProjectionMatrix = matrix;
+		this.shader = shader;
 
-	/**
-		Begin begins the spritebatch, setting up sorting modes, blend states and sampling.
-		Begin also attaches a custom shader (if chosen) and sets the camera/view matrix.
-	*/
-	public override void Begin(SpriteSorting sort_mode, Blending blend_state, Sampling sample_state, RasterizerState raster_state, Shader s, Matrix4x4 matrix) {
-		if (this.has_begun) throw new Exception("SpriteBatch.Begin called more than once! Remember to end spritebatch sessions before beginning new ones.");
-		this.has_begun = true;
-		this.sort_mode = sort_mode;
-		this.sample_state = sample_state;
-		this.blend_state = blend_state;
-		this.view_project = matrix;
-		this.shader = s;
-		this.raster_state = raster_state;
-		set_raster_state(this.raster_state);
-		if (this.shader is null) this.shader = default_shader;
-		this.current_texture = null;
+		this.rasterState = rasterState;
+		setRasterizerState(rasterState);
+
+		this.shader = shader !is null ? shader : defaultShader;
+		this.currentTexture = null;
 		this.queued = 0;
 	}
 
 	/**
-		Flush flushes the spritebatch, drawing whatever that has been batched to the screen.
-		End() will automatically call this.
+		Begin begins the spritebatch, setting up sorting modes, blend states and sampling.
+		Begin also attaches a custom shader (if chosen) and sets the camera/view matrix.
 	*/
-	public override void Flush() {
-		render();
-		current_texture = null;
-		last_queued = queued;
-		queued = 0;
+	override void Begin(SpriteSorting sortMode, Blending blendState, Sampling sampleState, RasterizerState rasterState, Shader shader, Camera camera) {
+		Camera cam = camera !is null ? camera : defaultCamera;
+		cam.Update();
+		Begin(sortMode, blendState, sampleState, rasterState, shader, cam.Matrix);
 	}
 
-	private void add_vertex(int offset, float x, float y, float r, float g, float b, float a, float u, float v) {
-		//Logger.VerboseDebug("{0}, {1} == {2}", offset, (queued*6), (queued*6)+offset);
-		if ((queued*6)+offset >= this.render_object.Data.length)
-			this.render_object.Data.length++;
-		this.render_object.Data[(queued*6)+offset].ppPosition = Vector2(x, y);
-		this.render_object.Data[(queued*6)+offset].ppColor = Vector4(r, g, b, a);
-		this.render_object.Data[(queued*6)+offset].ppTexcoord = Vector2(u, v);
+	override void Begin(SpriteSorting sortMode, Blending blendState, Sampling sampleState, RasterizerState rasterState, ProjectionState pstate, Shader shader, Camera camera) {
+		setProjectionState(pstate);
+		Begin(sortMode, blendState, sampleState, rasterState, shader, camera);
 	}
 
-	private void check_flush(Texture2D texture) {
-		if ((texture is null)) throw new Exception("Null value sprite. Please load a sprite before drawing it.");
-
-		if (texture != current_texture || queued > size) {
-			if (!(current_texture is null)) Flush();
-			current_texture = texture;
-		}
-	}
-
-	private void render() {
-		if (queued == 0) return;
-		// Buffer the data
-		this.render_object.Bind();
-		if ((queued*6) < last_queued) render_object.UpdateSubData(0, 0, (queued*6));
-		else render_object.UpdateBuffer();
-
-		// Draw current
-		this.render_object.Bind();
-
-		// Attach textures, set states, uniforms, etc.
-		this.shader.Attach();
-		if (!(current_texture is null)) current_texture.Bind(0, this.shader);
-		set_sampler_state(sample_state);
-		set_blend_state(blend_state);
-		this.shader.SetUniform(this.shader.GetUniform(uniform_prj_name), MultMatrices);
-		
-		// Draw.
-		render_object.Draw(queued*6);
-	}
-
-	/**
-		Swaps the draw chain (double buffering)
-
-		TODO: Add double buffering here.
-	*/
-	public override void SwapChain() {
-		swap = !swap;
-	}
-
-	/**
-		Draw draws a texture.
-	*/
-	public override void Draw(Texture2D texture, Rectangle pos, Rectangle cutout, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f) {
+	override void Draw(Texture2D texture, Rectangle pos, Rectangle cutout, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f) {
 		Draw(texture, pos, cutout, 0f, Vector2(-1, -1), color, flip, zlayer);
 	}
 
-	/**
-		Draw draws a texture.
-	*/
-	public override void Draw(Texture2D texture, Rectangle pos, Rectangle cutout, float rotation, Vector2 Origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0) {
-		check_flush(texture);
+	override void Draw(Texture2D texture, Rectangle pos, Rectangle cutout, float rotation, Vector2 Origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f) {
+		checkFlush(texture);
 		float x1, y1;
 		float x2, y2;
 		float x3, y3;
@@ -353,21 +368,17 @@ public class GlSpriteBatch : SpriteBatch {
 			v2 = vx;
 		}
 
-		add_vertex(0, x1, y1, color.Rf(), color.Gf(), color.Bf(), color.Af(), u, v); // TOP LEFT
-		add_vertex(1, x2, y2, color.Rf(), color.Gf(), color.Bf(), color.Af(), u2, v), // TOP RIGHT
-		add_vertex(2, x4, y4, color.Rf(), color.Gf(), color.Bf(), color.Af(), u, v2); // BOTTOM LEFT
-		add_vertex(3, x2, y2, color.Rf(), color.Gf(), color.Bf(), color.Af(), u2, v), // TOP RIGHT
-		add_vertex(4, x3, y3, color.Rf(), color.Gf(), color.Bf(), color.Af(), u2, v2); // BOTTOM RIGHT
-		add_vertex(5, x4, y4, color.Rf(), color.Gf(), color.Bf(), color.Af(), u, v2); // BOTTOM LEFT
+		addVertex(0, x1, y1, color.Rf(), color.Gf(), color.Bf(), color.Af(), u, v); // TOP LEFT
+		addVertex(1, x2, y2, color.Rf(), color.Gf(), color.Bf(), color.Af(), u2, v), // TOP RIGHT
+		addVertex(2, x4, y4, color.Rf(), color.Gf(), color.Bf(), color.Af(), u, v2); // BOTTOM LEFT
+		addVertex(3, x2, y2, color.Rf(), color.Gf(), color.Bf(), color.Af(), u2, v), // TOP RIGHT
+		addVertex(4, x3, y3, color.Rf(), color.Gf(), color.Bf(), color.Af(), u2, v2); // BOTTOM RIGHT
+		addVertex(5, x4, y4, color.Rf(), color.Gf(), color.Bf(), color.Af(), u, v2); // BOTTOM LEFT
 		queued++;
 	}
 
-	/**
-		Draw draws a texture.
-		Rectangle pos will act like an AABB rectangle instead.
-	*/
-	public override void DrawAABB(Texture2D texture, Rectangle pos_top, Rectangle pos_bottom, Rectangle cutout, Vector2 Origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0) {
-		check_flush(texture);
+	override void DrawAABB(Texture2D texture, Rectangle pos_top, Rectangle pos_bottom, Rectangle cutout, Vector2 Origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f) {
+		checkFlush(texture);
 		float x1, y1;
 		float x2, y2;
 		float x3, y3;
@@ -404,22 +415,28 @@ public class GlSpriteBatch : SpriteBatch {
 			v2 = vx;
 		}
 
-		add_vertex(0, x1, y1, color.Rf(), color.Gf(), color.Bf(), color.Af(), u, v); // TOP LEFT
-		add_vertex(1, x2, y2, color.Rf(), color.Gf(), color.Bf(), color.Af(), u2, v), // TOP RIGHT
-		add_vertex(2, x4, y4, color.Rf(), color.Gf(), color.Bf(), color.Af(), u, v2); // BOTTOM LEFT
-		add_vertex(3, x2, y2, color.Rf(), color.Gf(), color.Bf(), color.Af(), u2, v), // TOP RIGHT
-		add_vertex(4, x3, y3, color.Rf(), color.Gf(), color.Bf(), color.Af(), u2, v2); // BOTTOM RIGHT
-		add_vertex(5, x4, y4, color.Rf(), color.Gf(), color.Bf(), color.Af(), u, v2); // BOTTOM LEFT
+		addVertex(0, x1, y1, color.Rf(), color.Gf(), color.Bf(), color.Af(), u, v); // TOP LEFT
+		addVertex(1, x2, y2, color.Rf(), color.Gf(), color.Bf(), color.Af(), u2, v), // TOP RIGHT
+		addVertex(2, x4, y4, color.Rf(), color.Gf(), color.Bf(), color.Af(), u, v2); // BOTTOM LEFT
+		addVertex(3, x2, y2, color.Rf(), color.Gf(), color.Bf(), color.Af(), u2, v), // TOP RIGHT
+		addVertex(4, x3, y3, color.Rf(), color.Gf(), color.Bf(), color.Af(), u2, v2); // BOTTOM RIGHT
+		addVertex(5, x4, y4, color.Rf(), color.Gf(), color.Bf(), color.Af(), u, v2); // BOTTOM LEFT
 		queued++;
 	}
+	
+	override void Flush() {
+		render();
+		currentTexture = null;
+		queued = 0;
+	}
 
-	/**
-		End ends the sprite batching, allowing you to start a new batch.
-	*/
-	public override void End() {
-		if (!has_begun) throw new Exception("SpriteBatch.Begin must be called before SpriteBatch.End.");
-		has_begun = false;
+	override void SwapChain() {
+
+	}
+
+	override void End() {
+		hasBegun = false;
 		Flush();
-		reset_raster_state();
+		resetRasterizerState();
 	}
 }

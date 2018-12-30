@@ -113,9 +113,12 @@ public enum ProjectionState {
 public enum Sampling {
 	AnisotropicClamp,
 	AnisotropicWrap,
+	AnisotropicMirror,
 	LinearClamp,
 	LinearWrap,
+	LinearMirror,
 	PointClamp,
+	PointMirror,
 	PointWrap
 }
 

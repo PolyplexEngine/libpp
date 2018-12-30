@@ -33,7 +33,7 @@ enum BufferMode {
 }
 
 
-alias Buffer = GLfloat[];
+alias XBuffer = GLfloat[];
 
 /**
 	Layout is the way data is layed out in a buffer object.
@@ -59,7 +59,7 @@ enum Layout {
 }
 
 //Vertex Array Object contains state information to be sent to the GPU
-class VertexArray(T, Layout layout) {
+class XVertexArray(T, Layout layout) {
 
 	private GLuint id;
 	public @property uint Id() { return cast(uint)id; }
@@ -86,7 +86,7 @@ class VertexArray(T, Layout layout) {
 enum ValidBufferType(T) = (is(T == float)) || (IsVector!T && is(T.Type == float));
 
 struct VertexBuffer(T, Layout layout) {
-	VertexArray!(T, layout) vao;
+	XVertexArray!(T, layout) vao;
 	private GLuint[] gl_buffers;
 	public T[] Data;
 
@@ -96,7 +96,7 @@ struct VertexBuffer(T, Layout layout) {
 	}
 
 	this(T[] input) {
-		vao = new VertexArray!(T, layout)();
+		vao = new XVertexArray!(T, layout)();
 		this.Data = input;
 
 		vao.Bind();

@@ -5,25 +5,214 @@ private __gshared Buffer[GLenum]            boundBuffers;
 private __gshared Texture[GLenum]           boundTextures;
 private __gshared Framebuffer[GLenum]       boundFramebuffers;
 private __gshared Sampler[GLenum]           boundSamplers;
-private __gshared Renderbuffer[GLenum]      boundRenderbuffers;
+private __gshared Renderbuffer              boundRenderbuffer;
 private __gshared VertexArray               boundVertexArray;
 //private __gshared AsyncQuery[GLenum]        boundAsyncQueries;
 //private __gshared Pipeline[GLenum]          boundPipelines;
 //private __gshared TransformFeedback[GLenum] boundTransformFeedbacks;
+
+public @nogc:
+
+enum Capability : GLenum {
+    AlphaTesting        = GL_ALPHA_TEST,
+    AutoNormal          = GL_AUTO_NORMAL,
+    Blending            = GL_BLEND,
+    ColorLogic          = GL_COLOR_LOGIC_OP,
+    ColorMaterial       = GL_COLOR_MATERIAL,
+    ColorSum            = GL_COLOR_SUM,
+    ColorTable          = GL_COLOR_TABLE,
+    Convolution1D       = GL_CONVOLUTION_1D,
+    Convolution2D       = GL_CONVOLUTION_2D,
+    CullFace            = GL_CULL_FACE,
+    DepthTesting        = GL_DEPTH_TEST,
+    Dithering           = GL_DITHER,
+    Fog                 = GL_FOG,
+    Histogram           = GL_HISTOGRAM,
+    IndexLogic          = GL_INDEX_LOGIC_OP,
+    Lighting            = GL_LIGHTING,
+    LineSmooth          = GL_LINE_SMOOTH,
+    LineStipple         = GL_LINE_STIPPLE,
+    // TODO: Add a bunch of GL_MAP stuff
+
+    MinMax              = GL_MINMAX,
+    Multisample         = GL_MULTISAMPLE,
+    Normalize           = GL_NORMALIZE,
+    PointSmooth         = GL_POINT_SMOOTH,
+    PointSprite         = GL_POINT_SPRITE,
+    PolygonOffsetFill   = GL_POLYGON_OFFSET_FILL,
+    PolygonOffsetLine   = GL_POLYGON_OFFSET_LINE,
+    PolygonOffsetPoint  = GL_POLYGON_OFFSET_POINT,
+    PolygonSmooth       = GL_POLYGON_SMOOTH,
+    PolygonStipple      = GL_POLYGON_STIPPLE,
+
+    ScissorTest         = GL_SCISSOR_TEST,
+    StencilTest         = GL_STENCIL_TEST
+
+}
+/**
+    Functions for OpenGL not attached to an object.
+*/
+class GL {
+public:
+    enum : GLenum {
+
+        // Filters
+        Nearest                     = GL_NEAREST,
+        NearestMipmapNearest        = GL_NEAREST_MIPMAP_NEAREST,
+        NearestMipmapLinear         = GL_NEAREST_MIPMAP_LINEAR,
+        Linear                      = GL_LINEAR,
+        LinearMipmapNearest         = GL_LINEAR_MIPMAP_NEAREST,
+        LinearMipmapLinear          = GL_LINEAR_MIPMAP_LINEAR,
+
+        // Swizzle
+        Red                         = GL_RED,
+        Green                       = GL_GREEN,
+        Blue                        = GL_BLUE,
+        Alpha                       = GL_ALPHA,
+
+        // Wrap
+        ClampToEdge                 = GL_CLAMP_TO_EDGE,
+        ClampToBorder               = GL_CLAMP_TO_BORDER,
+        MirroredRepeat              = GL_MIRRORED_REPEAT,
+        Repeat                      = GL_REPEAT,
+
+        // Draw modes
+        Points                      = GL_POINTS,
+        LineStrip                   = GL_LINE_STRIP,
+        LineLoop                    = GL_LINE_LOOP,
+        Lines                       = GL_LINES,
+        LineStripAdjacency          = GL_LINE_STRIP_ADJACENCY,
+        LinesAdjacency              = GL_LINES_ADJACENCY,
+        TriangleStrip               = GL_TRIANGLE_STRIP,
+        TriangleFan                 = GL_TRIANGLE_FAN,
+        Triangles                   = GL_TRIANGLES,
+        TriangleStripAdjacency      = GL_TRIANGLE_STRIP_ADJACENCY,
+        TrianglesAdjacency          = GL_TRIANGLES_ADJACENCY
+        
+    }
+
+
+static:
+    /**
+        Enables an OpenGL capability.
+    */
+    void Enable(Capability cap) {
+        glEnable(cap);
+    }
+
+    /**
+        Disables an OpenGL capability
+    */
+    void Disable(Capability cap) {
+        glDisable(cap);
+    }
+
+    void DrawArrays(GLenum mode, GLint first, GLsizei count) {
+        glDrawArrays(mode, first, count);
+    }
+
+    /// 
+    void SetTextureParameter(GLenum target, GLenum pname, GLint param) {
+        glTexParameteri(target, pname, param);
+    }
+
+    /// 
+    void SetTextureParameter(GLenum target, GLenum pname, GLfloat param) {
+        glTexParameterf(target, pname, param);
+    }
+
+    /// 
+    void SetTextureParameter(GLenum target, GLenum pname, GLint* param) {
+        glTexParameteriv(target, pname, param);
+    }
+
+    /// 
+    void SetTextureParameter(GLenum target, GLenum pname, GLfloat* param) {
+        glTexParameterfv(target, pname, param);
+    }
+
+    /// 
+    void SetTextureParameter(GLenum target, GLenum pname, const(GLint)* param) {
+        glTexParameterIiv(target, pname, param);
+    }
+
+    /// 
+    void SetTextureParameter(GLenum target, GLenum pname, const(GLuint)* param) {
+        glTexParameterIuiv(target, pname, param);
+    }
+
+    /// 
+    void BufferSubData(GLenum target, ptrdiff_t offset, ptrdiff_t size, void* data) {
+        glBufferSubData(target, offset, size, data);
+    }
+
+    /// 
+    void BufferData(GLenum target, ptrdiff_t size, void* data, GLenum usage) {
+        glBufferData(target, size, data, usage);
+    }
+}
+
 
 enum ObjectClass {
     Anything,
     Data,
     Texture
 }
-public:
 
 abstract class GLObject {
 private:
     GLuint id;
 public:
+    /// Binds the object with default type
+    abstract void Bind();
+
+    /// Binds the object
     abstract void Bind(GLenum target);
+
+    /// Unbinds the object
     abstract void Unbind();
+}
+
+/*
+        ------ BUFFERS ------
+*/
+
+enum BufferUsage : GLenum {
+    StreamDraw          = GL_STREAM_DRAW,
+    StreamRead          = GL_STREAM_READ,
+    StreamCopy          = GL_STREAM_COPY,
+    StaticDraw          = GL_STATIC_DRAW,
+    StaticRead          = GL_STATIC_READ,
+    StaticCopy          = GL_STATIC_COPY,
+    DynamicDraw          = GL_DYNAMIC_DRAW,
+    DynamicRead          = GL_DYNAMIC_READ,
+    DynamicCopy          = GL_DYNAMIC_COPY,
+}
+
+enum BufferType : GLenum {
+    /// Vertex Attributes
+    Vertex              = GL_ARRAY_BUFFER,
+
+    /// Buffer Copy Source
+    CopyRead            = GL_COPY_READ_BUFFER,
+
+    /// Buffer Copy Destination
+    CopyWrite           = GL_COPY_WRITE_BUFFER,
+
+    /// Vertex Array Indices
+    ElementAray         = GL_ELEMENT_ARRAY_BUFFER,
+
+    /// Pixel Read Target
+    PixelPack           = GL_PIXEL_PACK_BUFFER,
+
+    /// Texture Data Source
+    PixelUnpack         = GL_PIXEL_UNPACK_BUFFER,
+
+    /// Texture Data Buffer
+    Texture             = GL_TEXTURE_BUFFER,
+
+    /// Uniform Block Storage
+    Uniform             = GL_UNIFORM_BUFFER
 }
 
 class Buffer : GLObject {
@@ -39,10 +228,17 @@ public:
         glDeleteBuffers(1, &id);
     }
 
+    /// Binds the buffer with default type
+    override void Bind() {
+        Bind(BufferType.Vertex);
+    }
+
     /// Binds the buffer
     override void Bind(GLenum target) {
         // We're already bound there, bail out.
-        if (boundBuffers[target].id == id) return;
+        if (target in boundBuffers && 
+            boundBuffers[target] !is null && 
+            boundBuffers[target].id == id) return;
 
         // Unbind from old position if needed.
         if (boundTarget != 0) Unbind();
@@ -68,15 +264,15 @@ public:
     }
 
     /// 
-    void Data(GLenum target, ptrdiff_t size, void* data, GLenum usage) {
-        Bind(target);
-        glBufferData(target, size, data, usage);
+    void Data(ptrdiff_t size, void* data, GLenum usage) {
+        if (boundTarget == 0) return;
+        GL.BufferData(boundTarget, size, data, usage);
     }
 
     /// 
-    void SubData(GLenum target, ptrdiff_t offset, ptrdiff_t size, void* data) {
-        Bind(target);
-        glBufferSubData(target, offset, size, data);
+    void SubData(ptrdiff_t offset, ptrdiff_t size, void* data) {
+        if (boundTarget == 0) return;
+        GL.BufferSubData(boundTarget, offset, size, data);
     }
 
     /*
@@ -104,6 +300,95 @@ public:
     }*/
 }
 
+
+
+/*
+        ------ TEXTURES ------
+*/
+
+enum TextureType : GLenum {
+    /// 1D Texture
+    Tex1D                   = GL_TEXTURE_1D,
+
+    /// 2D Texture
+    Tex2D                   = GL_TEXTURE_2D,
+
+    /// 3D Texture
+    Tex3D                   = GL_TEXTURE_3D,
+
+    /// Array of 1D Textures
+    Tex1DArray              = GL_TEXTURE_1D_ARRAY,
+
+    /// Array of 2D Textures
+    Tex2DArray              = GL_TEXTURE_2D_ARRAY,
+
+    /// Rectangle Texture
+    TexRectangle            = GL_TEXTURE_RECTANGLE,
+
+    /// Cube Map
+    TexCubeMap              = GL_TEXTURE_CUBE_MAP,
+
+    /// Buffer
+    TexBuffer               = GL_TEXTURE_BUFFER,
+
+    /// Multisampled 2D Texture
+    Tex2DMultisample        = GL_TEXTURE_2D_MULTISAMPLE,
+
+    /// Array of Multisampled 2D Textures
+    Tex2DMultisampleArray   = GL_TEXTURE_2D_MULTISAMPLE_ARRAY
+}
+
+enum TextureParameter : GLenum {
+
+    /// 
+    BaseLevel                   = GL_TEXTURE_BASE_LEVEL,
+    
+    /// 
+    CompareFunc                 = GL_TEXTURE_COMPARE_FUNC,
+    
+    /// 
+    CompareMode                 = GL_TEXTURE_COMPARE_MODE,
+    
+    /// 
+    LODBias                     = GL_TEXTURE_LOD_BIAS,
+    
+    /// 
+    MinFilter                   = GL_TEXTURE_MIN_FILTER,
+    
+    /// 
+    MagFilter                   = GL_TEXTURE_MAG_FILTER,
+    
+    /// 
+    MinLOD                      = GL_TEXTURE_MIN_LOD,
+    
+    /// 
+    MaxLOD                      = GL_TEXTURE_MAX_LOD,
+    
+    /// 
+    MaxLevel                    = GL_TEXTURE_MAX_LEVEL,
+    
+    /// 
+    SwizzleR                    = GL_TEXTURE_SWIZZLE_R,
+    
+    /// 
+    SwizzleG                    = GL_TEXTURE_SWIZZLE_G,
+    
+    /// 
+    SwizzleB                    = GL_TEXTURE_SWIZZLE_B,
+    
+    /// 
+    SwizzleA                    = GL_TEXTURE_SWIZZLE_A,
+    
+    /// 
+    WrapS                       = GL_TEXTURE_WRAP_S,
+    
+    /// 
+    WrapT                       = GL_TEXTURE_WRAP_T,
+    
+    /// 
+    WrapR                       = GL_TEXTURE_WRAP_R
+}
+
 class Texture : GLObject {
 private:
     GLenum boundTarget;
@@ -117,10 +402,17 @@ public:
         glDeleteTextures(1, &id);
     }
 
+    /// Binds the texture with default type
+    override void Bind() {
+        Bind(TextureType.Tex2D);
+    }
+
     /// Binds the texture
     override void Bind(GLenum target) {
         // We're already bound there, bail out.
-        if (boundTextures[target].id == id) return;
+        if (target in boundTextures && 
+            boundTextures[target] !is null && 
+            boundTextures[target].id == id) return;
 
         // Unbind from old position if needed.
         if (boundTarget != 0) Unbind();
@@ -153,37 +445,37 @@ public:
     /// 
     void SetParameter(GLenum target, GLenum pname, GLint param) {
         Bind(target);
-        glTexParameteri(target, pname, param);
+        GL.SetTextureParameter(target, pname, param);
     }
 
     /// 
     void SetParameter(GLenum target, GLenum pname, GLfloat param) {
         Bind(target);
-        glTexParameterf(target, pname, param);
+        GL.SetTextureParameter(target, pname, param);
     }
 
     /// 
     void SetParameter(GLenum target, GLenum pname, GLint* param) {
         Bind(target);
-        glTexParameteriv(target, pname, param);
+        GL.SetTextureParameter(target, pname, param);
     }
 
     /// 
     void SetParameter(GLenum target, GLenum pname, GLfloat* param) {
         Bind(target);
-        glTexParameterfv(target, pname, param);
+        GL.SetTextureParameter(target, pname, param);
     }
 
     /// 
     void SetParameter(GLenum target, GLenum pname, const(GLint)* param) {
         Bind(target);
-        glTexParameterIiv(target, pname, param);
+        GL.SetTextureParameter(target, pname, param);
     }
 
     /// 
     void SetParameter(GLenum target, GLenum pname, const(GLuint)* param) {
         Bind(target);
-        glTexParameterIuiv(target, pname, param);
+        GL.SetTextureParameter(target, pname, param);
     }
 
     /// 
@@ -212,6 +504,22 @@ public:
     }
 }
 
+
+/*
+        ------ FRAMEBUFFERS ------
+*/
+
+enum FramebufferType : GLenum {
+    /// A framebuffer which does multiple operations
+    Multi           = GL_FRAMEBUFFER,
+
+    /// Framebuffer that can be drawn to
+    Drawing         = GL_DRAW_FRAMEBUFFER,
+
+    /// Framebuffer that can be read from.
+    Reading         = GL_READ_FRAMEBUFFER
+}
+
 class Framebuffer : GLObject {
 private:
     GLenum boundTarget;
@@ -225,10 +533,17 @@ public:
         glDeleteFramebuffers(1, &id);
     }
 
+    /// Binds the framebuffer with default type
+    override void Bind() {
+        Bind(FramebufferType.Multi);
+    }
+
     /// Binds the framebuffer
     override void Bind(GLenum target) {
         // We're already bound there, bail out.
-        if (boundFramebuffers[target].id == id) return;
+        if (target in boundFramebuffers && 
+            boundFramebuffers[target] !is null && 
+            boundFramebuffers[target].id == id) return;
 
         // Unbind from old position if needed.
         if (boundTarget != 0) Unbind();
@@ -290,10 +605,11 @@ public:
     }
 }
 
-class Renderbuffer : GLObject {
-private:
-    GLenum boundTarget;
+/*
+        ------ RENDERBUFFERS ------
+*/
 
+class Renderbuffer : GLObject {
 public:
     this() {
         glGenRenderbuffers(1, &id);
@@ -303,44 +619,49 @@ public:
         glDeleteRenderbuffers(1, &id);
     }
 
+    /// Binds the renderbuffer with default type
+    override void Bind() {
+        Bind(0);
+    }
+
     /// Binds the renderbuffer
     override void Bind(GLenum target) {
         // We're already bound there, bail out.
-        if (boundRenderbuffers[target].id == id) return;
-
-        // Unbind from old position if needed.
-        if (boundTarget != 0) Unbind();
+        if (boundRenderbuffer is this) return;
 
         // Bind to new position.
-        boundTarget = target;
-        boundRenderbuffers[boundTarget] = this;
-        glBindRenderbuffer(target, id);
+        boundRenderbuffer = this;
+        glBindRenderbuffer(GL_RENDERBUFFER, id);
     }
 
     /// Unbinds the renderbuffer (binds renderbuffer 0)
     override void Unbind() {
         /// Skip unbinding if not bound in the first place.
-        if (boundTarget == 0) return;
+        if (boundRenderbuffer is null) return;
 
         /// If another renderbuffer is bound there, bail out.
-        if (boundRenderbuffers[boundTarget].id != id) return;
+        if (boundRenderbuffer !is this) return;
 
         /// Unbind target.
-        glBindRenderbuffer(boundTarget, 0);
-        boundRenderbuffers[boundTarget] = null;
-        boundTarget = 0;
+        glBindRenderbuffer(GL_RENDERBUFFER, 0);
+        boundRenderbuffer = null;
     }
 
     /// 
-    void Storage(GLenum target, GLenum internalFormat, GLsizei width, GLsizei height) {
-        glRenderbufferStorage(target, internalFormat, width, height);
+    void Storage(GLenum internalFormat, GLsizei width, GLsizei height) {
+        glRenderbufferStorage(GL_RENDERBUFFER, internalFormat, width, height);
     }
 
     /// 
-    void StorageMultisample(GLenum target, GLsizei samples, GLenum internalFormat, GLsizei width, GLsizei height) {
-        glRenderbufferStorageMultisample(target, samples, internalFormat, width, height);
+    void StorageMultisample(GLsizei samples, GLenum internalFormat, GLsizei width, GLsizei height) {
+        glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, internalFormat, width, height);
     }
 }
+
+
+/*
+        ------ VERTEX ARRAYS ------
+*/
 
 class VertexArray : GLObject {
 public:
@@ -350,6 +671,11 @@ public:
 
     ~this() {
         glDeleteVertexArrays(1, &id);
+    }
+
+    /// Binds the vertex array
+    override void Bind() {
+        Bind(0);
     }
 
     /// Binds the vertex array
@@ -387,13 +713,10 @@ public:
     void AttribIPointer(GLuint attribute, GLint size, GLenum type, GLsizei stride, const(GLvoid)* offset) {
         glVertexAttribIPointer(attribute, size, type, stride, offset);
     }
-
-    void AttribLPointer(GLuint attribute, GLint size, GLenum type, GLsizei stride, const(GLvoid)* offset) {
-        glVertexAttribLPointer(attribute, size, type, stride, offset);
-    }
 }
 
 // TODO: Implement features from this.
+
 class Sampler : GLObject {
 private:
     GLuint id;

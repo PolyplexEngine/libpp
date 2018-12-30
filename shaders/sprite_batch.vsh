@@ -1,15 +1,15 @@
-#version 130
+#version 330
 in vec2 ppPosition;
 in vec2 ppTexcoord;
 in vec4 ppColor;
 
-uniform mat4 ppProjection;
+uniform mat4 PROJECTION;
 
 out vec4 exColor;
 out vec2 exTexcoord;
 
 void main(void) {
-	gl_Position = ppProjection * vec4(ppPosition.xy, 0.0, 1.0);
+	gl_Position = PROJECTION * vec4(ppPosition.xy, 0.0, 1.0);
 	exTexcoord = ppTexcoord;
 	exColor = ppColor;
 }

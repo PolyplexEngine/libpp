@@ -42,7 +42,7 @@
 			"importPaths": [ "modules/pp-derelict-vulkan/source" ]
 		}
 	],
-	"versions": ["SDL_209", "GL_41"],
+	"versions": ["SDL_209", "GL_33", "GL_AllowDeprecated"],
 	"configurations": [
 		{
 			"name": "simplemath",
