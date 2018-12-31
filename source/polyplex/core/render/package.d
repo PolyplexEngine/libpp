@@ -188,16 +188,16 @@ public:
 		return implementation.Height;
 	}
 
-	this(int width, int height) {
-		implementation = new GlFramebufferImpl(width, height);
+	this(int width, int height, int colorAttachments = 1) {
+		implementation = new GlFramebufferImpl(width, height, colorAttachments);
 	}
 
 	void Begin() {
 		implementation.Begin();
 	}
 
-	void Resize(int width, int height) {
-		implementation.Resize(width, height);
+	void Resize(int width, int height, int colorAttachments = 1) {
+		implementation.Resize(width, height, colorAttachments);
 	}
 
 	void End() {
@@ -217,14 +217,14 @@ protected:
 
 public:
 
-	this(int width, int height) {
+	this(int width, int height, int colorAttachments) {
 		this.width = width;
 		this.height = height;
 	}
 
 	abstract @property int Width();
 	abstract @property int Height();
-	abstract void Resize(int width, int height);
+	abstract void Resize(int width, int height, int colorAttachments = 1);
 	abstract void Begin();
 }
 

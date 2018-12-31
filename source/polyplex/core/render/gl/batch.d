@@ -63,7 +63,7 @@ private:
 	Shader shader;
 
 	// Textures
-	Texture currentTexture;
+	Texture[] currentTextures;
 
 	// Viewport
 	Matrix4x4 viewProjectionMatrix;
@@ -158,16 +158,15 @@ private:
 		this.elementArray[queued][offset].color = Vector4(r, g, b, a);
 	}
 
-	void checkFlush(Texture texture) {
+	void checkFlush(Texture[] textures) {
 
 		// Throw exception if texture isn't instantiated.
-		if (texture is null) throw new Exception(ErrorNullTexture);
+		if (textures is null || textures.length == 0) throw new Exception(ErrorNullTexture);
 
 		// Flush batch if needed, then update texture.
-		if (texture != currentTexture || queued+1 >= elementArray.length) {
-			if (currentTexture !is null) Flush();
-
-			currentTexture = texture;
+		if (currentTextures != textures || queued+1 >= elementArray.length) {
+			if (currentTextures !is null || textures.length > 0) Flush();
+			currentTextures = textures;
 		}
 	}
 
@@ -192,17 +191,28 @@ private:
 		elementVertexArray.AttribPointer(1, 2, GL_FLOAT, GL_FALSE, SprBatchData.sizeof, cast(void*)SprBatchData.texCoord.offsetof);
 		elementVertexArray.AttribPointer(2, 4, GL_FLOAT, GL_FALSE, SprBatchData.sizeof, cast(void*)SprBatchData.color.offsetof);
 
+		// TODO: Optimize rendering routine.
+
 		// Attach everything else and render.
 		shader.Attach();
-		if (currentTexture !is null) {
-			currentTexture.Bind(TextureType.Tex2D);
-			currentTexture.AttachTo(0);
+		if (currentTextures !is null) {
+			foreach(i, currentTexture; currentTextures) {
+				currentTexture.Bind(TextureType.Tex2D);
+				currentTexture.AttachTo(cast(int)i);
+			}
 		}
 		setSamplerState(sampleMode);
 		setBlendState(blendMode);
 		shader.SetUniform(shader.GetUniform(UniformProjectionName), MultMatrices);
 
 		GL.DrawArrays(GL.Triangles, 0, queued*6);
+
+		if (currentTextures !is null) {
+			foreach(currentTexture; currentTextures) {
+				currentTexture.Bind(TextureType.Tex2D);
+				currentTexture.AttachTo(0);
+			}
+		}
 
 	}
 	
@@ -363,7 +373,7 @@ public:
 		setRasterizerState(rasterState);
 
 		this.shader = shader !is null ? shader : defaultShader;
-		this.currentTexture = null;
+		this.currentTextures = null;
 		this.queued = 0;
 	}
 
@@ -388,18 +398,18 @@ public:
 
 	override void Draw(Texture2D texture, Rectangle pos, Rectangle cutout, float rotation, Vector2 origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f) {
 		isRenderbuffer = false;
-		checkFlush((cast(GlTexture2D)texture).GLTexture);
+		checkFlush([(cast(GlTexture2D)texture).GLTexture]);
 		draw(texture.Width, texture.Height, pos, cutout, rotation, origin, color, flip, zlayer);
 	}
 
 	override void Draw(polyplex.core.render.Framebuffer buffer, Rectangle pos, Rectangle cutout, float rotation, Vector2 origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f) {
 		isRenderbuffer = true;
-		checkFlush((cast(GlFramebufferImpl)buffer.Implementation).OutTexture);
+		checkFlush((cast(GlFramebufferImpl)buffer.Implementation).OutTextures);
 		draw(buffer.Width, buffer.Height, pos, cutout, rotation, origin, color, flip, zlayer);
 	}
 
 	override void DrawAABB(Texture2D texture, Rectangle pos_top, Rectangle pos_bottom, Rectangle cutout, Vector2 Origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f) {
-		checkFlush((cast(GlTexture2D)texture).GLTexture);
+		checkFlush([(cast(GlTexture2D)texture).GLTexture]);
 		float x1, y1;
 		float x2, y2;
 		float x3, y3;
@@ -447,7 +457,7 @@ public:
 	
 	override void Flush() {
 		render();
-		currentTexture = null;
+		currentTextures = [];
 		queued = 0;
 	}
 

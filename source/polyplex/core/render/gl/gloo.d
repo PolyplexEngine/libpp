@@ -477,7 +477,7 @@ public:
         if (boundTarget == 0) return;
 
         /// If another texture is bound there, bail out.
-        if (boundTextures[boundTarget].id != id) return;
+        if (boundTarget in boundTextures && boundTextures[boundTarget] !is null && boundTextures[boundTarget].id != id) return;
 
         /// Unbind target.
         GL.BindTexture(boundTarget, 0);
