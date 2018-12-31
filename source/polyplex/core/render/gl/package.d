@@ -1,6 +1,7 @@
 module polyplex.core.render.gl;
 public import polyplex.core.render.gl.batch;
 public import polyplex.core.render.gl.debug2d;
+public import polyplex.core.render.gl.renderbuf;
 import polyplex.core.render;
 static import win = polyplex.core.window;
 import polyplex.core.color;

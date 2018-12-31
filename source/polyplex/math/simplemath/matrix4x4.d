@@ -167,6 +167,15 @@ public struct Matrix4x4 {
 		]);
 	}
 
+	public static Matrix4x4 OrthographicInverse(float left, float right, float bottom, float top, float znear, float zfar) {
+		return Matrix4x4([
+			[(right-left)/2f, 0, 0, 0],
+			[0, (top-bottom)/2f, 0, 0],
+			[0, 0, (zfar-znear)/-2f, 0],
+			[(right+left)/2f, (top+bottom)/2f, (zfar+znear)/2f, 1f]
+		]);
+	}
+
 	public Matrix4x4 Inverse() {
 		Matrix4x4 mat;
 		foreach(x; 0 .. 4) {

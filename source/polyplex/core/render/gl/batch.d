@@ -3,8 +3,10 @@ import polyplex.core.render;
 import polyplex.core.render.gl.shader;
 import polyplex.core.render.gl.gloo;
 import polyplex.core.render.gl.objects;
+import polyplex.core.render.gl.renderbuf;
 import polyplex.core.render.camera;
 import polyplex.core.content.textures;
+import polyplex.core.content.gl.textures;
 import polyplex.core.color;
 import bindbc.opengl;
 import bindbc.opengl.gl;
@@ -45,6 +47,8 @@ private:
 	bool hasBegun;
 	bool swap;
 
+	bool isRenderbuffer;
+
 	// Buffer
 	VertexArray 			elementVertexArray;
 	Buffer 					elementBuffer;
@@ -59,7 +63,7 @@ private:
 	Shader shader;
 
 	// Textures
-	Texture2D currentTexture;
+	Texture currentTexture;
 
 	// Viewport
 	Matrix4x4 viewProjectionMatrix;
@@ -154,7 +158,7 @@ private:
 		this.elementArray[queued][offset].color = Vector4(r, g, b, a);
 	}
 
-	void checkFlush(Texture2D texture) {
+	void checkFlush(Texture texture) {
 
 		// Throw exception if texture isn't instantiated.
 		if (texture is null) throw new Exception(ErrorNullTexture);
@@ -190,7 +194,10 @@ private:
 
 		// Attach everything else and render.
 		shader.Attach();
-		if (currentTexture !is null) currentTexture.Bind(0, shader);
+		if (currentTexture !is null) {
+			currentTexture.Bind(TextureType.Tex2D);
+			currentTexture.AttachTo(0);
+		}
 		setSamplerState(sampleMode);
 		setBlendState(blendMode);
 		shader.SetUniform(shader.GetUniform(UniformProjectionName), MultMatrices);
@@ -198,99 +205,18 @@ private:
 		GL.DrawArrays(GL.Triangles, 0, queued*6);
 
 	}
-
-public:
-
-	this() {
-		elementVertexArray = new VertexArray();
-		elementVertexArray.Bind();
-		elementBuffer = new Buffer();
-		elementBuffer.Bind(BufferType.Vertex);
-		elementBuffer.Data(elementArray.sizeof, elementArray.ptr, BufferUsage.DynamicDraw);
-		Logger.VerboseDebug("Some OpenGL features are not implemented yet, namely DepthStencilState, RasterizerState and some SpriteSortModes.");
-	}
-
-	/// Initialize sprite batch
-	static void InitializeSpritebatch() {
-		if (!hasInitCompleted) hasInitCompleted = !hasInitCompleted;
-		else return;
-
-		defaultShader = new GLShader(new ShaderCode(DefaultVert, DefaultFrag));
-		defaultCamera = new Camera2D(Vector2(0, 0));
-		defaultCamera.Update();
-	}
-
-	/// Get matrix.
-	override Matrix4x4 MultMatrices() {
-		switch(projectionState) {
-			case ProjectionState.Perspective:
-				return defaultCamera.ProjectPerspective(Renderer.Window.ClientBounds.Width, 90f, Renderer.Window.ClientBounds.Height) * viewProjectionMatrix;
-			default:
-				return defaultCamera.ProjectOrthographic(Renderer.Window.ClientBounds.Width, Renderer.Window.ClientBounds.Height) * viewProjectionMatrix;
-		}
-	}
-
-	/**
-		Begin begins the spritebatch, setting up sorting modes, blend states and sampling.
-		Begin also attaches a custom shader (if chosen) and sets the camera/view matrix.
-	*/
-	override void Begin() {
-		Begin(SpriteSorting.Deferred, Blending.AlphaBlend, Sampling.LinearClamp, RasterizerState.Default, defaultShader, defaultCamera);
-	}
-
-	/**
-		Begin begins the spritebatch, setting up sorting modes, blend states and sampling.
-		Begin also attaches a custom shader (if chosen) and sets the camera/view matrix.
-	*/
-	override void Begin(SpriteSorting sortMode, Blending blendState, Sampling sampleState, RasterizerState rasterState, Shader shader, Matrix4x4 matrix) {
-		if (hasBegun) throw new Exception(ErrorAlreadyStarted);
-		hasBegun = true;
-		this.sortMode = sortMode;
-		this.blendMode = blendState;
-		this.sampleMode = sampleState;
-		this.blendMode = blendState;
-		this.viewProjectionMatrix = matrix;
-		this.shader = shader;
-
-		this.rasterState = rasterState;
-		setRasterizerState(rasterState);
-
-		this.shader = shader !is null ? shader : defaultShader;
-		this.currentTexture = null;
-		this.queued = 0;
-	}
-
-	/**
-		Begin begins the spritebatch, setting up sorting modes, blend states and sampling.
-		Begin also attaches a custom shader (if chosen) and sets the camera/view matrix.
-	*/
-	override void Begin(SpriteSorting sortMode, Blending blendState, Sampling sampleState, RasterizerState rasterState, Shader shader, Camera camera) {
-		Camera cam = camera !is null ? camera : defaultCamera;
-		cam.Update();
-		Begin(sortMode, blendState, sampleState, rasterState, shader, cam.Matrix);
-	}
-
-	override void Begin(SpriteSorting sortMode, Blending blendState, Sampling sampleState, RasterizerState rasterState, ProjectionState pstate, Shader shader, Camera camera) {
-		setProjectionState(pstate);
-		Begin(sortMode, blendState, sampleState, rasterState, shader, camera);
-	}
-
-	override void Draw(Texture2D texture, Rectangle pos, Rectangle cutout, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f) {
-		Draw(texture, pos, cutout, 0f, Vector2(-1, -1), color, flip, zlayer);
-	}
-
-	override void Draw(Texture2D texture, Rectangle pos, Rectangle cutout, float rotation, Vector2 Origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f) {
-		checkFlush(texture);
+	
+	void draw(int width, int height, Rectangle pos, Rectangle cutout, float rotation, Vector2 origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f) {
 		float x1, y1;
 		float x2, y2;
 		float x3, y3;
 		float x4, y4;
 
 		static import std.math;
-		float scaleX = cast(float)pos.Width/cast(float)texture.Width;
-		float scaleY = cast(float)pos.Height/cast(float)texture.Height;
-		float cx = Origin.X*scaleX;
-		float cy = Origin.Y*scaleY;
+		float scaleX = cast(float)pos.Width/cast(float)width;
+		float scaleY = cast(float)pos.Height/cast(float)height;
+		float cx = origin.X*scaleX;
+		float cy = origin.Y*scaleY;
 
 		if (rotation != 0) {
 
@@ -349,19 +275,19 @@ public:
 			y4 = pos.Y+pos.Height-cy;
 		}
 		// Remove any edges in spritesheets/atlases by cutting a tiiiiiny portion away
-		float pxx = 0.2f/cast(float)texture.Width;
-		float pxy = 0.2f/cast(float)texture.Height;
+		float pxx = 0.2f/cast(float)width;
+		float pxy = 0.2f/cast(float)height;
 
-		float u = ((cutout.X)/cast(float)texture.Width)+pxx;
-		float u2 = ((cutout.X+cutout.Width)/cast(float)texture.Width)-pxx;
+		float u = ((cutout.X)/cast(float)width)+pxx;
+		float u2 = ((cutout.X+cutout.Width)/cast(float)width)-pxx;
 		if ((flip&SpriteFlip.FlipVertical)>0) {
 			float ux = u;
 			u = u2;
 			u2 = ux;
 		}
 
-		float v = ((cutout.Y)/cast(float)texture.Height)+pxy;
-		float v2 = ((cutout.Y+cutout.Height)/cast(float)texture.Height)-pxy;
+		float v = ((cutout.Y)/cast(float)height)+pxy;
+		float v2 = ((cutout.Y+cutout.Height)/cast(float)height)-pxy;
 		if ((flip&SpriteFlip.FlipHorizontal)>0) {
 			float vx = v;
 			v = v2;
@@ -377,8 +303,103 @@ public:
 		queued++;
 	}
 
+public:
+
+	this() {
+		elementVertexArray = new VertexArray();
+		elementVertexArray.Bind();
+		elementBuffer = new Buffer();
+		elementBuffer.Bind(BufferType.Vertex);
+		elementBuffer.Data(elementArray.sizeof, elementArray.ptr, BufferUsage.DynamicDraw);
+		Logger.VerboseDebug("Some OpenGL features are not implemented yet, namely DepthStencilState, RasterizerState and some SpriteSortModes.");
+	}
+
+	/// Initialize sprite batch
+	static void InitializeSpritebatch() {
+		if (!hasInitCompleted) hasInitCompleted = !hasInitCompleted;
+		else return;
+
+		defaultShader = new GLShader(new ShaderCode(DefaultVert, DefaultFrag));
+		defaultCamera = new Camera2D(Vector2(0, 0));
+		defaultCamera.Update();
+	}
+
+	/// Get matrix.
+	override Matrix4x4 MultMatrices() {
+		switch(projectionState) {
+			case ProjectionState.Perspective:
+				return defaultCamera.ProjectPerspective(Renderer.Window.ClientBounds.Width, 90f, Renderer.Window.ClientBounds.Height) * viewProjectionMatrix;
+			default:
+				if (isRenderbuffer) {
+					return defaultCamera.ProjectOrthographicInv(Renderer.Window.ClientBounds.Width, Renderer.Window.ClientBounds.Height) * viewProjectionMatrix;
+				}
+				return defaultCamera.ProjectOrthographic(Renderer.Window.ClientBounds.Width, Renderer.Window.ClientBounds.Height) * viewProjectionMatrix;
+		}
+	}
+
+	/**
+		Begin begins the spritebatch, setting up sorting modes, blend states and sampling.
+		Begin also attaches a custom shader (if chosen) and sets the camera/view matrix.
+	*/
+	override void Begin() {
+		Begin(SpriteSorting.Deferred, Blending.AlphaBlend, Sampling.LinearClamp, RasterizerState.Default, defaultShader, defaultCamera);
+	}
+
+	/**
+		Begin begins the spritebatch, setting up sorting modes, blend states and sampling.
+		Begin also attaches a custom shader (if chosen) and sets the camera/view matrix.
+	*/
+	override void Begin(SpriteSorting sortMode, Blending blendState, Sampling sampleState, RasterizerState rasterState, Shader shader, Matrix4x4 matrix) {
+		if (hasBegun) throw new Exception(ErrorAlreadyStarted);
+		hasBegun = true;
+		this.sortMode = sortMode;
+		this.blendMode = blendState;
+		this.sampleMode = sampleState;
+		this.blendMode = blendState;
+		this.viewProjectionMatrix = matrix;
+		this.shader = shader;
+
+		this.rasterState = rasterState;
+		setRasterizerState(rasterState);
+
+		this.shader = shader !is null ? shader : defaultShader;
+		this.currentTexture = null;
+		this.queued = 0;
+	}
+
+	/**
+		Begin begins the spritebatch, setting up sorting modes, blend states and sampling.
+		Begin also attaches a custom shader (if chosen) and sets the camera/view matrix.
+	*/
+	override void Begin(SpriteSorting sortMode, Blending blendState, Sampling sampleState, RasterizerState rasterState, Shader shader, Camera camera) {
+		Camera cam = camera !is null ? camera : defaultCamera;
+		cam.Update();
+		Begin(sortMode, blendState, sampleState, rasterState, shader, cam.Matrix);
+	}
+
+	override void Begin(SpriteSorting sortMode, Blending blendState, Sampling sampleState, RasterizerState rasterState, ProjectionState pstate, Shader shader, Camera camera) {
+		setProjectionState(pstate);
+		Begin(sortMode, blendState, sampleState, rasterState, shader, camera);
+	}
+
+	override void Draw(Texture2D texture, Rectangle pos, Rectangle cutout, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f) {
+		Draw(texture, pos, cutout, 0f, Vector2(-1, -1), color, flip, zlayer);
+	}
+
+	override void Draw(Texture2D texture, Rectangle pos, Rectangle cutout, float rotation, Vector2 origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f) {
+		isRenderbuffer = false;
+		checkFlush((cast(GlTexture2D)texture).GLTexture);
+		draw(texture.Width, texture.Height, pos, cutout, rotation, origin, color, flip, zlayer);
+	}
+
+	override void Draw(polyplex.core.render.Framebuffer buffer, Rectangle pos, Rectangle cutout, float rotation, Vector2 origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f) {
+		isRenderbuffer = true;
+		checkFlush((cast(GlFramebufferImpl)buffer.Implementation).OutTexture);
+		draw(buffer.Width, buffer.Height, pos, cutout, rotation, origin, color, flip, zlayer);
+	}
+
 	override void DrawAABB(Texture2D texture, Rectangle pos_top, Rectangle pos_bottom, Rectangle cutout, Vector2 Origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f) {
-		checkFlush(texture);
+		checkFlush((cast(GlTexture2D)texture).GLTexture);
 		float x1, y1;
 		float x2, y2;
 		float x3, y3;

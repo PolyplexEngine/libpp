@@ -36,6 +36,13 @@ public class Camera {
 	public Matrix4x4 ProjectOrthographic(float width, float height) {
 		return Matrix4x4.Identity.Orthographic(0f, width, height, 0f, znear, zfar);
 	}
+
+	/**
+		Creates an othrographic projection with the specified width and height.
+	*/
+	public Matrix4x4 ProjectOrthographicInv(float width, float height) {
+		return Matrix4x4.Identity.Orthographic(0f, width, 0f, height, znear, zfar);
+	}
 }
 
 /**

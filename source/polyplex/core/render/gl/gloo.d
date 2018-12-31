@@ -107,6 +107,10 @@ static:
         glDisable(cap);
     }
 
+    void Viewport(GLint x, GLint y, GLsizei width, GLsizei height) {
+        glViewport(x, y, width, height);
+    }
+
     void DrawArrays(GLenum mode, GLint first, GLsizei count) {
         glDrawArrays(mode, first, count);
     }
@@ -150,6 +154,46 @@ static:
     void BufferData(GLenum target, ptrdiff_t size, void* data, GLenum usage) {
         glBufferData(target, size, data, usage);
     }
+
+    /+
+        Activating
+    +/
+
+    void ActiveTexture(GLenum texture) {
+        glActiveTexture(texture);
+    }
+
+    /+
+        Drawing
+    +/
+
+    void DrawBuffers(GLsizei count, const(GLenum)* buffers) {
+        glDrawBuffers(count, buffers);
+    }
+
+    /+
+        Binding
+    +/
+
+    void BindBuffer(GLenum target, GLuint id) {
+        glBindBuffer(target, id);
+    }
+
+    void BindFramebuffer(GLenum target, GLuint id) {
+        glBindFramebuffer(target, id);
+    }
+
+    void BindRenderbuffer(GLenum target, GLuint id) {
+        glBindRenderbuffer(target, id);
+    }
+
+    void BindTexture(GLenum target, GLuint id) {
+        glBindTexture(target, id);
+    }
+
+    void BindVertexArray(GLuint id) {
+        glBindVertexArray(id);
+    }
 }
 
 
@@ -163,6 +207,10 @@ abstract class GLObject {
 private:
     GLuint id;
 public:
+    GLuint Id() {
+        return id;
+    }
+
     /// Binds the object with default type
     abstract void Bind();
 
@@ -246,7 +294,7 @@ public:
         // Bind to new position.
         boundTarget = target;
         boundBuffers[boundTarget] = this;
-        glBindBuffer(target, id);
+        GL.BindBuffer(target, id);
     }
 
     /// Unbinds the buffer (binds buffer 0)
@@ -258,7 +306,7 @@ public:
         if (boundBuffers[boundTarget].id != id) return;
 
         /// Unbind target.
-        glBindBuffer(boundTarget, 0);
+        GL.BindBuffer(boundTarget, 0);
         boundBuffers[boundTarget] = null;
         boundTarget = 0;
     }
@@ -420,7 +468,7 @@ public:
         // Bind to new position.
         boundTarget = target;
         boundTextures[boundTarget] = this;
-        glBindTexture(target, id);
+        GL.BindTexture(target, id);
     }
 
     /// Unbinds the texture (binds texture 0)
@@ -432,14 +480,14 @@ public:
         if (boundTextures[boundTarget].id != id) return;
 
         /// Unbind target.
-        glBindTexture(boundTarget, 0);
+        GL.BindTexture(boundTarget, 0);
         boundTextures[boundTarget] = null;
         boundTarget = 0;
     }
 
     /// 
     void AttachTo(GLenum textureid) {
-        glActiveTexture(GL_TEXTURE0+textureid);
+        GL.ActiveTexture(GL_TEXTURE0+textureid);
     }
 
     /// 
@@ -551,7 +599,7 @@ public:
         // Bind to new position.
         boundTarget = target;
         boundFramebuffers[boundTarget] = this;
-        glBindFramebuffer(target, id);
+        GL.BindFramebuffer(target, id);
     }
 
     /// Unbinds the framebuffer (binds framebuffer 0)
@@ -563,7 +611,7 @@ public:
         if (boundFramebuffers[boundTarget].id != id) return;
 
         /// Unbind target.
-        glBindFramebuffer(boundTarget, 0);
+        GL.BindFramebuffer(boundTarget, 0);
         boundFramebuffers[boundTarget] = null;
         boundTarget = 0;
     }
@@ -631,7 +679,7 @@ public:
 
         // Bind to new position.
         boundRenderbuffer = this;
-        glBindRenderbuffer(GL_RENDERBUFFER, id);
+        GL.BindRenderbuffer(GL_RENDERBUFFER, id);
     }
 
     /// Unbinds the renderbuffer (binds renderbuffer 0)
@@ -643,7 +691,7 @@ public:
         if (boundRenderbuffer !is this) return;
 
         /// Unbind target.
-        glBindRenderbuffer(GL_RENDERBUFFER, 0);
+        GL.BindRenderbuffer(GL_RENDERBUFFER, 0);
         boundRenderbuffer = null;
     }
 
@@ -685,7 +733,7 @@ public:
 
         // Bind to new position.
         boundVertexArray = this;
-        glBindVertexArray(id);
+        GL.BindVertexArray(id);
     }
 
     /// Unbinds the vertex array (binds vertex array 0)
@@ -694,7 +742,7 @@ public:
         if (boundVertexArray !is this) return;
 
         /// Unbind target.
-        glBindVertexArray(0);
+        GL.BindVertexArray(0);
         boundVertexArray = null;
     }
 

@@ -167,15 +167,65 @@ public:
 	abstract void Begin(SpriteSorting sort_mode, Blending blend_state, Sampling sample_State, RasterizerState raster_state, Shader s, Camera camera);
 	abstract void Begin(SpriteSorting sort_mode, Blending blend_state, Sampling sample_State, RasterizerState raster_state, ProjectionState pstate, Shader s, Camera camera);
 	abstract void Draw(Texture2D texture, Rectangle pos, Rectangle cutout, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f);
-	abstract void Draw(Texture2D texture, Rectangle pos, Rectangle cutout, float rotation, Vector2 Origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f);
+	abstract void Draw(Framebuffer texture, Rectangle pos, Rectangle cutout, float rotation, Vector2 origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f);
+	abstract void Draw(Texture2D texture, Rectangle pos, Rectangle cutout, float rotation, Vector2 origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f);
 	abstract void DrawAABB(Texture2D texture, Rectangle pos_top, Rectangle pos_bottom, Rectangle cutout, Vector2 Origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f);
 	abstract void Flush();
 	abstract void SwapChain();
 	abstract void End();
 }
 
-public abstract class Renderbuffer {
+public class Framebuffer {
+private:
+	FramebufferImpl implementation;
+
 public:
+	@property int Width() {
+		return implementation.Width;
+	}
+
+	@property int Height() {
+		return implementation.Height;
+	}
+
+	this(int width, int height) {
+		implementation = new GlFramebufferImpl(width, height);
+	}
+
+	void Begin() {
+		implementation.Begin();
+	}
+
+	void Resize(int width, int height) {
+		implementation.Resize(width, height);
+	}
+
+	void End() {
+		GlFramebufferImpl.End();
+		Renderer.AdjustViewport();
+	}
+
+	FramebufferImpl Implementation() {
+		return implementation;
+	}
+}
+
+public abstract class FramebufferImpl {
+protected:
+	int width;
+	int height;
+
+public:
+
+	this(int width, int height) {
+		this.width = width;
+		this.height = height;
+	}
+
+	abstract @property int Width();
+	abstract @property int Height();
+	abstract void Resize(int width, int height);
+	abstract void Begin();
 }
 
 public abstract class Shader {
