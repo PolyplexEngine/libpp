@@ -186,15 +186,6 @@ public struct Matrix4x4 {
 		return mat;
 	}
 
-	public static Matrix4x4 OrthographicInverse(float left, float right, float bottom, float top, float znear, float zfar) {
-		return Matrix4x4([
-			[(right-left)/2f, 0, 0, 0],
-			[0, (top-bottom)/2f, 0, 0],
-			[0, 0, (zfar-znear)/-2f, 0],
-			[(right+left)/2f, (top+bottom)/2f, (zfar+znear)/2f, 1f]
-		]);
-	}
-
 	private static float[6] prepPerspective(float width, float height, float fov, float znear, float zfar) {
 		float aspect = width/height;
 		float top = znear * Mathf.Tan(Mathf.ToRadians(fov));
