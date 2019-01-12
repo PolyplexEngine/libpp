@@ -304,6 +304,13 @@ private:
 			v2 = vx;
 		}
 
+		// TODO: FIX THIS CURSED CODE.
+		if (isRenderbuffer) {
+			float vx = v;
+			v = v2;
+			v2 = vx;
+		}
+
 		addVertex(0, x1, y1, color.Rf(), color.Gf(), color.Bf(), color.Af(), u, v); // TOP LEFT
 		addVertex(1, x2, y2, color.Rf(), color.Gf(), color.Bf(), color.Af(), u2, v), // TOP RIGHT
 		addVertex(2, x4, y4, color.Rf(), color.Gf(), color.Bf(), color.Af(), u, v2); // BOTTOM LEFT
@@ -340,9 +347,6 @@ public:
 			case ProjectionState.Perspective:
 				return defaultCamera.ProjectPerspective(Renderer.Window.ClientBounds.Width, 90f, Renderer.Window.ClientBounds.Height) * viewProjectionMatrix;
 			default:
-				if (isRenderbuffer) {
-					return defaultCamera.ProjectOrthographicInv(Renderer.Window.ClientBounds.Width, Renderer.Window.ClientBounds.Height) * viewProjectionMatrix;
-				}
 				return defaultCamera.ProjectOrthographic(Renderer.Window.ClientBounds.Width, Renderer.Window.ClientBounds.Height) * viewProjectionMatrix;
 		}
 	}
@@ -352,7 +356,7 @@ public:
 		Begin also attaches a custom shader (if chosen) and sets the camera/view matrix.
 	*/
 	override void Begin() {
-		Begin(SpriteSorting.Deferred, Blending.AlphaBlend, Sampling.LinearClamp, RasterizerState.Default, defaultShader, defaultCamera);
+		Begin(SpriteSorting.Deferred, Blending.NonPremultiplied, Sampling.LinearClamp, RasterizerState.Default, defaultShader, defaultCamera);
 	}
 
 	/**
@@ -400,6 +404,10 @@ public:
 		isRenderbuffer = false;
 		checkFlush([(cast(GlTexture2D)texture).GLTexture]);
 		draw(texture.Width, texture.Height, pos, cutout, rotation, origin, color, flip, zlayer);
+	}
+
+	override void Draw(polyplex.core.render.Framebuffer buffer, Rectangle pos, Rectangle cutout, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f) {
+		Draw(buffer, pos, cutout, 0f, Vector2(-1, -1), color, flip, zlayer);
 	}
 
 	override void Draw(polyplex.core.render.Framebuffer buffer, Rectangle pos, Rectangle cutout, float rotation, Vector2 origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f) {

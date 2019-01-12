@@ -79,10 +79,19 @@ enum ErrCodes : ALCenum {
 protected __gshared ALint maxSlots;
 
 public class AudioDevice {
+	private static bool deviceCreationSucceeded;
 	public ALCdevice* ALDevice;
 	public ALCcontext* ALContext;
-	public static ALExtensionSupport SupportedExt;
+	private static ALExtensionSupport supportedExtensions;
 	public static ALint MixerSize = 10;
+
+	public static bool DeviceCreationSucceeded() {
+		return deviceCreationSucceeded;
+	}
+
+	public static ALExtensionSupport SupportedExtensions() {
+		return supportedExtensions;
+	}
 
 	/**
 		Constucts an audio device, NULL for preffered device.
@@ -97,13 +106,13 @@ public class AudioDevice {
 		bool supex = cast(bool)alIsExtensionPresent("EAX2.0");
 		if (supex) {
 			Logger.Success("EAX 2.0 extensions are supported!");
-			SupportedExt |= ALExtensionSupport.EAX2;
+			supportedExtensions |= ALExtensionSupport.EAX2;
 		}
 
 		// If EFX is supported, flag it as supported.
 		supex = cast(bool)alcIsExtensionPresent(dev, "ALC_EXT_EFX");
 		if (supex) {
-			SupportedExt |= ALExtensionSupport.EFX;
+			supportedExtensions |= ALExtensionSupport.EFX;
 			Logger.Success("EFX extensions are supported!");
 			Logger.Info("Setting up mixer channel count...");
 			attribs = new ALint[4];
@@ -114,7 +123,7 @@ public class AudioDevice {
 		// If Effect Chaining is supported, flag it as supported.
 		supex = cast(bool)alcIsExtensionPresent(dev, "AL_SOFTX_effect_chain");
 		if (supex) {
-			SupportedExt |= ALExtensionSupport.EffectChaining;
+			supportedExtensions |= ALExtensionSupport.EffectChaining;
 			Logger.Success("Effect chains are supported!");
 		}
 
@@ -124,7 +133,9 @@ public class AudioDevice {
 		} else {
 			import std.conv;
 			import std.stdio;
-			throw new Exception("Could not create device! " ~ (cast(ErrCodes)alcGetError(dev)).to!string);
+			Logger.Err("Could not create device! {0}", (cast(ErrCodes)alcGetError(dev)).to!string);
+			deviceCreationSucceeded = false;
+			return;
 		}
 		if (supex) {
 			ALint sourceMax;
@@ -134,6 +145,7 @@ public class AudioDevice {
 
 			Logger.Info("Created {0} mixer sends", sourceMax);
 		}
+		deviceCreationSucceeded = true;
 	}
 
 	~this() {

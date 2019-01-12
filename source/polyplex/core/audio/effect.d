@@ -80,6 +80,10 @@ protected:
 public:
     
     this(EffectType eType) {
+        if (!(AudioDevice.SupportedExtensions & ALExtensionSupport.EFX)) {
+            return;
+        }
+
         // clear errors
         alGetError();
 
@@ -95,7 +99,10 @@ public:
     }
 
     ~this() {
-        if (AudioDevice.SupportedExt & ALExtensionSupport.EffectChaining) {
+        if (!(AudioDevice.SupportedExtensions & ALExtensionSupport.EFX)) {
+            return;
+        }
+        if (AudioDevice.SupportedExtensions & ALExtensionSupport.EffectChaining) {
             // Be SURE to unmap this effect from something else.
             // Prevents OpenAL crashing in some instances.
             deattachAllChildren();
@@ -125,7 +132,7 @@ public:
         A sound effect can be attached to by many others.
     */
     void AttachTo(AudioEffect effect) {
-        if (!(AudioDevice.SupportedExt & ALExtensionSupport.EffectChaining)) {
+        if (!(AudioDevice.SupportedExtensions & ALExtensionSupport.EffectChaining)) {
             throw new Exception(ErrorNotOpenAlSoftRouting);
         }
 
@@ -143,7 +150,7 @@ public:
         Deattaches the sound effect from ALL other sound effects.
     */
     void Deattach() {
-        if (!(AudioDevice.SupportedExt & ALExtensionSupport.EffectChaining)) {
+        if (!(AudioDevice.SupportedExtensions & ALExtensionSupport.EffectChaining)) {
             throw new Exception(ErrorNotOpenAlSoftRouting);
         }
         // Skip all the unbinding as it's not neccesary, small optimization.
@@ -163,6 +170,9 @@ protected:
 
 public:
     this(FilterType fType) {
+        if (!(AudioDevice.SupportedExtensions & ALExtensionSupport.EFX)) {
+            return;
+        }
         alGenFilters(1, &id);
         this.filterType = fType;
 
@@ -174,6 +184,9 @@ public:
     }
 
     ~this() {
+        if (!(AudioDevice.SupportedExtensions & ALExtensionSupport.EFX)) {
+            return;
+        }
         alDeleteFilters(1, &id);
     }
 
