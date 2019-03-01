@@ -142,10 +142,10 @@ for (int i=0 ; i<100 ; ++i)     // Wrong
 
 ## Naming
 * Do not use Hungarian notation
-* Do not use an underscore prefix for member variables, e.g. `_foo`
-* Do use snake_casing for private member variables, function, property and event names (words all lowercase, with underscores between each word)
-* Do use snake_casing for parameters
-* Do use snake_casing for local variables
+* Do not use an underscore prefix for member variables, e.g. `_foo`, underscore suffixes are allowed.
+* Do use camelCase for private member variables, function, property and event names
+* Do use camelCase for parameters
+* Do use camelCase for local variables
 * Do use PascalCasing for public member variables, function, property, event, and class names (all words initial uppercase)
 * Do prefix interfaces names with **I**
 * Do not prefix enums, classes, or delegates with any letter
