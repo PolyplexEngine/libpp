@@ -1,4 +1,4 @@
-[![Polyplex Logo][logo]](http://git.pplex.org/Polyplex/ppbranding)
+[![Polyplex Logo][logo]](https://github.com/PolyplexEngine/branding)
 
 # Polyplex Main Library (libpp)
 <a href="https://www.patreon.com/bePatron?u=10156994" data-patreon-widget-type="become-patron-button"><img class="s5qsvfm-0 fIpNGV" src="https://c5.patreon.com/external/logo/become_a_patron_button.png"></a></img> <a href='https://ko-fi.com/O4O59UGN' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://az743702.vo.msecnd.net/cdn/kofi2.png?v=0' border='0' alt='Buy Clipsey a Coffee at ko-fi.com' /></a> [Mastodon](https://mastodon.social/@Polyplex) | [Twitter](https://twitter.com/polyplexengine)
@@ -93,4 +93,4 @@ You can also check out [example_game](http://git.pplex.org/Polyplex/example_game
 ## Notice
 ##### The library is written in what would be considered non-idiomatic D.
 
-[logo]: https://git.pplex.org/Polyplex/ppbranding/raw/commit/419d73673a9fde5a66554b19155b43dd13d04514/flat/libpp-pngs/libpp_transparent@256w.png
+[logo]: https://raw.githubusercontent.com/PolyplexEngine/branding/master/flat/libpp-pngs/libpp_transparent%40256w.png
