@@ -6,9 +6,7 @@
 [Join the Discord Server](https://discord.gg/Dus5ArV)
 
 
-libpp is an XNA like framework written in D. libpp supports OpenGL and will [in the future support Vulkan](https://git.pplex.org/Polyplex/plexrend).
-
-The framework is written to be easy to read and understand for people comming from an C#/XNA background.
+libpp is an game development framework written in D. libpp supports OpenGL and will [in the future support Vulkan](https://git.pplex.org/Polyplex/plexrend).
 
 libpp is the base rendering, input handling, content handling, etc. library for the WIP Polyplex engine.
 
