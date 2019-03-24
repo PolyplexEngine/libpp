@@ -1,0 +1,10 @@
+name "audio"
+description "Polyplex Audio subsystem"
+authors "Clipsey"
+copyright "Copyright © 2018, Clipsey"
+license "BSL-1.0"
+dependency "pp:core" version="*"
+dependency "pp:openal" version="*"
+dependency "ppc" version="~>0.2.0"
+
+dependency "pp:math" version="*"

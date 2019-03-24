@@ -1,0 +1,9 @@
+name "gl3"
+description "Polyplex OpenGL 3.2 renderer"
+authors "Clipsey"
+copyright "Copyright © 2018, Clipsey"
+license "BSL-1.0"
+
+dependency "pp:core" version="*"
+
+dependency "bindbc-opengl" version=">0.5.0"

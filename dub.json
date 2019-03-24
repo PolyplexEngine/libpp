@@ -1,56 +1,32 @@
 {
 	"name": "pp",
-	"license": "Boost",
+	"license": "BSL-1.0",
 	"targetType": "dynamicLibrary",
 	"description": "The base library of the polyplex engine. (Heavily WIP, non-idiomatic)",
 	"stringImportPaths": [
 		"shaders/"
 	],
 	"subPackages": [
-		{
-			"name": "derelict-util",
-			"description": "Cross-platform shared library loader and a number of utility modules used by the Derelict libraries.",
-			"authors": ["Mike Parker", "Polyplex Developers"],
-			"license": "Boost",
-			"targetPath": "lib",
-			"libs-linux": ["dl"],
-			"sourcePaths": [ "modules/pp-derelict-util/source" ],
-			"importPaths": [ "modules/pp-derelict-util/source" ]
-		},
-		{
-			"name": "openal",
-			"sourcePaths": [ "modules/openal/source" ],
-			"importPaths": [ "modules/openal/source" ],
-			"dependencies": {
-				"bindbc-loader": "~>0.1.1"
-			}
-		},
-		{
-			"name": "derelict-vulkan",
-			"description": "A dynamic binding to the vulkan api.",
-			"copyright": "Copyright © 2016, Felix Hufnagel",
-			"authors": ["Felix Hufnagel", "Polyplex Developers"],
-			"license": "BSL-1.0",
-			"targetPath": "lib",
-			"targetType": "library",
-			"dependencies": {
-				"pp:derelict-util": "*",
-				"xlib-d": { "version": "~>0.1.1", "optional": true },
-				"xcb-d" : { "version": "~>2.1.0+1.11.1", "optional": true }
-			},
-			"sourcePaths": [ "modules/pp-derelict-vulkan/source" ],
-			"importPaths": [ "modules/pp-derelict-vulkan/source" ]
-		}
+		"./modules/openal/",
+		"./modules/core/",
+		"./modules/audio/",
+		"./modules/math/",
+		"./modules/utils/",
+		"./modules/backends/render/gl3"
 	],
 	"versions": ["SDL_209", "GL_33", "GL_AllowDeprecated"],
 	"configurations": [
 		{
 			"name": "simplemath",
-			"versions": ["SIMPLE_MATH"]
+			"subConfigurations": {
+				"pp:math": "simplemath"
+			}
 		},
 		{
 			"name": "glmath",
-			"versions": ["GL_MATH"]
+			"subConfigurations": {
+				"pp:math": "glmath"
+			}
 		}
 	],
 	"dependencies": {
@@ -60,13 +36,12 @@
 
 		"bindbc-loader": "~>0.1.1",
 
-		"bindbc-opengl": ">0.5.0",
-
 		"bindbc-sdl": "~>0.5.1",
 		
+		"pp:utils": "*",
+		"pp:core": "*",
 		"pp:openal": "*",
-
-		"pp:derelict-util": "*",
-		"pp:derelict-vulkan": "*"
+		"pp:gl3": "*",
+		"pp:audio": "*"
 	}
 }

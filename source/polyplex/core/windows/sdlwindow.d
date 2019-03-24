@@ -1,7 +1,6 @@
 module polyplex.core.windows.sdlwindow;
 import polyplex.core.window;
 import polyplex;
-import polyplex.utils.sdlbool;
 public import polyplex.core.render;
 static import polyplex;
 
@@ -34,7 +33,7 @@ public class SDLGameWindow : Window {
 		SDL_WindowFlags flags = SDL_GetWindowFlags(window);
 		return ((flags & SDL_WINDOW_RESIZABLE) > 0);
 	}
-	public override @property void AllowResizing(bool allow) { SDL_SetWindowResizable(this.window, ToSDL(allow)); }
+	public override @property void AllowResizing(bool allow) { SDL_SetWindowResizable(this.window, cast(SDL_bool)allow); }
 
 	// VSync
 	public override @property VSyncState VSync() {
@@ -51,7 +50,7 @@ public class SDLGameWindow : Window {
 		SDL_WindowFlags flags = SDL_GetWindowFlags(window);
 		return ((flags & SDL_WINDOW_BORDERLESS) > 0);
 	}
-	public override @property void Borderless(bool i) { SDL_SetWindowBordered(this.window, ToSDL(!i)); }
+	public override @property void Borderless(bool i) { SDL_SetWindowBordered(this.window, cast(SDL_bool)!i); }
 
 	// Title
 	public override @property string Title() { return to!string(SDL_GetWindowTitle(this.window)); }

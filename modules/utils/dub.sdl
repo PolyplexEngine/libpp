@@ -1,0 +1,5 @@
+name "utils"
+description "Polyplex utility library"
+authors "Clipsey"
+copyright "Copyright © 2018, Clipsey"
+license "BSL-1.0"

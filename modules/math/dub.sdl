@@ -1,0 +1,17 @@
+name "math"
+description "Polyplex Math library"
+authors "Clipsey"
+copyright "Copyright © 2018, Clipsey"
+license "BSL-1.0"
+
+dependency "pp:core" version="*"
+
+// Simplemath is the default
+configuration "simplemath" {
+    versions "simplemath"
+}
+
+// GL math for more hardcore people.
+configuration "glmath" {
+    versions "glmath"
+}

@@ -1,5 +1,4 @@
 module polyplex;
-import derelict.vulkan.vulkan;
 
 import bindbc.sdl;
 import bindbc.opengl;
