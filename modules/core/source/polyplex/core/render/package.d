@@ -2,16 +2,13 @@ module polyplex.core.render;
 public import polyplex.core.render.camera;
 public import polyplex.core.render.shapes;
 
-import polyplex.core.render.gl;
-import polyplex.core.render.simplefont;
-import polyplex.core.content;
 import polyplex.core.color;
-import polyplex.core.content;
+//import polyplex.core.content;
 static import win = polyplex.core.window;
 import polyplex.math;
-import bindbc.sdl;
+//import bindbc.sdl;
 import polyplex.math;
-import polyplex;
+//import polyplex;
 import std.stdio;
 
 public enum VSyncState {

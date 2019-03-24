@@ -1,5 +1,5 @@
 module polyplex.math.simplemath.vectors;
-import polyplex.utils.strutils;
+import pputils.strutils;
 import std.math, std.traits, std.string;
 import polyplex.math.simplemath;
 static import Mathf = polyplex.math.mathf;

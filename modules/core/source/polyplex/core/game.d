@@ -2,19 +2,19 @@ module polyplex.core.game;
 
 import polyplex.math;
 static import win = polyplex.core.window;
-import polyplex.core.windows;
-import polyplex.core.render;
-import polyplex.core.input;
-import polyplex.core.events;
-import polyplex.core.content;
-import polyplex.core.audio;
-import polyplex.utils.logging;
+//import polyplex.core.windows;
+//import polyplex.core.render;
+//import polyplex.core.input;
+//import polyplex.core.events;
+//import polyplex.core.content;
+//import polyplex.core.audio;
+//import polyplex.utils.logging;
 
-import polyplex.utils.strutils;
-import polyplex : InitLibraries, UnInitLibraries;
+//import polyplex.utils.strutils;
+//import polyplex : InitLibraries, UnInitLibraries;
 
-import bindbc.sdl;
-import sev.event;
+//import bindbc.sdl;
+//import sev.event;
 
 import std.math;
 import std.random;

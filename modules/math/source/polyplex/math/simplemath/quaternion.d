@@ -218,7 +218,7 @@ public struct Quaternion {
 	}
 
 	public string toString() {
-		import polyplex.utils.strutils;
+		import pputils.strutils;
 		return "<{0}, {1}, {2}, {3}>".Format(X, Y, Z, W);
 	}
 }

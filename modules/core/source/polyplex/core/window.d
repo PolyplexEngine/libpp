@@ -1,8 +1,8 @@
 module polyplex.core.window;
 import polyplex.core.render;
 import polyplex.math;
-import polyplex;
-import sev.event;
+//import polyplex;
+//import sev.event;
 
 public class BoundsEventArgs : EventArgs {
 public :

@@ -1,8 +1,5 @@
 module polyplex.core.events;
-import polyplex.core.input;
-import bindbc.sdl;
 import std.stdio;
-import sev.event;
 
 public class GameResizeEventArgs : EventArgs {
 	public void* SDLEvent;

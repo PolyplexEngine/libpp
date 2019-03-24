@@ -1,5 +1,5 @@
 module pputils.logging;
-import strutils;
+import pputils.strutils;
 import std.conv;
 import std.array;
 import std.stdio;

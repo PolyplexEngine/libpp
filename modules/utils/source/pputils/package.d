@@ -1,3 +1,3 @@
-module polyplex.utils;
-public import polyplex.utils.logging;
-public import polyplex.utils.strutils;
+module pputils.utils;
+public import pputils.logging;
+public import pputils.strutils;
