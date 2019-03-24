@@ -79,11 +79,14 @@ protected :
 	void updateBounds(Rectangle rect) {
 		ClientBounds.updateWindowBounds(rect);
 	}
+
+	void replaceOn(Game game) {
+		game.forceWindowChange(this);
+	}
+
 public :
 	WindowBounds ClientBounds;
-	bool AutoFocus = true;
-
-	
+	bool AutoFocus = true;	
 
 	// Base Constructor.
 	this(string name) {

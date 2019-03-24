@@ -11,6 +11,7 @@ import polyplex.core.audio;
 import polyplex.utils.logging;
 
 import polyplex.utils.strutils;
+import polyplex : InitLibraries, UnInitLibraries;
 
 import bindbc.sdl;
 import sev.event;
@@ -96,21 +97,29 @@ public class GameTimes {
 }
 
 public abstract class Game {
+private:
+	GameEventSystem events;
+	GameTimes times;
+	static uint MAX_SAMPLES = 100;
+	long[] samples;
+	ulong start_frames = 0;
+	ulong delta_frames = 0;
+	ulong last_frames = 0;
+	double avg_fps = 0;
+	bool enable_audio = true;
+
+protected:
 	//Private properties
-	private win.Window window;
-	private GameEventSystem events;
-	private GameTimes times;
-	private static uint MAX_SAMPLES = 100;
-	private long[] samples;
-	private ulong start_frames = 0;
-	private ulong delta_frames = 0;
-	private ulong last_frames = 0;
-	private double avg_fps = 0;
-	private bool enable_audio = true;
+	win.Window window;
+	ContentManager Content;
+	SpriteBatch sprite_batch;
 
-	protected ContentManager Content;
-	protected SpriteBatch sprite_batch;
+package:
+	void forceWindowChange(win.Window newWindow) {
+		this.window = newWindow;
+	}
 
+public:
 	/// Wether the engine should count FPS and frametimes.
 	public bool CountFPS = false;
 
@@ -156,8 +165,9 @@ public abstract class Game {
 
 	public @property win.Window Window() { return window; }
 
-	this(bool audio = true) {
+	this(bool audio = true, bool eventSystem = true) {
 		enable_audio = audio;
+		if (eventSystem) events = new GameEventSystem();
 	}
 
 	~this() {
@@ -166,43 +176,96 @@ public abstract class Game {
 	}
 
 	public void Run() {
-		import polyplex;
-		InitLibraries();
-		
-		events = new GameEventSystem();
-
 		if (window is null) {
 			window = new SDLGameWindow(new Rectangle(0, 0, 0, 0), false);
 		}
-		window.Show();
 		InitLibraries();
-
-		import polyplex.core.audio.music;
+		window.Show();
 		
 		do_update();
-		
 		UnInitLibraries();
 	}
 
-    private void do_update() {
-		//Preupdate before init, just in case some event functions are use there.
+	public void PollEvents() {
 		events.Update();
+	}
+
+	/// Run a single iteration
+	public bool RunOne() {
+		//FPS begin counting.
+		start_frames = SDL_GetTicks();
+		times.TotalTime.BaseValue = start_frames;
+
+		if (events !is null) {
+			//Update events.
+			PPEvents.PumpEvents();
+
+			//Do actual updating and drawing.
+			events.Update();
+		}
+		
+		Update(times);
+		Draw(times);
+
+		// Exit the game if the window is closed.
+		if (!window.Visible) {
+			End();
+			return true;
+		}
+
+		//Swap buffers and chain.
+		if (sprite_batch !is null) sprite_batch.SwapChain();
+		Renderer.SwapBuffers();
+
+		if (CountFPS) {
+			//FPS counter.
+			delta_frames = SDL_GetTicks() - start_frames;
+			times.DeltaTime.BaseValue = delta_frames;
+			last_frames = start_frames;
+
+			if (samples.length <= MAX_SAMPLES) {
+				samples.length++;
+			} else {
+				samples[0] = -1;
+				for (int i = 1; i < samples.length; i++) {
+					if (samples[i-1] == -1) {
+						samples[i-1] = samples[i];
+						samples[i] = -1;
+					}
+				}
+				samples[samples.length-1] = cast(long)delta_frames;
+			}
+			double t = 0;
+			foreach(ulong sample; samples) {
+				t += cast(double)sample;
+			}
+			t /= MAX_SAMPLES;
+			avg_fps = t;
+		}
+		return false;
+	}
+
+	void Prepare(bool waitForVisible = true) {
+		// Preupdate before init, just in case some event functions are use there.
+		if (events !is null) events.Update();
 
 		//Wait for window to open.
 		Logger.Debug("~~~ Init ~~~");
-		while (!window.Visible) {}
+		while (waitForVisible && !window.Visible) {}
 
 		//Update window info.
 		window.UpdateState();
-		events.OnExitRequested ~= (void* sender, EventArgs data) {
-			window.Close();
-		};
+		if (events !is null) {
+			events.OnExitRequested ~= (void* sender, EventArgs data) {
+				window.Close();
+			};
 
-		events.OnWindowSizeChanged ~= (void* sender, EventArgs data) {
-			window.UpdateState();
-			Renderer.AdjustViewport();
-			OnWindowSizeChanged(sender, data);
-		};
+			events.OnWindowSizeChanged ~= (void* sender, EventArgs data) {
+				window.UpdateState();
+				Renderer.AdjustViewport();
+				OnWindowSizeChanged(sender, data);
+			};
+		}
 		
 		times = new GameTimes(new GameTime(0), new GameTime(0));
 		int avg_c = 0;
@@ -216,52 +279,9 @@ public abstract class Game {
 		Init();
 		LoadContent();
 		Logger.Debug("~~~ Gameloop ~~~");
-		while (window.Visible) {
-			//FPS begin counting.
-			start_frames = SDL_GetTicks();
-			times.TotalTime.BaseValue = start_frames;
+	}
 
-			//Update events.
-			PPEvents.PumpEvents();
-
-			//Do actual updating and drawing.
-			events.Update();
-			Update(times);
-			Draw(times);
-
-			// Exit the game if the window is closed.
-			if (!window.Visible) break;
-
-			//Swap buffers and chain.
-			if (sprite_batch !is null) sprite_batch.SwapChain();
-			Renderer.SwapBuffers();
-
-			if (CountFPS) {
-				//FPS counter.
-				delta_frames = SDL_GetTicks() - start_frames;
-				times.DeltaTime.BaseValue = delta_frames;
-				last_frames = start_frames;
-
-				if (samples.length <= MAX_SAMPLES) {
-					samples.length++;
-				} else {
-					samples[0] = -1;
-					for (int i = 1; i < samples.length; i++) {
-						if (samples[i-1] == -1) {
-							samples[i-1] = samples[i];
-							samples[i] = -1;
-						}
-					}
-					samples[samples.length-1] = cast(long)delta_frames;
-				}
-				double t = 0;
-				foreach(ulong sample; samples) {
-					t += cast(double)sample;
-				}
-				t /= MAX_SAMPLES;
-				avg_fps = t;
-			}
-		}
+	public void End() {
 		import polyplex.core.audio.music;
 		shouldStop = true;
 
@@ -279,6 +299,12 @@ public abstract class Game {
 		Logger.Success("Cleanup completed...");
 
 		Logger.Success("~~~ GAME ENDED ~~~");
+	}
+
+    private void do_update() {
+		Prepare();
+		while (!RunOne()) {
+		}
 	}
 
 	public void Quit() {

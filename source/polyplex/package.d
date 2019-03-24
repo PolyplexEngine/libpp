@@ -109,7 +109,8 @@ public void InitLibraries() {
 		} else {
 			// Load system libraries
 			Logger.Info("Binding to system libraries....");
-			loadSDL();
+			SDLSupport support = loadSDL();
+			if (support == SDLSupport.noLibrary) Logger.Fatal("SDL2 not found!");
 		}
 		loadOAL();
 		SDL_version linked;
