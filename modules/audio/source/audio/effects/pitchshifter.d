@@ -1,6 +1,6 @@
-module polyplex.core.audio.effects.pitchshifter;
-import polyplex.core.audio.effects;
-import polyplex.core.audio.effect;
+module audio.effects.pitchshifter;
+import audio.effects;
+import audio.effect;
 import openal;
 
 /**

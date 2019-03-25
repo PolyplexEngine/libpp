@@ -1,5 +1,5 @@
-module polyplex.core.audio.effects.reverb;
-import polyplex.core.audio.effect;
+module audio.effects.reverb;
+import audio.effect;
 import openal;
 
 public class ReverbEffect : AudioEffect {

@@ -1,6 +1,6 @@
-module polyplex.core.audio.effects.echo;
-import polyplex.core.audio.effects;
-import polyplex.core.audio.effect;
+module audio.effects.echo;
+import audio.effects;
+import audio.effect;
 import openal;
 
 /// An Echo

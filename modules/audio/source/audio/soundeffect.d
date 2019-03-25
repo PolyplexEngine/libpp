@@ -1,11 +1,11 @@
-module polyplex.core.audio.soundeffect;
-import polyplex.core.audio;
-import polyplex.core.audio.effect;
+module audio.soundeffect;
+import audio;
+import audio.effect;
 import ppc.types.audio;
 import openal;
 import ppc.backend.cfile;
 import polyplex.math;
-import polyplex.utils.logging;
+import pputils.logging;
 
 /// A sound effect which is persistent in memory.
 public class SoundEffect {

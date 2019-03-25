@@ -1,6 +1,6 @@
-module polyplex.core.audio.effects.freqshifter;
-import polyplex.core.audio.effects;
-import polyplex.core.audio.effect;
+module audio.effects.freqshifter;
+import audio.effects;
+import audio.effect;
 import openal;
 
 enum FrequencyShiftDirection : ALenum {

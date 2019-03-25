@@ -1,5 +1,5 @@
-module polyplex.core.audio.filters.bandpass;
-import polyplex.core.audio.effect;
+module audio.filters.bandpass;
+import audio.effect;
 import openal;
 
 // TODO: Implement high pass filter

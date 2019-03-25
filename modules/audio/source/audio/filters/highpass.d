@@ -1,5 +1,5 @@
-module polyplex.core.audio.filters.highpass;
-import polyplex.core.audio.effect;
+module audio.filters.highpass;
+import audio.effect;
 import openal;
 
 // TODO: Implement high pass filter

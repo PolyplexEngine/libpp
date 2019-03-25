@@ -1,13 +1,16 @@
-module polyplex.core.audio.music;
-import polyplex.core.audio;
-import polyplex.core.audio.effect;
-import ppc.types.audio;
+module audio.music;
+import pputils.logging;
 import openal;
+import audio.effect;
+import audio;
+
+import ppc.types.audio;
 import ppc.backend.cfile;
+
 import polyplex.math;
+
 import std.concurrency;
 import std.stdio;
-import polyplex.utils.logging;
 import core.thread;
 import core.time;
 import core.sync.mutex;
@@ -149,6 +152,10 @@ public:
 	/// Takes effect on new audio load.
 	static size_t BufferCount = 16;
 
+	static Music fromFile(string file) {
+		return new Music(Audio(file));
+	}
+
     /// Constructs a Music via an Audio source.
     // TODO: Optimize enough so that we can have fewer buffers
     this(Audio audio, AudioRenderFormats format = AudioRenderFormats.Auto) {
@@ -222,6 +229,7 @@ public:
 		synchronized {
 			if (musicThread is null || !musicThread.isRunning) spawnHandler();
             alSourcePlay(source);
+			looping = isLooping;
             paused = false;
 			playing = true;
 		}

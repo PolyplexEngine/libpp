@@ -1,7 +1,6 @@
-module polyplex.core.audio.syncgroup;
-import polyplex.core.audio;
-import polyplex.core;
-import polyplex.utils.logging;
+module audio.syncgroup;
+import audio;
+import pputils.logging;
 
 /**
     SyncGroup is a rudementary and naive form of audio synchronization for music channels.

@@ -1,11 +1,17 @@
-module polyplex.core.audio;
-import polyplex.utils.logging;
+module audio;
+import pputils.logging;
 import openal;
-public import polyplex.core.audio.soundeffect;
-public import polyplex.core.audio.music;
-public import polyplex.core.audio.syncgroup;
-public import polyplex.core.audio.effect;
+public import audio.soundeffect;
+public import audio.music;
+public import audio.syncgroup;
+public import audio.effect;
+import std.string : fromStringz, toStringz;
 
+/++
+	Formats that are available for audio rendering
+
+	More will be added later.
+++/
 public enum AudioRenderFormats : int {
 	/**
 		Auto detect (only available for PPC Audio streams)
@@ -20,6 +26,17 @@ public enum AudioRenderFormats : int {
 	StereoFloat = AL_FORMAT_STEREO_FLOAT32,
 }
 
+/++
+	Extensions avilable
+
+	More will be added later, if needed.
+
+	EAX2 is irelevant in most cases, the audio library does not deal with EAX2 currently.
+	Rather, make sure that EFX is supported, which is what the effects & filters system uses.
+
+	Effect chaining is only available in newer OpenAL-Soft implementations
+	If needed you can use LD_PRELOAD_PATH on UNIX platforms to load a pre-compiled version of OpenAL Soft with the needed features.
+++/
 public enum ALExtensionSupport {
 	/**
 		Basic OpenAL context is supported.
@@ -42,8 +59,6 @@ public enum ALExtensionSupport {
 	EffectChaining = 0x04
 	// TODO add more extensions here.
 }
-
-public static AudioDevice DefaultAudioDevice;
 
 //TODO: remove this
 enum ErrCodes : ALCenum {
@@ -76,20 +91,53 @@ enum ErrCodes : ALCenum {
     ALC_CAPTURE_SAMPLES                     = 0x312,
 }
 
-protected __gshared ALint maxSlots;
+public __gshared AudioDevice DEFAULT_DEVICE;
+public __gshared ALint MixerSize = 10;
+
+package __gshared ALint maxSlots;
+package __gshared ALExtensionSupport supportedExtensions;
+
+string GetDefaultDevice() {
+	const(char)* cDevice = alcGetString(null, ALC_DEFAULT_ALL_DEVICES_SPECIFIER);
+	return cast(string)fromStringz(cDevice);
+}
+
+string[] GetDevices() {
+	import std.stdio : writeln;
+	const(char)* cDeviceList = alcGetString(null, ALC_ALL_DEVICES_SPECIFIER);
+	const(char)* currentChar = cDeviceList;
+	string[] strings = [""];
+	do {
+		if (*currentChar == 0) {
+			writeln("Next!");
+			strings.length++;
+			currentChar++;
+			continue;
+		}
+		strings[$-1] ~= *currentChar;
+		currentChar++;
+	} while (*(currentChar-1) != '\0' && *(currentChar) != '\0');
+	return strings;
+}
 
 public class AudioDevice {
-	private static bool deviceCreationSucceeded;
-	public ALCdevice* ALDevice;
-	public ALCcontext* ALContext;
-	private static ALExtensionSupport supportedExtensions;
-	public static ALint MixerSize = 10;
+private:
+	bool deviceCreationSucceeded;
 
-	public static bool DeviceCreationSucceeded() {
+package:
+	ALCdevice* ALDevice;
+	ALCcontext* ALContext;
+
+public:
+	bool DeviceCreationSucceeded() {
 		return deviceCreationSucceeded;
 	}
 
-	public static ALExtensionSupport SupportedExtensions() {
+	string DeviceName() {
+		return cast(string)fromStringz(alcGetString(ALDevice, ALC_DEVICE_SPECIFIER));
+	}
+
+	ALExtensionSupport SupportedExtensions() {
 		return supportedExtensions;
 	}
 
@@ -160,4 +208,15 @@ public class AudioDevice {
 	public void MakeCurrent() {
 		alcMakeContextCurrent(ALContext);
 	}
+}
+
+shared static this() {
+	Logger.Info("Binding OpenAL...");
+	if (!loadOAL()) {
+		Logger.Warn("Failed binding OpenAL, sound might not work correctly!");
+	}
+	Logger.Info("Creating default audio device...");
+	DEFAULT_DEVICE = new AudioDevice();
+	DEFAULT_DEVICE.MakeCurrent();
+	Logger.Success("Created default device on {0}!", DEFAULT_DEVICE.DeviceName);
 }

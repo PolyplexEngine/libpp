@@ -1,6 +1,6 @@
-module polyplex.core.audio.effects.eq;
-import polyplex.core.audio.effects;
-import polyplex.core.audio.effect;
+module audio.effects.eq;
+import audio.effects;
+import audio.effect;
 import openal;
 
 /// An equalizer.

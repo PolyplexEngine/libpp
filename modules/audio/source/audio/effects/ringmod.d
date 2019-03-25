@@ -1,6 +1,6 @@
-module polyplex.core.audio.effects.ringmod;
-import polyplex.core.audio.effects;
-import polyplex.core.audio.effect;
+module audio.effects.ringmod;
+import audio.effects;
+import audio.effect;
 import openal;
 
 /// A ring modulator

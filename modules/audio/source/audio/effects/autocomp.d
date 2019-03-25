@@ -1,6 +1,6 @@
-module polyplex.core.audio.effects.autocomp;
-import polyplex.core.audio.effects;
-import polyplex.core.audio.effect;
+module audio.effects.autocomp;
+import audio.effects;
+import audio.effect;
 import openal;
 
 /// An automatic compressor

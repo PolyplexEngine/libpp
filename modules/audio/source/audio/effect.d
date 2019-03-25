@@ -1,7 +1,7 @@
-module polyplex.core.audio.effect;
-public import polyplex.core.audio.effects;
-public import polyplex.core.audio.filters;
-public import polyplex.core.audio;
+module audio.effect;
+public import audio.effects;
+public import audio.filters;
+public import audio;
 import std.algorithm.searching;
 import std.array;
 import std.algorithm.mutation : remove;
@@ -11,6 +11,7 @@ private enum ErrorNotOpenAlSoftRouting = "Chaining effects together is not suppo
 
     -   Try using OpenAL-Soft which is open source.";
 
+//// Types of effects supported.
 enum EffectType : ALenum {
     Nothing             = AL_EFFECT_NULL,
     RoomDynamics        = AL_EFFECT_EAXREVERB,
@@ -28,6 +29,7 @@ enum EffectType : ALenum {
     Equalizer           = AL_EFFECT_EQUALIZER
 }
 
+/// Types of filters supported
 enum FilterType : ALenum {
     Nothing             = AL_FILTER_NULL,
     Lowpass             = AL_FILTER_LOWPASS,
@@ -35,6 +37,16 @@ enum FilterType : ALenum {
     Bandpass            = AL_FILTER_BANDPASS
 }
 
+/**
+    A realtime audio effect
+    Some audio effects might not be available on some systems.
+    If an effect is not available an error will be logged and the effect ignored.
+
+    With OpenAL-Soft effect routing is supported
+    You **CAN'T** route an effect back to itself.
+
+    You will need OpenAL-Soft installed or EFX extensions.
+*/
 public class AudioEffect {
 protected:
     ALuint id;
@@ -80,7 +92,7 @@ protected:
 public:
     
     this(EffectType eType) {
-        if (!(AudioDevice.SupportedExtensions & ALExtensionSupport.EFX)) {
+        if (!(supportedExtensions & ALExtensionSupport.EFX)) {
             return;
         }
 
@@ -99,10 +111,10 @@ public:
     }
 
     ~this() {
-        if (!(AudioDevice.SupportedExtensions & ALExtensionSupport.EFX)) {
+        if (!(supportedExtensions & ALExtensionSupport.EFX)) {
             return;
         }
-        if (AudioDevice.SupportedExtensions & ALExtensionSupport.EffectChaining) {
+        if (supportedExtensions & ALExtensionSupport.EffectChaining) {
             // Be SURE to unmap this effect from something else.
             // Prevents OpenAL crashing in some instances.
             deattachAllChildren();
@@ -112,14 +124,17 @@ public:
         alDeleteEffects(1, &id);
     }
 
+    /// Returns the ID of this effect.
     ALuint Id() {
         return sendId;
     }
 
+    /// Returns the raw (non-send) ID of this effect.
     ALuint RawId() {
         return id;
     }
 
+    /// Returns the type of this effect.
     EffectType Type() {
         return effectType;
     }
@@ -132,7 +147,7 @@ public:
         A sound effect can be attached to by many others.
     */
     void AttachTo(AudioEffect effect) {
-        if (!(AudioDevice.SupportedExtensions & ALExtensionSupport.EffectChaining)) {
+        if (!(supportedExtensions & ALExtensionSupport.EffectChaining)) {
             throw new Exception(ErrorNotOpenAlSoftRouting);
         }
 
@@ -150,7 +165,7 @@ public:
         Deattaches the sound effect from ALL other sound effects.
     */
     void Deattach() {
-        if (!(AudioDevice.SupportedExtensions & ALExtensionSupport.EffectChaining)) {
+        if (!(supportedExtensions & ALExtensionSupport.EffectChaining)) {
             throw new Exception(ErrorNotOpenAlSoftRouting);
         }
         // Skip all the unbinding as it's not neccesary, small optimization.
@@ -163,6 +178,15 @@ public:
     }
 }
 
+/**
+    An audio filter, various filters are supported
+
+    A filter modifies which frequencies of audio are sent through.
+
+    You can only have 1 filter applied at a time, applying a new filter will overwrite the old selection.
+
+    You will need OpenAL-Soft installed or EFX extensions.
+*/
 public class AudioFilter {
 protected:
     ALuint id;
@@ -170,7 +194,7 @@ protected:
 
 public:
     this(FilterType fType) {
-        if (!(AudioDevice.SupportedExtensions & ALExtensionSupport.EFX)) {
+        if (!(supportedExtensions & ALExtensionSupport.EFX)) {
             return;
         }
         alGenFilters(1, &id);
@@ -184,16 +208,18 @@ public:
     }
 
     ~this() {
-        if (!(AudioDevice.SupportedExtensions & ALExtensionSupport.EFX)) {
+        if (!(supportedExtensions & ALExtensionSupport.EFX)) {
             return;
         }
         alDeleteFilters(1, &id);
     }
 
+    /// Returns the ID of this filter.
     ALuint Id() {
         return id;
     }
 
+    /// Returns the type of this filter.
     FilterType Type() {
         return filterType;
     }

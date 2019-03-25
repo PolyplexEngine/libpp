@@ -1,6 +1,6 @@
-module polyplex.core.audio.effects.distortion;
-import polyplex.core.audio.effects;
-import polyplex.core.audio.effect;
+module audio.effects.distortion;
+import audio.effects;
+import audio.effect;
 import openal;
 
 /// An Distortion
