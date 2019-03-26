@@ -132,7 +132,7 @@ private:
 
 		Logger.Debug("Applying effect {0} and filter {1} on Music {2}...", efId, flId, source);
 
-		alSource3i(source, AL_AUXILIARY_SEND_FILTER, efId, 0, flId);
+		alSource3i(source, AL_AUXILIARY_SEND_FILTER, efId, fxSend, flId);
 		ErrCodes err = cast(ErrCodes)alGetError();
 		
 		import std.conv;
@@ -141,6 +141,9 @@ private:
 
     // Source
     ALuint source;
+
+	// The send the audio goes through
+	ALuint fxSend;
 
 public:
 
@@ -315,6 +318,14 @@ public:
 	/// Gets wether the music is playing
 	bool Playing() {
 		return playing;
+	}
+
+	@property ALuint Send() {
+		return fxSend;
+	}
+
+	@property void Send(ALuint value) {
+		fxSend = value;
 	}
 
 	@property AudioEffect Effect() {
