@@ -128,11 +128,12 @@ private:
 
 	void applyEffectsAndFilters() {
 		ALuint efId = attachedEffect !is null ? attachedEffect.Id : AL_EFFECTSLOT_NULL;
-		ALuint flId = attachedFilter !is null ? attachedFilter.Id : 0;
+		ALuint flId = attachedFilter !is null ? attachedFilter.Id : AL_FILTER_NULL;
 
 		Logger.Debug("Applying effect {0} and filter {1} on Music {2}...", efId, flId, source);
 
 		alSource3i(source, AL_AUXILIARY_SEND_FILTER, efId, fxSend, flId);
+		alSourcei(source, AL_DIRECT_FILTER, flId);
 		ErrCodes err = cast(ErrCodes)alGetError();
 		
 		import std.conv;
