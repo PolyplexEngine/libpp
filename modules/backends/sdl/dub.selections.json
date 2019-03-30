@@ -1,0 +1,9 @@
+{
+	"fileVersion": 1,
+	"versions": {
+		"bindbc-loader": "0.1.1",
+		"bindbc-sdl": "0.7.0",
+		"colorize": "1.0.5",
+		"pp": "0.0.5"
+	}
+}

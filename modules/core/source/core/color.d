@@ -1,6 +1,5 @@
-module polyplex.core.color;
+module core.color;
 import polyplex.math;
-import pputils.logging;
 
 public class Color {
 	/*

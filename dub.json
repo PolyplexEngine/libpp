@@ -1,7 +1,7 @@
 {
 	"name": "pp",
 	"license": "BSL-1.0",
-	"targetType": "dynamicLibrary",
+	"targetType": "executable",
 	"description": "The base library of the polyplex engine. (Heavily WIP, non-idiomatic)",
 	"stringImportPaths": [
 		"shaders/"
@@ -12,6 +12,7 @@
 		"./modules/audio/",
 		"./modules/math/",
 		"./modules/utils/",
+		"./modules/backends/sdl",
 		"./modules/backends/render/gl3"
 	],
 	"versions": ["SDL_209", "GL_33", "GL_AllowDeprecated"],
@@ -37,11 +38,7 @@
 		"bindbc-loader": "~>0.1.1",
 
 		"bindbc-sdl": "~>0.5.1",
-		
-		"pp:utils": "*",
-		"pp:core": "*",
-		"pp:openal": "*",
-		"pp:gl3": "*",
-		"pp:audio": "*"
+		"pp:audio": "*",
+		"pp:sdl": "*"
 	}
 }

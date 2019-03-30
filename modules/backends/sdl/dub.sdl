@@ -1,0 +1,9 @@
+name "sdl"
+description "Polyplex SDL2 Backend"
+authors "Clipsey"
+copyright "Copyright © 2018, Clipsey"
+license "BSL-1.0"
+
+dependency "pp:core" version="*"
+dependency "pp:math" version="*"
+dependency "bindbc-sdl" version="0.7.0"
