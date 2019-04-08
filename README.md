@@ -6,7 +6,9 @@
 [Join the Discord Server](https://discord.gg/Dus5ArV)
 
 
-libpp is an game development framework written in D. libpp supports OpenGL and will [in the future support Vulkan](https://git.pplex.org/Polyplex/plexrend).
+libpp is an game development framework written in D, supporting OpenGL 3.3 (and above). 
+
+_OpenGL ES 2 and Vulkan will be supported in the future._
 
 libpp is the base rendering, input handling, content handling, etc. library for the WIP Polyplex engine.
 
@@ -21,7 +23,7 @@ Once added, you will need to set logging levels, choose a backend and create a w
 
 ### Current capabilities
 Polyplex is still very early in development, but libpp can already be used to make simple 2D games, that are relatively easy to port to other platforms.
-Polyplex packages textures, sounds, etc. into files with the extension ppc. To convert ogg, png, jpeg or tga files to .ppc, use [ppcc](https://git.pplex.org/Polyplex/ppcc)
+Polyplex packages textures, sounds, etc. into files with the extension ppc. To convert ogg, png, jpeg or tga files to .ppc, use [ppcc](https://github.com/PolyplexEngine/ppcc)
 
 Othewise, you can use `Content.Load!(Type)(string);` by prepending `!` to the path (based on content directory) to the raw file.
 
@@ -86,9 +88,11 @@ class MyGame : Game
 
 ```
 
-You can also check out [example_game](http://git.pplex.org/Polyplex/example_game), which is used as a testbed for new libpp features/fixes.
+You can also check out [example_game](http://github.com/PolyplexEngine/example_game), which is used as a testbed for new libpp features/fixes.
 
 ## Notice
+This framework will **not** work oficially on macOS, in future updates support code will be fully removed. The reason for this is that Apple has deprecated OpenGL, Polyplex will not support Metal, in any form (including MoltenVK) in the near-to-far future.
+
 ##### The library is written in what would be considered non-idiomatic D.
 
 [logo]: https://raw.githubusercontent.com/PolyplexEngine/branding/master/flat/libpp-pngs/libpp_transparent%40256w.png
