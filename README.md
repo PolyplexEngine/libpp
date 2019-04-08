@@ -91,7 +91,7 @@ class MyGame : Game
 You can also check out [example_game](http://github.com/PolyplexEngine/example_game), which is used as a testbed for new libpp features/fixes.
 
 ## Notice
-This framework will **not** work oficially on macOS, in future updates support code will be fully removed. The reason for this is that Apple has deprecated OpenGL, Polyplex will not support Metal, in any form (including MoltenVK) in the near-to-far future.
+This framework will **not** work officially on macOS, in future updates support code will be fully removed. The reason for this is that Apple has deprecated OpenGL, Polyplex will not support Metal, in any form (including MoltenVK) in the near-to-far future.
 
 ##### The library is written in what would be considered non-idiomatic D.
 
