@@ -90,7 +90,7 @@ public void UnInitLibraries() {
 	InitLibraries loads the Derelict libraries for Vulkan, SDL and OpenGL
 */
 public void InitLibraries() {
-	if (!core_init) {
+	/*if (!core_init) {
 		if (std.file.exists("libs/")) {
 			// Load bundled libraries.
 			Logger.Info("Binding to runtime libraries...");
@@ -120,7 +120,22 @@ public void InitLibraries() {
 		Logger.Debug("SDL (compiled against): {0}.{1}.{2}", to!string(compiled.major), to!string(compiled.minor), to!string(compiled.patch));
 		Logger.Debug("SDL (linked): {0}.{1}.{2}", to!string(linked.major), to!string(linked.minor), to!string(linked.patch));
 		core_init = true;
-	}
+	}*/
 	loadOpenGL();
-	gl_init = true;
+	//gl_init = true;
+}
+
+shared static this() {
+	bool success = loadOAL();
+	Logger.Info("Bound OpenAL {0}!", success ? "successfully" : "unsuccessfully");
+	
+	import bindbc.sdl;
+	SDLSupport support = loadSDL();
+	if (support == SDLSupport.noLibrary) Logger.Fatal("SDL2 not found!");
+	SDL_version linked;
+	SDL_version compiled;
+	SDL_GetVersion(&linked);
+	SDL_VERSION(&compiled);
+	Logger.Info("SDL (compiled against): {0}.{1}.{2}", to!string(compiled.major), to!string(compiled.minor), to!string(compiled.patch));
+	Logger.Info("SDL (linked): {0}.{1}.{2}", to!string(linked.major), to!string(linked.minor), to!string(linked.patch));
 }
