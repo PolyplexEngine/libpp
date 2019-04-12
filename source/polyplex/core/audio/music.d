@@ -222,7 +222,10 @@ public:
     void Play(bool isLooping = false) {
 		synchronized {
 			if (musicThread is null || !musicThread.isRunning) spawnHandler();
+
+			this.Looping = isLooping;
             alSourcePlay(source);
+
             paused = false;
 			playing = true;
 		}

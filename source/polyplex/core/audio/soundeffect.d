@@ -77,6 +77,7 @@ public:
     }
 
     void Play(bool looping = false) {
+		this.Looping = looping;
         alSourcePlay(source);
     }
 
