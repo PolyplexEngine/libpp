@@ -56,7 +56,7 @@
 	"dependencies": {
 		"colorize": "~>1.0.5",
 		"sharpevents": "~>1.0.0",
-		"ppc": "~>0.2.0",
+		"ppc": "~>0.2.2",
 
 		"bindbc-loader": "~>0.1.1",
 
