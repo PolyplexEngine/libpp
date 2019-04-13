@@ -96,7 +96,7 @@ public class Camera2D : Camera {
 	public float Depth;
 	public Vector2 Origin;
 
-	this(Vector2 position, float depth = -5f, float rotation = 0f, float zoom = 1f, float near = 0.01f, float far = 100f) {
+	this(Vector2 position, float depth = 0f, float rotation = 0f, float zoom = 1f, float near = 0f, float far = 100f) {
 		this.Position = Vector2(position.X, position.Y);
 		this.Rotation = rotation;
 		this.RotationX = 0;

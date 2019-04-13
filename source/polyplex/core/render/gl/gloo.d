@@ -14,39 +14,40 @@ private __gshared VertexArray               boundVertexArray;
 public @nogc:
 
 enum Capability : GLenum {
-    AlphaTesting        = GL_ALPHA_TEST,
-    AutoNormal          = GL_AUTO_NORMAL,
-    Blending            = GL_BLEND,
-    ColorLogic          = GL_COLOR_LOGIC_OP,
-    ColorMaterial       = GL_COLOR_MATERIAL,
-    ColorSum            = GL_COLOR_SUM,
-    ColorTable          = GL_COLOR_TABLE,
-    Convolution1D       = GL_CONVOLUTION_1D,
-    Convolution2D       = GL_CONVOLUTION_2D,
-    CullFace            = GL_CULL_FACE,
-    DepthTesting        = GL_DEPTH_TEST,
-    Dithering           = GL_DITHER,
-    Fog                 = GL_FOG,
-    Histogram           = GL_HISTOGRAM,
-    IndexLogic          = GL_INDEX_LOGIC_OP,
-    Lighting            = GL_LIGHTING,
-    LineSmooth          = GL_LINE_SMOOTH,
-    LineStipple         = GL_LINE_STIPPLE,
+    AlphaTesting            = GL_ALPHA_TEST,
+    AutoNormal              = GL_AUTO_NORMAL,
+    Blending                = GL_BLEND,
+    ColorLogic              = GL_COLOR_LOGIC_OP,
+    ColorMaterial           = GL_COLOR_MATERIAL,
+    ColorSum                = GL_COLOR_SUM,
+    ColorTable              = GL_COLOR_TABLE,
+    Convolution1D           = GL_CONVOLUTION_1D,
+    Convolution2D           = GL_CONVOLUTION_2D,
+    CullFace                = GL_CULL_FACE,
+    DepthTesting            = GL_DEPTH_TEST,
+    Dithering               = GL_DITHER,
+    Fog                     = GL_FOG,
+    Histogram               = GL_HISTOGRAM,
+    IndexLogic              = GL_INDEX_LOGIC_OP,
+    Lighting                = GL_LIGHTING,
+    LineSmooth              = GL_LINE_SMOOTH,
+    LineStipple             = GL_LINE_STIPPLE,
+    SampleAreaToCoverage    = GL_SAMPLE_ALPHA_TO_COVERAGE,
     // TODO: Add a bunch of GL_MAP stuff
 
-    MinMax              = GL_MINMAX,
-    Multisample         = GL_MULTISAMPLE,
-    Normalize           = GL_NORMALIZE,
-    PointSmooth         = GL_POINT_SMOOTH,
-    PointSprite         = GL_POINT_SPRITE,
-    PolygonOffsetFill   = GL_POLYGON_OFFSET_FILL,
-    PolygonOffsetLine   = GL_POLYGON_OFFSET_LINE,
-    PolygonOffsetPoint  = GL_POLYGON_OFFSET_POINT,
-    PolygonSmooth       = GL_POLYGON_SMOOTH,
-    PolygonStipple      = GL_POLYGON_STIPPLE,
+    MinMax                  = GL_MINMAX,
+    Multisample             = GL_MULTISAMPLE,
+    Normalize               = GL_NORMALIZE,
+    PointSmooth             = GL_POINT_SMOOTH,
+    PointSprite             = GL_POINT_SPRITE,
+    PolygonOffsetFill       = GL_POLYGON_OFFSET_FILL,
+    PolygonOffsetLine       = GL_POLYGON_OFFSET_LINE,
+    PolygonOffsetPoint      = GL_POLYGON_OFFSET_POINT,
+    PolygonSmooth           = GL_POLYGON_SMOOTH,
+    PolygonStipple          = GL_POLYGON_STIPPLE,
 
-    ScissorTest         = GL_SCISSOR_TEST,
-    StencilTest         = GL_STENCIL_TEST
+    ScissorTest             = GL_SCISSOR_TEST,
+    StencilTest             = GL_STENCIL_TEST
 
 }
 /**
@@ -63,6 +64,15 @@ public:
         Linear                      = GL_LINEAR,
         LinearMipmapNearest         = GL_LINEAR_MIPMAP_NEAREST,
         LinearMipmapLinear          = GL_LINEAR_MIPMAP_LINEAR,
+
+        // Func
+        Greater                     = GL_GREATER,
+        Less                        = GL_LESS,
+
+        // Culling
+        Front                       = GL_FRONT,
+        Back                        = GL_BACK,
+        FrontAndBack                = GL_FRONT_AND_BACK,
 
         // Swizzle
         Red                         = GL_RED,
@@ -193,6 +203,25 @@ static:
 
     void BindVertexArray(GLuint id) {
         glBindVertexArray(id);
+    }
+
+    /*
+        AlphaFunc
+    */
+    void AlphaFunc(GLenum mode, float clamp) {
+        glAlphaFunc(mode, clamp);
+    }
+
+    void DepthFunc(GLenum mode) {
+        glDepthFunc(mode);
+    }
+
+    /*
+        Culling
+    */
+
+    void CullFace(GLenum face) {
+        glCullFace(face);
     }
 }
 

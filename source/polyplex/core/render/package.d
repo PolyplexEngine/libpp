@@ -137,9 +137,11 @@ public enum SpriteSorting {
 public struct RasterizerState {
 public:
 	static RasterizerState Default() {
-		return RasterizerState(false, false, 0f);
+		return RasterizerState(true, false, false, false, 0f);
 	}
 
+	bool BackfaceCulling;
+	bool DepthTest;
 	bool ScissorTest;
 	bool MSAA;
 	float SlopeScaleBias;

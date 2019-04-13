@@ -24,7 +24,7 @@ private enum : string {
 }
 
 private struct SprBatchData {
-	Vector2 position;
+	Vector3 position;
 	Vector2 texCoord;
 	Vector4 color;
 }
@@ -97,12 +97,24 @@ private:
 		if (state.ScissorTest) GL.Enable(Capability.ScissorTest);
 		if (state.MSAA) GL.Enable(Capability.Multisample);
 		if (state.SlopeScaleBias > 0) GL.Enable(Capability.PolygonOffsetFill); 
+
+		if (state.DepthTest) {
+			GL.Enable(Capability.DepthTesting);
+			GL.DepthFunc(GL.Less);
+		}
+
+		if (state.BackfaceCulling) {
+			GL.Enable(Capability.CullFace);
+			GL.CullFace(GL.Front);
+		}
 	}
 
 	void resetRasterizerState() {
 		GL.Disable(Capability.ScissorTest);
 		GL.Disable(Capability.Multisample);
 		GL.Disable(Capability.PolygonOffsetFill);
+		GL.Disable(Capability.DepthTesting);
+		GL.Disable(Capability.CullFace);
 	}
 
 	void setSamplerState(Sampling state) {
@@ -152,8 +164,8 @@ private:
 		}
 	}
 
-	void addVertex(int offset, float x, float y, float r, float g, float b, float a, float u, float v) {
-		this.elementArray[queued][offset].position = Vector2(x, y);
+	void addVertex(int offset, float x, float y, float r, float g, float b, float a, float u, float v, float depth) {
+		this.elementArray[queued][offset].position = Vector3(x, y, depth);
 		this.elementArray[queued][offset].texCoord = Vector2(u, v);
 		this.elementArray[queued][offset].color = Vector4(r, g, b, a);
 	}
@@ -187,7 +199,7 @@ private:
 		elementVertexArray.EnableArray(0);
 		elementVertexArray.EnableArray(1);
 		elementVertexArray.EnableArray(2);
-		elementVertexArray.AttribPointer(0, 2, GL_FLOAT, GL_FALSE, SprBatchData.sizeof, cast(void*)SprBatchData.position.offsetof);
+		elementVertexArray.AttribPointer(0, 3, GL_FLOAT, GL_FALSE, SprBatchData.sizeof, cast(void*)SprBatchData.position.offsetof);
 		elementVertexArray.AttribPointer(1, 2, GL_FLOAT, GL_FALSE, SprBatchData.sizeof, cast(void*)SprBatchData.texCoord.offsetof);
 		elementVertexArray.AttribPointer(2, 4, GL_FLOAT, GL_FALSE, SprBatchData.sizeof, cast(void*)SprBatchData.color.offsetof);
 
@@ -311,12 +323,12 @@ private:
 			v2 = vx;
 		}
 
-		addVertex(0, x1, y1, color.Rf(), color.Gf(), color.Bf(), color.Af(), u, v); // TOP LEFT
-		addVertex(1, x2, y2, color.Rf(), color.Gf(), color.Bf(), color.Af(), u2, v), // TOP RIGHT
-		addVertex(2, x4, y4, color.Rf(), color.Gf(), color.Bf(), color.Af(), u, v2); // BOTTOM LEFT
-		addVertex(3, x2, y2, color.Rf(), color.Gf(), color.Bf(), color.Af(), u2, v), // TOP RIGHT
-		addVertex(4, x3, y3, color.Rf(), color.Gf(), color.Bf(), color.Af(), u2, v2); // BOTTOM RIGHT
-		addVertex(5, x4, y4, color.Rf(), color.Gf(), color.Bf(), color.Af(), u, v2); // BOTTOM LEFT
+		addVertex(0, x1, y1, color.Rf(), color.Gf(), color.Bf(), color.Af(), u,   v, -zlayer); // TOP LEFT
+		addVertex(1, x2, y2, color.Rf(), color.Gf(), color.Bf(), color.Af(), u2,  v, -zlayer), // TOP RIGHT
+		addVertex(2, x4, y4, color.Rf(), color.Gf(), color.Bf(), color.Af(), u,  v2, -zlayer); // BOTTOM LEFT
+		addVertex(3, x2, y2, color.Rf(), color.Gf(), color.Bf(), color.Af(), u2,  v, -zlayer), // TOP RIGHT
+		addVertex(4, x3, y3, color.Rf(), color.Gf(), color.Bf(), color.Af(), u2, v2, -zlayer); // BOTTOM RIGHT
+		addVertex(5, x4, y4, color.Rf(), color.Gf(), color.Bf(), color.Af(), u,  v2, -zlayer); // BOTTOM LEFT
 		queued++;
 	}
 
@@ -454,12 +466,12 @@ public:
 			v2 = vx;
 		}
 
-		addVertex(0, x1, y1, color.Rf(), color.Gf(), color.Bf(), color.Af(), u, v); // TOP LEFT
-		addVertex(1, x2, y2, color.Rf(), color.Gf(), color.Bf(), color.Af(), u2, v), // TOP RIGHT
-		addVertex(2, x4, y4, color.Rf(), color.Gf(), color.Bf(), color.Af(), u, v2); // BOTTOM LEFT
-		addVertex(3, x2, y2, color.Rf(), color.Gf(), color.Bf(), color.Af(), u2, v), // TOP RIGHT
-		addVertex(4, x3, y3, color.Rf(), color.Gf(), color.Bf(), color.Af(), u2, v2); // BOTTOM RIGHT
-		addVertex(5, x4, y4, color.Rf(), color.Gf(), color.Bf(), color.Af(), u, v2); // BOTTOM LEFT
+		addVertex(0, x1, y1, color.Rf(), color.Gf(), color.Bf(), color.Af(), u,   v, -zlayer); // TOP LEFT
+		addVertex(1, x2, y2, color.Rf(), color.Gf(), color.Bf(), color.Af(), u2,  v, -zlayer), // TOP RIGHT
+		addVertex(2, x4, y4, color.Rf(), color.Gf(), color.Bf(), color.Af(), u,  v2, -zlayer); // BOTTOM LEFT
+		addVertex(3, x2, y2, color.Rf(), color.Gf(), color.Bf(), color.Af(), u2,  v, -zlayer), // TOP RIGHT
+		addVertex(4, x3, y3, color.Rf(), color.Gf(), color.Bf(), color.Af(), u2, v2, -zlayer); // BOTTOM RIGHT
+		addVertex(5, x4, y4, color.Rf(), color.Gf(), color.Bf(), color.Af(), u,  v2, -zlayer); // BOTTOM LEFT
 		queued++;
 	}
 	
