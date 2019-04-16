@@ -1,5 +1,6 @@
 module polyplex.math.rectangle;
 import polyplex.math;
+import std.traits;
 
 /// Base template for all AABB-types.
 /// Params:
@@ -27,7 +28,6 @@ public:
 		this.Height = height;
 	}
 
-	import std.traits;
 	@trusted Rectangle opBinary(string op, T)(T other) if (isNumeric!(T)) {
 		import std.format;
 		mixin(q{
@@ -50,12 +50,12 @@ public:
 
 	bool Intersects(Rectangle other) {
 		if (other is null) return false;
-		bool v = (other.Left > this.Right || other.Right < this.Left || other.Top > this.Bottom || other.Bottom < this.Top);
+		bool v = (other.Left >= this.Right || other.Right <= this.Left || other.Top >= this.Bottom || other.Bottom <= this.Top);
 		return !v;
 	}
 
 	bool Intersects(Vector2 other) {
-		bool v = (other.X > this.Right || other.X < this.Left || other.Y > this.Bottom || other.Y < this.Top);
+		bool v = (other.X >= this.Right || other.X <= this.Left || other.Y >= this.Bottom || other.Y <= this.Top);
 		return !v;
 	}
 
