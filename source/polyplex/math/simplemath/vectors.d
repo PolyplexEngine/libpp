@@ -122,6 +122,11 @@ public struct Vector2T(T) if (isNumeric!(T)) {
 		return o;
 	}
 
+
+	public @trusted nothrow T Det(GVector other) {
+		return (this.X*other.Y)-(this.Y*other.X);
+	}
+
 	/// Dot product of a vector.
 	public @trusted nothrow T Dot(GVector other) {
 		return (this.X*other.X)+(this.Y*other.Y);

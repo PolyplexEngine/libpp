@@ -18,7 +18,10 @@ protected:
 	override void rebuffer() {
 		int mode = GL_RGBA;
 
-		if (tex !is null) destroy(tex);
+		if (tex !is null) {
+			UpdatePixelData(image.Pixels);
+			return;
+		}
 		tex = new Texture();
 
 		Bind();
@@ -51,6 +54,13 @@ public:
 
 	~this() {
 		destroy(tex);
+	}
+
+	override void UpdatePixelData(ubyte[] data) {
+		Bind();
+		if (image !is null) image.SetPixels(data);
+		glTexSubImage2D(TextureType.Tex2D, 0, 0, 0, image.Width, image.Height, GL_RGBA, GL_UNSIGNED_BYTE, data.ptr);
+		Unbind();
 	}
 
 	/**

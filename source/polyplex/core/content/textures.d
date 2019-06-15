@@ -19,6 +19,10 @@ public class TextureImg {
 	public @property ubyte[] Pixels() { return pixels; }
 	public @property string InternalName() { return i_name; }
 
+	public void SetPixels(ref ubyte[] data) {
+		this.pixels = data;
+	}
+
 	this(int width, int height, ubyte[] pixels, string iname = "unnamed") {
 		this.width = width;
 		this.height = height;
@@ -338,6 +342,8 @@ public abstract class Texture2D {
 		Binds the texture.	
 	*/
 	public abstract void Bind(int attach_pos = 0, Shader s = null);
+
+	public abstract void UpdatePixelData(ubyte[] data);
 
 	/**
 		Unbinds the texture.	
