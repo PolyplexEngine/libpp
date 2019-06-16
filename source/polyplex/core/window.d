@@ -54,7 +54,7 @@ public :
 	void ResizeWindow(int width, int height) {
 		winRect.Width  = width;
 		winRect.Height = height;
-		BoundsEventArgs args;
+		BoundsEventArgs args = new BoundsEventArgs();
 		args.Width = width;
 		args.Height = height;
 		windowResizeRequestEvent(cast(void*)this, cast(EventArgs)args);
@@ -63,7 +63,7 @@ public :
 	void MoveWindow(int x, int y) {
 		winRect.X = x;
 		winRect.Y = y;
-		BoundsEventArgs args;
+		BoundsEventArgs args = new BoundsEventArgs();
 		args.X = x;
 		args.Y = y;
 		windowPositionRequestEvent(cast(void*)this, cast(EventArgs)args);
