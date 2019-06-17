@@ -50,7 +50,6 @@ private:
 	int queued;
 	bool hasBegun;
 	bool swap;
-	bool renderingFont;
 
 	bool isRenderbuffer;
 
@@ -426,11 +425,6 @@ public:
 	override void Draw(Texture2D texture, Rectangle pos, Rectangle cutout, float rotation, Vector2 origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f) {
 		isRenderbuffer = false;
 		checkFlush([(cast(GlTexture2D)texture).GLTexture]);
-
-		if (renderingFont) {
-			if (this.shader == defaultShaderFont) this.shader = defaultShader;
-			renderingFont = false;
-		}
 		draw(texture.Width, texture.Height, pos, cutout, rotation, origin, color, flip, zlayer);
 	}
 
@@ -444,16 +438,15 @@ public:
 		draw(buffer.Width, buffer.Height, pos, cutout, rotation, origin, color, flip, zlayer);
 	}
 
-	override void DrawString(SpriteFont font, string text, Vector2 position, Color color, float scale = 1f, float zlayer = 0f) {
+	override void DrawString(SpriteFont font, string text, Vector2 position, Color color, float scale = 1f, float zlayer = 0f, Shader textShader = null) {
 		isRenderbuffer = false;
+
+		Shader prevShader = this.shader;
 
 		// Support custom font shaders.
 		checkFlush([(cast(GlTexture2DImpl!(GL_RED, 1))font.getTexture()).GLTexture]);
 
-		if (!renderingFont) {
-			if (this.shader == defaultShader) this.shader = defaultShaderFont;
-			renderingFont = true;
-		}
+		this.shader = textShader !is null ? textShader : defaultShaderFont;
 
 		// Measure the tallest height (used for rendering)
 		Vector2 measured = font.MeasureString(text);
@@ -486,6 +479,9 @@ public:
 			x += cast(int)((info.advance.x >> 6) * scale);
 		}
 		Flush();
+
+		// Revert back to the previous shader.
+		this.shader = prevShader;
 	}
 	
 	override void Flush() {
