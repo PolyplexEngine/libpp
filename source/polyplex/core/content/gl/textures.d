@@ -8,7 +8,9 @@ import polyplex.core.color;
 import std.stdio;
 
 
-public class GlTexture2D(int mode = GL_RGBA, int alignment = 4) : Texture2D {
+alias GlTexture2D = GlTexture2DImpl!(GL_RGBA, 4);
+
+public class GlTexture2DImpl(int mode = GL_RGBA, int alignment = 4) : Texture2D {
 private:
 	Texture tex;
 
