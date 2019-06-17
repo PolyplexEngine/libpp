@@ -81,8 +81,10 @@ public class ContentManager {
 	}
 
 	T loadLocal(T)(string name) if (is(T : SpriteFont)) {
-		auto tface = ppct.TypeFace(loadFile(name));
-		return new SpriteFont(tface);
+		throw new Exception("SpriteFont does not support localLoad at current time!");
+		
+		// auto tface = ppct.TypeFace(loadFile(name));
+		// return new SpriteFont(tface);
 	}
 
 	public T Load(T)(string name) if (is(T : SpriteFont)) {
