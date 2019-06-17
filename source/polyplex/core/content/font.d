@@ -29,7 +29,9 @@ public:
 		Vector2 size = Vector2(0, 0);
 		foreach(char c; text) {
 			if (this[c] is null) continue;
-			size.X += this[c].advance.x;
+			
+			// Bitshift by 6 to make it be in pixels
+			size.X += (this[c].advance.x >> 6);
 			if (this[c].bearing.y > size.Y) size.Y = this[c].bearing.y;
 		}
 		return size;
