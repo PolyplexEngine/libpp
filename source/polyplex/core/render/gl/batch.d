@@ -36,9 +36,12 @@ private:
 
 	// Creation info
 	enum UniformProjectionName = "PROJECTION";
-	enum DefaultVert = import("sprite_batch.vsh");
-	enum DefaultFrag = import("sprite_batch.fsh");
+	enum DefaultVert = import("sprite_batch.vert");
+	enum DefaultFrag = import("sprite_batch.frag");
+	enum DefaultVertFont = import("font_batch.vert");
+	enum DefaultFragFont = import("font_batch.frag");
 	static Shader defaultShader;
+	static Shader defaultShaderFont;
 	static Camera defaultCamera;
 	static bool hasInitCompleted;
 
@@ -349,6 +352,7 @@ public:
 		else return;
 
 		defaultShader = new GLShader(new ShaderCode(DefaultVert, DefaultFrag));
+		defaultShaderFont = new GLShader(new ShaderCode(DefaultVertFont, DefaultFragFont));
 		defaultCamera = new Camera2D(Vector2(0, 0));
 		defaultCamera.Update();
 	}
@@ -414,7 +418,7 @@ public:
 
 	override void Draw(Texture2D texture, Rectangle pos, Rectangle cutout, float rotation, Vector2 origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f) {
 		isRenderbuffer = false;
-		checkFlush([(cast(GlTexture2D)texture).GLTexture]);
+		checkFlush([(cast(GlTexture2D!(GL_BRGA, 4))texture).GLTexture]);
 		draw(texture.Width, texture.Height, pos, cutout, rotation, origin, color, flip, zlayer);
 	}
 
@@ -426,53 +430,6 @@ public:
 		isRenderbuffer = true;
 		checkFlush((cast(GlFramebufferImpl)buffer.Implementation).OutTextures);
 		draw(buffer.Width, buffer.Height, pos, cutout, rotation, origin, color, flip, zlayer);
-	}
-
-	override void DrawAABB(Texture2D texture, Rectangle pos_top, Rectangle pos_bottom, Rectangle cutout, Vector2 Origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f) {
-		checkFlush([(cast(GlTexture2D)texture).GLTexture]);
-		float x1, y1;
-		float x2, y2;
-		float x3, y3;
-		float x4, y4;
-
-		static import std.math;
-		x1 = pos_top.X;
-		y1 = pos_top.Y;
-
-		x2 = pos_top.Width;
-		y2 = pos_top.Height;
-		
-		x3 = pos_bottom.Width;
-		y3 = pos_bottom.Height;
-
-		x4 = pos_bottom.X;
-		y4 = pos_bottom.Y;
-		float pxx = 0.2f/cast(float)texture.Width;
-		float pxy = 0.2f/cast(float)texture.Height;
-
-		float u = ((cutout.X)/cast(float)texture.Width)+pxx;
-		float u2 = ((cutout.X+cutout.Width)/cast(float)texture.Width)-pxx;
-		if ((flip&SpriteFlip.FlipVertical)>0) {
-			float ux = u;
-			u = u2;
-			u2 = ux;
-		}
-
-		float v = ((cutout.Y)/cast(float)texture.Height)+pxy;
-		float v2 = ((cutout.Y+cutout.Height)/cast(float)texture.Height)-pxy;
-		if ((flip&SpriteFlip.FlipHorizontal)>0) {
-			float vx = v;
-			v = v2;
-			v2 = vx;
-		}
-
-		addVertex(0, x1, y1, color.Rf(), color.Gf(), color.Bf(), color.Af(), u,   v, -zlayer); // TOP LEFT
-		addVertex(1, x2, y2, color.Rf(), color.Gf(), color.Bf(), color.Af(), u2,  v, -zlayer), // TOP RIGHT
-		addVertex(2, x4, y4, color.Rf(), color.Gf(), color.Bf(), color.Af(), u,  v2, -zlayer); // BOTTOM LEFT
-		addVertex(3, x2, y2, color.Rf(), color.Gf(), color.Bf(), color.Af(), u2,  v, -zlayer), // TOP RIGHT
-		addVertex(4, x3, y3, color.Rf(), color.Gf(), color.Bf(), color.Af(), u2, v2, -zlayer); // BOTTOM RIGHT
-		addVertex(5, x4, y4, color.Rf(), color.Gf(), color.Bf(), color.Af(), u,  v2, -zlayer); // BOTTOM LEFT
-		queued++;
 	}
 	
 	override void Flush() {

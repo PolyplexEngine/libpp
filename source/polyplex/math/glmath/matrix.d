@@ -1,6 +1,7 @@
 module polyplex.math.glmath.matrix;
 import polyplex.math.glmath.vector;
 import polyplex.math.glmath.quaternion;
+import polyplex.math : Mathf;
 import std.conv;
 import std.stdio;
 

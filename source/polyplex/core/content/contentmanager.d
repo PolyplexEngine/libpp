@@ -80,6 +80,23 @@ public class ContentManager {
 		return new GlTexture2D(img);
 	}
 
+	T loadLocal(T)(string name) if (is(T : Texture2D)) {
+		auto tface = ppct.TypeFace(loadFile(name));
+		TextureImg img = new TextureImg(cast(int)imgd.width, cast(int)imgd.height, imgd.pixelData, name);
+		return new SpriteFont(img);
+	}
+
+	public T Load(T)(string name) if (is(T : Texture2D)) {
+		// Load raw file if instructed to.
+		if (name[0] == '!') return loadLocal!T(name[1..$]);
+
+		// Otherwise load PPC file
+		PPC ppc = PPC(this.ContentRoot~name~".ppc");
+		auto imgd = ppct.Image(ppc.data);
+		TextureImg img = new TextureImg(cast(int)imgd.width, cast(int)imgd.height, imgd.pixelData, name);
+		return new GlTexture2D(img);
+	}
+
 	public T Load(T)(string name) if (is(T : Shader)) {
 		// Shaders can't be loaded locally
 		if (name[0] == '!') throw new Exception("Shaders cannot be loaded rawly, please use ppcc to convert to PSGL");

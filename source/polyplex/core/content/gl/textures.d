@@ -8,7 +8,7 @@ import polyplex.core.color;
 import std.stdio;
 
 
-public class GlTexture2D : Texture2D {
+public class GlTexture2D(int mode = GL_RGBA, int alignment = 4) : Texture2D {
 private:
 	Texture tex;
 
@@ -16,8 +16,7 @@ private:
 	
 protected:
 	override void rebuffer() {
-		int mode = GL_RGBA;
-
+		glPixelStorei(GL_UNPACK_ALIGNMENT, alignment); 
 		if (tex !is null) {
 			UpdatePixelData(image.Pixels);
 			return;
@@ -59,7 +58,7 @@ public:
 	override void UpdatePixelData(ubyte[] data) {
 		Bind();
 		if (image !is null) image.SetPixels(data);
-		glTexSubImage2D(TextureType.Tex2D, 0, 0, 0, image.Width, image.Height, GL_RGBA, GL_UNSIGNED_BYTE, data.ptr);
+		glTexSubImage2D(TextureType.Tex2D, 0, 0, 0, image.Width, image.Height, mode, GL_UNSIGNED_BYTE, data.ptr);
 		Unbind();
 	}
 

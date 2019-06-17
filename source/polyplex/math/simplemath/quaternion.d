@@ -1,6 +1,7 @@
 module polyplex.math.simplemath.quaternion;
 import polyplex.math.simplemath.matrix4x4;
 import polyplex.math.simplemath.vectors;
+import polyplex.math : Mathf;
 
 public struct Quaternion {
 	private float[4] data;
