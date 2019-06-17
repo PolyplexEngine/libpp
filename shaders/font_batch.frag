@@ -8,6 +8,6 @@ in vec2 exTexcoord;
 out vec4 outColor;
 
 void main(void) {
-	vec4 tex_col = vec4(1.0, 1.0, 1.0, texture2D(ppTexture, exTexcoord).r);
-	outColor = exColor * tex_col;
+	vec4 tex_col = vec4(exColor.r, exColor.g, exColor.b, texture2D(ppTexture, exTexcoord).r);
+	outColor = tex_col;
 }

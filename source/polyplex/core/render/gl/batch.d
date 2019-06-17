@@ -7,6 +7,7 @@ import polyplex.core.render.gl.renderbuf;
 import polyplex.core.render.camera;
 import polyplex.core.content.textures;
 import polyplex.core.content.gl.textures;
+import polyplex.core.content.font;
 import polyplex.core.color;
 import bindbc.opengl;
 import bindbc.opengl.gl;
@@ -49,6 +50,7 @@ private:
 	int queued;
 	bool hasBegun;
 	bool swap;
+	bool renderingFont;
 
 	bool isRenderbuffer;
 
@@ -173,7 +175,7 @@ private:
 		this.elementArray[queued][offset].color = Vector4(r, g, b, a);
 	}
 
-	void checkFlush(Texture[] textures) {
+	bool checkFlush(Texture[] textures) {
 
 		// Throw exception if texture isn't instantiated.
 		if (textures is null || textures.length == 0) throw new Exception(ErrorNullTexture);
@@ -182,7 +184,9 @@ private:
 		if (currentTextures != textures || queued+1 >= elementArray.length) {
 			if (currentTextures !is null || textures.length > 0) Flush();
 			currentTextures = textures;
+			return true;
 		}
+		return false;
 	}
 
 	void render() {
@@ -218,6 +222,9 @@ private:
 		}
 		setSamplerState(sampleMode);
 		setBlendState(blendMode);
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		shader.SetUniform(shader.GetUniform(UniformProjectionName), MultMatrices);
 
 		GL.DrawArrays(GL.Triangles, 0, queued*6);
@@ -419,6 +426,11 @@ public:
 	override void Draw(Texture2D texture, Rectangle pos, Rectangle cutout, float rotation, Vector2 origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f) {
 		isRenderbuffer = false;
 		checkFlush([(cast(GlTexture2D)texture).GLTexture]);
+
+		if (renderingFont) {
+			if (this.shader == defaultShaderFont) this.shader = defaultShader;
+			renderingFont = false;
+		}
 		draw(texture.Width, texture.Height, pos, cutout, rotation, origin, color, flip, zlayer);
 	}
 
@@ -430,6 +442,48 @@ public:
 		isRenderbuffer = true;
 		checkFlush((cast(GlFramebufferImpl)buffer.Implementation).OutTextures);
 		draw(buffer.Width, buffer.Height, pos, cutout, rotation, origin, color, flip, zlayer);
+	}
+
+	override void DrawString(SpriteFont font, string text, Vector2 position, Color color, float rotation = 0f, Vector2 origin = Vector2(0f, 0f), float zlayer = 0f) {
+		isRenderbuffer = false;
+
+		// Support custom font shaders.
+		checkFlush([(cast(GlTexture2DImpl!(GL_RED, 1))font.getTexture()).GLTexture]);
+
+		if (!renderingFont) {
+			if (this.shader == defaultShader) this.shader = defaultShaderFont;
+			renderingFont = true;
+		}
+		
+		// Measure the tallest height (used for rendering)
+		Vector2 measured = font.MeasureString(text);
+
+		Texture2D tex = font.getTexture();
+
+		int posX = cast(int)position.X;
+
+		Rectangle clipRectangle = new Rectangle(0, 0);
+		foreach(char c; text) {
+			auto info = font[c];
+			if (info is null) continue;
+
+			Rectangle currentRectangle = new Rectangle(
+				posX + cast(int)info.bearing.x, 
+				cast(int)(position.Y-info.size.y) + cast(int)(info.size.y - info.bearing.y)+cast(int)measured.Y,
+				cast(int)info.size.x, 
+				cast(int)info.size.y);
+
+			clipRectangle.X = cast(int)info.origin.x;
+			clipRectangle.Y = cast(int)info.origin.y;
+			clipRectangle.Width = cast(int)info.size.x;
+			clipRectangle.Height = cast(int)info.size.y;
+
+			draw(tex.Width, tex.Height, currentRectangle, clipRectangle, rotation, origin, color, SpriteFlip.None, zlayer);
+
+			// Bitshift 6 times to get value in pixels
+			posX += (info.advance.x >> 6);
+		}
+		Flush();
 	}
 	
 	override void Flush() {

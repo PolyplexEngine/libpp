@@ -171,6 +171,7 @@ public:
 	abstract void Draw(Framebuffer texture, Rectangle pos, Rectangle cutout, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f);
 	abstract void Draw(Framebuffer texture, Rectangle pos, Rectangle cutout, float rotation, Vector2 origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f);
 	abstract void Draw(Texture2D texture, Rectangle pos, Rectangle cutout, float rotation, Vector2 origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f);
+	abstract void DrawString(SpriteFont font, string text, Vector2 position, Color color, float rotation = 0f, Vector2 origin = Vector2(0f, 0f), float zlayer = 0f);
 	abstract void Flush();
 	abstract void SwapChain();
 	abstract void End();
