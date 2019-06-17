@@ -444,7 +444,7 @@ public:
 		draw(buffer.Width, buffer.Height, pos, cutout, rotation, origin, color, flip, zlayer);
 	}
 
-	override void DrawString(SpriteFont font, string text, Vector2 position, Color color, float rotation = 0f, Vector2 origin = Vector2(0f, 0f), float zlayer = 0f) {
+	override void DrawString(SpriteFont font, string text, Vector2 position, Color color, float scale = 1f, float zlayer = 0f) {
 		isRenderbuffer = false;
 
 		// Support custom font shaders.
@@ -454,34 +454,36 @@ public:
 			if (this.shader == defaultShader) this.shader = defaultShaderFont;
 			renderingFont = true;
 		}
-		
+
 		// Measure the tallest height (used for rendering)
 		Vector2 measured = font.MeasureString(text);
 
 		Texture2D tex = font.getTexture();
 
-		int posX = cast(int)position.X;
+		int x = 0;
 
 		Rectangle clipRectangle = new Rectangle(0, 0);
 		foreach(char c; text) {
 			auto info = font[c];
 			if (info is null) continue;
-
+			
+			int posX = cast(int)((position.X+x) + info.bearing.x * scale);
+			int posY = cast(int)(((position.Y-info.size.y) + cast(int)(info.size.y - info.bearing.y)+cast(int)measured.Y)*scale);
 			Rectangle currentRectangle = new Rectangle(
-				posX + cast(int)info.bearing.x, 
-				cast(int)(position.Y-info.size.y) + cast(int)(info.size.y - info.bearing.y)+cast(int)measured.Y,
-				cast(int)info.size.x, 
-				cast(int)info.size.y);
+				posX, 
+				posY,
+				cast(int)(info.size.x*scale), 
+				cast(int)(info.size.y*scale));
 
 			clipRectangle.X = cast(int)info.origin.x;
 			clipRectangle.Y = cast(int)info.origin.y;
 			clipRectangle.Width = cast(int)info.size.x;
 			clipRectangle.Height = cast(int)info.size.y;
 
-			draw(tex.Width, tex.Height, currentRectangle, clipRectangle, rotation, origin, color, SpriteFlip.None, zlayer);
+			draw(tex.Width, tex.Height, currentRectangle, clipRectangle, 0f, Vector2(0, 0), color, SpriteFlip.None, zlayer);
 
 			// Bitshift 6 times to get value in pixels
-			posX += (info.advance.x >> 6);
+			x += cast(int)((info.advance.x >> 6) * scale);
 		}
 		Flush();
 	}
