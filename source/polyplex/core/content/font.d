@@ -7,14 +7,14 @@ import polyplex.math;
 
 public class SpriteFont {
 private:
-	GlTexture2D!(GL_RED, 1) texture;
+	GlTexture2DImpl!(GL_RED, 1) texture;
 	TypeFace typeface;
 
 public:
 	this(TypeFace typeface) {
 		this.typeface = typeface;
 		PSize size = typeface.getAtlasSize();
-		this.texture = new GlTexture2D!(GL_RED, 1)(new TextureImg(cast(int)size.width, cast(int)size.height, typeface.getTexture()));
+		this.texture = new GlTexture2DImpl!(GL_RED, 1)(new TextureImg(cast(int)size.width, cast(int)size.height, typeface.getTexture()));
 	}
 
 	Texture2D getTexture() {

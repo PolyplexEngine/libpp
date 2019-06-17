@@ -5,10 +5,8 @@ import std.conv;
 
 // TODO: Redo implementation
 public struct Matrix4x4 {
-	union {
-		float[4][4] data;
-		float* ptr;
-	}
+	float[4][4] data;
+	
 
 	this(float[4][4] data) {
 		this.data = data;
@@ -278,4 +276,9 @@ public struct Matrix4x4 {
 		}
 		return dim ~ "\n]";
 	}
+
+	/**
+		Pointer to the underlying array data.
+	*/
+	public float* ptr() return { return data[0].ptr; }
 }
