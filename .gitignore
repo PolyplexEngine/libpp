@@ -26,3 +26,5 @@ docs/
 
 lib/
 pp-test-library
+
+dub.selections.json

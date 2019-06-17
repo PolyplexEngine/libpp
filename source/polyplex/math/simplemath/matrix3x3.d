@@ -1,6 +1,6 @@
 module polyplex.math.simplemath.matrix3x3;
 
-public struct Matrix3x3 {
+public class Matrix3x3 {
 	private float[3][3] data;
 
 	/**

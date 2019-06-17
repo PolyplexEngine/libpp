@@ -418,7 +418,7 @@ public:
 
 	override void Draw(Texture2D texture, Rectangle pos, Rectangle cutout, float rotation, Vector2 origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f) {
 		isRenderbuffer = false;
-		checkFlush([(cast(GlTexture2D!(GL_BRGA, 4))texture).GLTexture]);
+		checkFlush([(cast(GlTexture2D!(GL_BGRA, 4))texture).GLTexture]);
 		draw(texture.Width, texture.Height, pos, cutout, rotation, origin, color, flip, zlayer);
 	}
 

@@ -1,6 +1,6 @@
 module polyplex.math.simplemath.matrix2x2;
 
-public struct Matrix2x2 {
+public class Matrix2x2 {
 	private float[2][2] data;
 
 	/**

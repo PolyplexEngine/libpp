@@ -3,7 +3,6 @@ public import polyplex.core.render.camera;
 public import polyplex.core.render.shapes;
 
 import polyplex.core.render.gl;
-import polyplex.core.render.simplefont;
 import polyplex.core.content;
 import polyplex.core.color;
 import polyplex.core.content;
@@ -172,7 +171,6 @@ public:
 	abstract void Draw(Framebuffer texture, Rectangle pos, Rectangle cutout, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f);
 	abstract void Draw(Framebuffer texture, Rectangle pos, Rectangle cutout, float rotation, Vector2 origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f);
 	abstract void Draw(Texture2D texture, Rectangle pos, Rectangle cutout, float rotation, Vector2 origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f);
-	abstract void DrawAABB(Texture2D texture, Rectangle pos_top, Rectangle pos_bottom, Rectangle cutout, Vector2 Origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f);
 	abstract void Flush();
 	abstract void SwapChain();
 	abstract void End();
