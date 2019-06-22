@@ -64,6 +64,6 @@ public:
 	}
 
 	Rectangle Expand(int x, int y) {
-		return new Rectangle(this.X-x, this.Y-y, this.Width+x, this.Height+y);
+		return new Rectangle(this.X-x, this.Y-y, this.Width+(x*2), this.Height+(y*2));
 	}
 }
