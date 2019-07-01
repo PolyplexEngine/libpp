@@ -31,11 +31,7 @@ subPackage {
 	sourcePaths "modules/pp-derelict-util/source"
 	importPaths "modules/pp-derelict-util/source"
 }
-subPackage {
-	name "openal"
-	sourcePaths "modules/openal/source"
-	importPaths "modules/openal/source"
-}
+subPackage "./modules/openal"
 subPackage {
 	name "derelict-vulkan"
 	description "A dynamic binding to the vulkan api."
