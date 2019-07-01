@@ -33,7 +33,6 @@ subPackage {
 }
 subPackage {
 	name "openal"
-	dependency "bindbc-loader" version="~>0.1.1"
 	sourcePaths "modules/openal/source"
 	importPaths "modules/openal/source"
 }
