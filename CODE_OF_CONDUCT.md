@@ -1,4 +1,4 @@
-# Polyplex Covenant Code of Conduct
+# Polyplex Code of Conduct
 
 ## Our Pledge
 
