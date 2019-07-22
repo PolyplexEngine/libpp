@@ -1,31 +1,76 @@
 # Polyplex Code of Conduct
 
-## Summary
-This Code of Conduct is based of [GNOME's Code of Conduct](https://wiki.gnome.org/action/show/Foundation/CodeOfConduct).
+## Our Pledge
 
-This document specifices what we see as ideal behaviour.
-Only the Polyplex Discord server strictly follows these principles, but following them elsewhere would be very appriciated.
+In the interest of fostering an open and welcoming environment, we as
+contributors and maintainers pledge to making participation in our project and
+our community a harassment-free experience for everyone, regardless of age, body
+size, disability, ethnicity, sex characteristics, gender identity and expression,
+level of experience, education, socio-economic status, nationality, personal
+appearance, race, religion, or sexual identity and orientation.
 
-## Advice
-* Be respectful and considerate:
+## Our Standards
 
-	Disagreement is no excuse for poor behaviour or personal attacks. Remember that a community where people feel uncomfortable is not a productive one.
+Examples of behavior that contributes to creating a positive environment
+include:
 
-* Be patient and generous:
+* Using welcoming and inclusive language
+* Being respectful of differing viewpoints and experiences
+* Gracefully accepting constructive criticism
+* Focusing on what is best for the community
+* Showing empathy towards other community members
 
-	If someone asks for help it is because they need it. Do politely suggest specific documentation or more appropriate venues where appropriate, but avoid aggressive or vague responses like "RTFM".
+Examples of unacceptable behavior by participants include:
 
-* Assume people mean well:
+* The use of sexualized language or imagery and unwelcome sexual attention or
+  advances
+* Trolling, insulting/derogatory comments, and personal or political attacks
+* Public or private harassment
+* Publishing others' private information, such as a physical or electronic
+  address, without explicit permission
+* Other conduct which could reasonably be considered inappropriate in a
+  professional setting
 
-	Remember that decisions are often a difficult choice between competing priorities. If you disagree, please do so politely. If something seems outrageous, check that you did not misinterpret it. Ask for clarification, but do not assume the worst.
+## Our Responsibilities
 
-* Try to be concise:
+Project maintainers are responsible for clarifying the standards of acceptable
+behavior and are expected to take appropriate and fair corrective action in
+response to any instances of unacceptable behavior.
 
-	Avoid repeating what has been said already. Making a conversation larger makes it difficult to follow, and people often feel personally attacked if they receive multiple messages telling them to do the same thing.
+Project maintainers have the right and responsibility to remove, edit, or
+reject comments, commits, code, wiki edits, issues, and other contributions
+that are not aligned to this Code of Conduct, or to ban temporarily or
+permanently any contributor for other behaviors that they deem inappropriate,
+threatening, offensive, or harmful.
 
-* Avoid political discussion:
+## Scope
 
-	The pages associated with this project (be it mailing lists, issues, forums, etc.) are for discussing the project. Please keep politics off those pages, arguing over politics is not productive.
+This Code of Conduct applies within all project spaces, and it also applies when
+an individual is representing the project or its community in public spaces.
+Examples of representing a project or community include using an official
+project e-mail address, posting via an official social media account, or acting
+as an appointed representative at an online or offline event. Representation of
+a project may be further defined and clarified by project maintainers.
 
-## This applies to
-All projects in the [PolyplexEngine](https://git.pplex.org/Polyplex) organization, aswell the github mirror.
+## Enforcement
+
+Instances of abusive, harassing, or otherwise unacceptable behavior may be
+reported by contacting the project team at [INSERT EMAIL ADDRESS]. All
+complaints will be reviewed and investigated and will result in a response that
+is deemed necessary and appropriate to the circumstances. The project team is
+obligated to maintain confidentiality with regard to the reporter of an incident.
+Further details of specific enforcement policies may be posted separately.
+
+Project maintainers who do not follow or enforce the Code of Conduct in good
+faith may face temporary or permanent repercussions as determined by other
+members of the project's leadership.
+
+## Attribution
+
+This Code of Conduct is adapted from the [Contributor Covenant][homepage], version 1.4,
+available at https://www.contributor-covenant.org/version/1/4/code-of-conduct.html
+
+[homepage]: https://www.contributor-covenant.org
+
+For answers to common questions about this code of conduct, see
+https://www.contributor-covenant.org/faq
