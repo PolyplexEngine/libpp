@@ -283,10 +283,9 @@ public:
 
 	public void End() {
 		import polyplex.core.audio.music;
-		shouldStop = true;
 
-		Logger.Info("Cleaning up music threads... {0}", openMusicChannels);
-		while (openMusicChannels > 0) {}
+		// Stop music thread(s) and wait...
+		stopMusicThread();
 
 		Logger.Info("Cleaning up resources...");
 		UnloadContent();

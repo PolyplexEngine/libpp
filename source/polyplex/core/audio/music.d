@@ -16,6 +16,13 @@ import core.sync.mutex;
 protected 	__gshared bool shouldStop;
 protected 	__gshared int openMusicChannels;
 
+package(polyplex) void stopMusicThread() {
+	shouldStop = true;
+
+	Logger.Info("Cleaning up music threads... {0}", openMusicChannels);
+	while (openMusicChannels > 0) {}
+}
+
 private void iHandlerLaunch() {
 	synchronized {
 		openMusicChannels++;
