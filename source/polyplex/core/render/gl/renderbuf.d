@@ -1,18 +1,21 @@
 module polyplex.core.render.gl.renderbuf;
 import core = polyplex.core.render;
 import polyplex.core.render.gl.gloo;
+import polyplex.core.render.gl.gloo : RBO = Renderbuffer, FBO = Framebuffer;
 
 enum Attachment {
     Color=GL_COLOR_ATTACHMENT0,
     Depth=GL_DEPTH_ATTACHMENT
 }
 
-public class GlFramebufferImpl : core.FramebufferImpl {
+public class Framebuffer {
 private:
-    Framebuffer     fbo;
-    Renderbuffer    rbo;
+    int             width;
+    int             height;
+    FBO             fbo;
+    RBO             rbo;
     Texture[]       renderTextures;
-    GLenum[] drawBufs;
+    GLenum[]        drawBufs;
 
     void bufferTexture() {
         fbo.Bind();
@@ -43,18 +46,20 @@ private:
     }
 
 public:
-    override @property int Width() {
+    @property int Width() {
         return width;
     }
 
-    override @property int Height() {
+    @property int Height() {
         return height;
     }
 
     this(int width, int height, int colorAttachments = 1) {
-        super(width, height, colorAttachments);
-        fbo = new Framebuffer();
-        rbo = new Renderbuffer();
+        this.width = width;
+        this.height = height;
+
+        fbo = new FBO();
+        rbo = new RBO();
 
         int colors = 0;
         foreach(i; 0..colorAttachments) {
@@ -77,7 +82,7 @@ public:
         return renderTextures;
     }
 
-    override void Resize(int width, int height, int colorAttachments = 1) {
+    void Resize(int width, int height, int colorAttachments = 1) {
         destroy(rbo);
         destroy(fbo);
         destroy(renderTextures);
@@ -86,8 +91,8 @@ public:
         this.width = width;
         this.height = height;
 
-        fbo = new Framebuffer();
-        rbo = new Renderbuffer();
+        fbo = new FBO();
+        rbo = new RBO();
 
         // TODO: Optimize this.
         renderTextures = new Texture[colorAttachments];
@@ -106,7 +111,7 @@ public:
         fbo.Unbind();
     }
 
-    override void Begin() {
+    void Begin() {
         //destroy(rbo);
         //destroy(to);
         //to  = new Texture();

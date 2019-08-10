@@ -208,7 +208,6 @@ public class SDLGameWindow : Window {
     override void Show() {
 		Logger.Debug("Spawning window...");
 		this.window = SDL_CreateWindow(this.start_title.toStringz, this.start_bounds.X, this.start_bounds.Y, this.start_bounds.Width, this.start_bounds.Height, SDL_WINDOW_OPENGL);
-		Renderer.AssignRenderer(this);
 		if (this.window == null) {
 			destroy(this.window);
 			Logger.Fatal("Window creation error: {0}", SDL_GetError());

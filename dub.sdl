@@ -24,7 +24,7 @@ dependency "bindbc-sdl" version="~>0.10.1"
 // Backend functionality stuff
 dependency "colorize" version="~>1.0.5"
 dependency "sharpevents" version="~>1.0.0"
-dependency "ppc" version="~>0.2.5"
+dependency "ppc" version="0.2.6"
 
 // Audio stuff
 dependency "pp:openal" version="*"

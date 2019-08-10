@@ -7,7 +7,7 @@ import polyplex.utils.logging;
 import std.conv;
 
 
-class GLShader : Shader {
+class Shader {
 	private GLuint shaderprogram;
 	private GLuint vertexshader = 0;
 	private GLuint fragmentshader = 0;
@@ -49,7 +49,7 @@ class GLShader : Shader {
 	/**
 		Gets whenever this shader is attached.
 	*/
-	public override @property bool Attached() {
+	public @property bool Attached() {
 		int i;
 		glGetIntegerv(GL_CURRENT_PROGRAM, &i);
 		if (i == shaderprogram) return true;
@@ -57,22 +57,22 @@ class GLShader : Shader {
 	}
 
 	//Uniform stuff.
-	public override void SetUniform(int location, float value) { if (!Attached) Attach(); glUniform1f(cast(GLint)location, cast(GLfloat)value); }
-	public override void SetUniform(int location, Vector2 value) { if (!Attached) Attach(); glUniform2f(cast(GLint)location, cast(GLfloat)value.X, cast(GLfloat)value.Y); }
-	public override void SetUniform(int location, Vector3 value) { if (!Attached) Attach(); glUniform3f(cast(GLint)location, cast(GLfloat)value.X, cast(GLfloat)value.Y, cast(GLfloat)value.Z); }
-	public override void SetUniform(int location, Vector4 value) { if (!Attached) Attach(); glUniform4f(cast(GLint)location, cast(GLfloat)value.X, cast(GLfloat)value.Y, cast(GLfloat)value.Z, cast(GLfloat)value.W); }
-	public override void SetUniform(int location, int value) { if (!Attached) Attach(); glUniform1i(cast(GLint)location, cast(GLint)value); }
-	public override void SetUniform(int location, Vector2i value) { if (!Attached) Attach(); glUniform2i(cast(GLint)location, cast(GLint)value.X, cast(GLint)value.Y); }
-	public override void SetUniform(int location, Vector3i value) { if (!Attached) Attach(); glUniform3i(cast(GLint)location, cast(GLint)value.X, cast(GLint)value.Y, cast(GLint)value.Z); }
-	public override void SetUniform(int location, Vector4i value) { if (!Attached) Attach(); glUniform4i(cast(GLint)location, cast(GLint)value.X, cast(GLint)value.Y, cast(GLint)value.Z, cast(GLint)value.W); }
-	public override void SetUniform(int location, Matrix2x2 value) { if (!Attached) Attach(); glUniformMatrix2fv(location, 1, GL_TRUE, value.ptr); }
-	public override void SetUniform(int location, Matrix3x3 value) { if (!Attached) Attach(); glUniformMatrix3fv(location, 1, GL_TRUE, value.ptr); }
-	public override void SetUniform(int location, Matrix4x4 value) { if (!Attached) Attach(); glUniformMatrix4fv(location, 1, GL_TRUE, value.ptr); }
+	public void SetUniform(int location, float value) { if (!Attached) Attach(); glUniform1f(cast(GLint)location, cast(GLfloat)value); }
+	public void SetUniform(int location, Vector2 value) { if (!Attached) Attach(); glUniform2f(cast(GLint)location, cast(GLfloat)value.X, cast(GLfloat)value.Y); }
+	public void SetUniform(int location, Vector3 value) { if (!Attached) Attach(); glUniform3f(cast(GLint)location, cast(GLfloat)value.X, cast(GLfloat)value.Y, cast(GLfloat)value.Z); }
+	public void SetUniform(int location, Vector4 value) { if (!Attached) Attach(); glUniform4f(cast(GLint)location, cast(GLfloat)value.X, cast(GLfloat)value.Y, cast(GLfloat)value.Z, cast(GLfloat)value.W); }
+	public void SetUniform(int location, int value) { if (!Attached) Attach(); glUniform1i(cast(GLint)location, cast(GLint)value); }
+	public void SetUniform(int location, Vector2i value) { if (!Attached) Attach(); glUniform2i(cast(GLint)location, cast(GLint)value.X, cast(GLint)value.Y); }
+	public void SetUniform(int location, Vector3i value) { if (!Attached) Attach(); glUniform3i(cast(GLint)location, cast(GLint)value.X, cast(GLint)value.Y, cast(GLint)value.Z); }
+	public void SetUniform(int location, Vector4i value) { if (!Attached) Attach(); glUniform4i(cast(GLint)location, cast(GLint)value.X, cast(GLint)value.Y, cast(GLint)value.Z, cast(GLint)value.W); }
+	public void SetUniform(int location, Matrix2x2 value) { if (!Attached) Attach(); glUniformMatrix2fv(location, 1, GL_TRUE, value.ptr); }
+	public void SetUniform(int location, Matrix3x3 value) { if (!Attached) Attach(); glUniformMatrix3fv(location, 1, GL_TRUE, value.ptr); }
+	public void SetUniform(int location, Matrix4x4 value) { if (!Attached) Attach(); glUniformMatrix4fv(location, 1, GL_TRUE, value.ptr); }
 
 	/**
 		GetUniform gets the position of a uniform.
 	*/
-	public override int GetUniform(string name) {
+	public int GetUniform(string name) {
 		import std.string;
 		return glGetUniformLocation(shaderprogram, name.toStringz);
 	}
@@ -81,7 +81,7 @@ class GLShader : Shader {
 		HasUniform checks whenever the shader contains a unform with name "name"
 		Returns true if it exists, false otherwise.
 	*/
-	public override bool HasUniform(string name) {
+	public bool HasUniform(string name) {
 		auto u = GetUniform(name);
 		if (u == -1) return false;
 		return true;
@@ -90,14 +90,14 @@ class GLShader : Shader {
 	/**
 		Attach attaches the shader.
 	*/
-	public override void Attach() {
+	public void Attach() {
 		glUseProgram(this.shaderprogram);
 	}
 
 	/**
 		Detatch detatches the shader. (Binds shader 0)
 	*/
-	public override void Detach() {
+	public void Detach() {
 		glUseProgram(0);
 	}
 

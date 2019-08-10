@@ -1,11 +1,11 @@
-module polyplex.math.simplemath;
+module polyplex.math.linear;
 
-public import polyplex.math.simplemath.vectors;
-public import polyplex.math.simplemath.matrix2x2;
-public import polyplex.math.simplemath.matrix3x3;
-public import polyplex.math.simplemath.matrix4x4;
-public import polyplex.math.simplemath.quaternion;
-public import polyplex.math.simplemath.transform;
+public import polyplex.math.linear.vectors;
+public import polyplex.math.linear.matrix2x2;
+public import polyplex.math.linear.matrix3x3;
+public import polyplex.math.linear.matrix4x4;
+public import polyplex.math.linear.quaternion;
+public import polyplex.math.linear.transform;
 
 // Unit tests
 unittest {

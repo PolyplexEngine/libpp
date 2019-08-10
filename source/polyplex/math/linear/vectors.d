@@ -1,8 +1,7 @@
-module polyplex.math.simplemath.vectors;
+module polyplex.math.linear.vectors;
 import polyplex.utils.strutils;
 import std.math, std.traits, std.string;
-import polyplex.math.simplemath;
-static import Mathf = polyplex.math.mathf;
+import polyplex.math;
 
 /**
 	A 2 dimensional vector.

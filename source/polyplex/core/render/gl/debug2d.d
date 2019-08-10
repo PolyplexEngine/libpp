@@ -17,8 +17,8 @@ private struct DebugVertexLayout {
 	Vector4 ppColor;
 }
 
-public class GlDebugging2D {
-	private static GLShader shader;
+public class Debugging2D {
+	private static Shader shader;
 	private static Camera2D cm;
 
 	private static VertexBuffer!(DebugVertexLayout, Layout.Interleaved) buff;
@@ -29,7 +29,7 @@ public class GlDebugging2D {
 	*/
 	public static void PrepDebugging() {
 		buff = VertexBuffer!(DebugVertexLayout, Layout.Interleaved)([]);
-		shader = new GLShader(new ShaderCode(import("debug.vert"), import("debug.frag")));
+		shader = new Shader(new ShaderCode(import("debug.vert"), import("debug.frag")));
 		matr_indx = shader.GetUniform("ppProjection");
 		cm = new Camera2D(Vector2(0, 0));
 		cm.Update();

@@ -97,7 +97,17 @@ public:
         TriangleFan                 = GL_TRIANGLE_FAN,
         Triangles                   = GL_TRIANGLES,
         TriangleStripAdjacency      = GL_TRIANGLE_STRIP_ADJACENCY,
-        TrianglesAdjacency          = GL_TRIANGLES_ADJACENCY
+        TrianglesAdjacency          = GL_TRIANGLES_ADJACENCY,
+
+        // Blending Operations
+        SourceColor                 = GL_SRC_COLOR,
+        SourceAlpha                 = GL_SRC_ALPHA,
+        DestinationColor            = GL_DST_COLOR,
+        DestinationAlpha            = GL_DST_ALPHA,
+        One                         = GL_ONE,
+        OneMinusSourceColor         = GL_ONE_MINUS_SRC_COLOR,
+        OneMinusSourceAlpha         = GL_ONE_MINUS_SRC_ALPHA,
+        Zero                        = GL_ZERO,
         
     }
 
@@ -214,6 +224,10 @@ static:
 
     void DepthFunc(GLenum mode) {
         glDepthFunc(mode);
+    }
+
+    void BlendFunc(GLenum logicOpA, GLenum logicOpB) {
+        glBlendFunc(logicOpA, logicOpB);
     }
 
     /*

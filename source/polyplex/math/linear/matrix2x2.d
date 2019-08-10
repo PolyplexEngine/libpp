@@ -1,7 +1,7 @@
-module polyplex.math.simplemath.matrix3x3;
+module polyplex.math.linear.matrix2x2;
 
-public class Matrix3x3 {
-	private float[3][3] data;
+public class Matrix2x2 {
+	private float[2][2] data;
 
 	/**
 		Pointer to the underlying array data.

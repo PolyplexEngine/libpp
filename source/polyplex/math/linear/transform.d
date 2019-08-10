@@ -1,8 +1,5 @@
-module polyplex.math.simplemath.transform;
-import polyplex.math.simplemath.matrix4x4;
-import polyplex.math.simplemath.vectors;
-import polyplex.math.simplemath.quaternion;
-import polyplex.math : Mathf;
+module polyplex.math.linear.transform;
+import polyplex.math;
 
 public class Transform {
 	public Transform Parent;

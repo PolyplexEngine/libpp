@@ -3,6 +3,7 @@ public import polyplex.core.render.gl.batch;
 public import polyplex.core.render.gl.debug2d;
 public import polyplex.core.render.gl.renderbuf;
 import polyplex.core.render;
+import polyplex.core.render.gl.gloo;
 static import win = polyplex.core.window;
 import polyplex.core.color;
 import polyplex.utils;
@@ -19,20 +20,30 @@ public import polyplex.core.render.gl.shader;
 
 // TODO: Remove SDL dependency from this.
 
-public class GlRenderer : BackendRenderer {
+public class Renderer {
+static:
+private:
+	win.Window window;
+	Rectangle scissorRect;
 
-	private Rectangle scissorRect;
+package(polyplex):
+	void setWindow(win.Window parent) {
+		this.window = parent;
+	}
 
-	this(win.Window parent) { super(parent); }
+public:
+	win.Window Window() {
+		return window;
+	}
 
-	public override void Init() {
+	void Init() {
 		// Create the neccesary rendering backend.
 		Window.CreateContext(GraphicsBackend.OpenGL);
 		
 		loadOpenGL();
 
-		GlSpriteBatch.InitializeSpritebatch();
-		GlDebugging2D.PrepDebugging();
+		SpriteBatch.InitializeSpritebatch();
+		Debugging2D.PrepDebugging();
 		
 		//Default settings for sprite clamping and wrapping
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -41,8 +52,8 @@ public class GlRenderer : BackendRenderer {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 		Logger.Info("OpenGL version: {0}", to!string(glGetString(GL_VERSION)));
-		glEnable (GL_BLEND);
-		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		GL.Enable (Capability.Blending);
+		GL.BlendFunc (GL.SourceAlpha, GL.OneMinusSourceAlpha);
 		
 		// TODO: reimplement this.
 		//Crash if system has unsupported opengl version.
@@ -50,11 +61,11 @@ public class GlRenderer : BackendRenderer {
 		Logger.Info("OpenGL initialized...");
 	}
 	
-	public override @property Rectangle ScissorRectangle() {
+	@property Rectangle ScissorRectangle() {
 		return scissorRect;
 	}
 
-	public override @property void ScissorRectangle(Rectangle rect) {
+	@property void ScissorRectangle(Rectangle rect) {
 		scissorRect = rect;
 		glScissor(
 			scissorRect.X, 
@@ -63,33 +74,29 @@ public class GlRenderer : BackendRenderer {
 			scissorRect.Height);
 	}
 
-	public override @property VSyncState VSync() {
+	@property VSyncState VSync() {
 		return Window.VSync;
 	}
 
-	public override @property void VSync(VSyncState state) {
+	@property void VSync(VSyncState state) {
 		Window.VSync = state;
 	}
 
-	public override void AdjustViewport() {
+	void AdjustViewport() {
 		glViewport(0, 0, Window.ClientBounds.Width, Window.ClientBounds.Height);
 	}
 
-	public override void ClearColor(Color color) {
+	void ClearColor(Color color) {
 		glClearColor(color.Rf, color.Gf, color.Bf, color.Af);
 		glClear(GL_COLOR_BUFFER_BIT);
 		ClearDepth();
 	}
 
-	public override void ClearDepth() {
+	void ClearDepth() {
 		glClear(GL_DEPTH_BUFFER_BIT);
 	}
 
-	public override void SwapBuffers() {
+	void SwapBuffers() {
 		Window.SwapBuffers();
-	}
-
-	public override Shader CreateShader(ShaderCode code) {
-		return new GLShader(code);
 	}
 }

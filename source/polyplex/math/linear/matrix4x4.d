@@ -1,5 +1,5 @@
-module polyplex.math.simplemath.matrix4x4;
-import polyplex.math.simplemath;
+module polyplex.math.linear.matrix4x4;
+import polyplex.math.linear;
 import polyplex.math;
 import std.conv;
 
