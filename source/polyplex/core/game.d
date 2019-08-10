@@ -24,7 +24,7 @@ import std.conv;
 
 import core.memory;
 
-public class GameTime {
+class GameTimeSpan {
 	private ulong ticks;
 
 	public @property ulong BaseValue() { return ticks; }
@@ -40,35 +40,35 @@ public class GameTime {
 	public @property double Minutes() { return Seconds/60; }
 	public @property double Hours() { return Minutes/60; }
 
-	public static GameTime FromSeconds(ulong seconds) {
-		return new GameTime(seconds*1000);
+	public static GameTimeSpan FromSeconds(ulong seconds) {
+		return new GameTimeSpan(seconds*1000);
 	}
 
-	public static GameTime FromMinutes(ulong minutes) {
+	public static GameTimeSpan FromMinutes(ulong minutes) {
 		return FromSeconds(minutes*60);
 	}
 
-	public static GameTime FromHours(ulong hours) {
+	public static GameTimeSpan FromHours(ulong hours) {
 		return FromMinutes(hours*60);
 	}
 
-	public GameTime opBinary(string op:"+")(GameTime other) {
-		return new GameTime(this.ticks+other.ticks);
+	public GameTimeSpan opBinary(string op:"+")(GameTimeSpan other) {
+		return new GameTimeSpan(this.ticks+other.ticks);
 	}
 
-	public GameTime opBinary(string op:"-")(GameTime other) {
-		return new GameTime(this.ticks-other.ticks);
+	public GameTimeSpan opBinary(string op:"-")(GameTimeSpan other) {
+		return new GameTimeSpan(this.ticks-other.ticks);
 	}
 
-	public GameTime opBinary(string op:"/")(GameTime other) {
-		return new GameTime(this.ticks/other.ticks);
+	public GameTimeSpan opBinary(string op:"/")(GameTimeSpan other) {
+		return new GameTimeSpan(this.ticks/other.ticks);
 	}
 
-	public GameTime opBinary(string op:"*")(GameTime other) {
-		return new GameTime(this.ticks*other.ticks);
+	public GameTimeSpan opBinary(string op:"*")(GameTimeSpan other) {
+		return new GameTimeSpan(this.ticks*other.ticks);
 	}
 
-	public float PercentageOf(GameTime other) {
+	public float PercentageOf(GameTimeSpan other) {
 		return cast(float)this.ticks/cast(float)other.ticks;
 	}
 
@@ -85,88 +85,137 @@ public class GameTime {
 	}
 }
 
-public class GameTimes {
-
-	this(GameTime total, GameTime delta) {
+class GameTime {
+public:
+	this(GameTimeSpan total, GameTimeSpan delta) {
 		TotalTime = total;
 		DeltaTime = delta;
 	}
 
-	public GameTime TotalTime;
-	public GameTime DeltaTime;
+	/**
+		The total time the game has been running
+	*/
+	GameTimeSpan TotalTime;
+
+	/**
+		The time between this and the last frame
+	*/
+	GameTimeSpan DeltaTime;
+
+private:
+	void updateDelta(ulong delta) {
+		DeltaTime.BaseValue = delta;
+	}
+	
+	void updateTotal(ulong total) {
+		TotalTime.BaseValue = total;
+	}
 }
 
-public abstract class Game {
+abstract class Game {
 private:
 	GameEventSystem events;
-	GameTimes times;
-	static uint MAX_SAMPLES = 100;
-	long[] samples;
-	ulong start_frames = 0;
-	ulong delta_frames = 0;
-	ulong last_frames = 0;
-	double avg_fps = 0;
-	bool enable_audio = true;
+	GameTime times;
+	ulong frameTimeStart = 0;
+	ulong frameTimeDelta = 0;
+	ulong frameTimeLast = 0;
+	bool enableAudio = true;
+
+    void doUpdate() {
+		Prepare();
+		while (!RunOne()) {
+		}
+	}
 
 protected:
 	//Private properties
 	win.Window window;
 	ContentManager Content;
-	SpriteBatch sprite_batch;
+	SpriteBatch spriteBatch;
 
 package:
 	void forceWindowChange(win.Window newWindow) {
 		this.window = newWindow;
 	}
 
-public:
+
+public abstract {
+	/**
+		Initialize core game variables and the like.
+		
+		Content can be loaded in LoadContent.
+	*/
+	void Init();
+	/**
+		Load game assets from disk, etc.
+	*/
+	void LoadContent();
+
+	/**
+		Unload game assets, etc.
+
+		Use D's `destroy(<*>);` function to unload content
+	*/
+	void UnloadContent();
+
+	/**
+		Run an update iteration
+	*/
+	void Update(GameTime game_time);
+
+	/**
+		Run a draw iteration
+	*/
+	void Draw(GameTime game_time);
+}
+
+public final:
 	/// Wether the engine should count FPS and frametimes.
-	public bool CountFPS = false;
+	bool CountFPS = false;
 
-	public Event OnWindowSizeChanged = new Event();
-	public @property GameTime TotalTime() { return times.TotalTime; }
-	public @property GameTime DeltaTime() { return times.DeltaTime; }
+	Event OnWindowSizeChanged = new Event();
 
-	public @property bool ShowCursor() {
+	/// How much time since game started
+	@property GameTimeSpan TotalTime() { return times.TotalTime; }
+
+	/// How much time since last frame
+	@property GameTimeSpan DeltaTime() { return times.DeltaTime; }
+
+	/// Wether the system cursor should be shown while inside the game window.
+	@property bool ShowCursor() {
 		return (SDL_ShowCursor(SDL_QUERY) == SDL_ENABLE);
 	}
 
-	public @property void ShowCursor(bool value) {
+	/// ditto.
+	@property void ShowCursor(bool value) {
 		SDL_ShowCursor(cast(int)value);
 	}
 
-	public @property bool AudioEnabled() {
+	/// Wether the audio backend is enabled.
+	@property bool AudioEnabled() {
 		return !(DefaultAudioDevice is null);
 	}
 
-	public @property void AudioEnabled(bool val) {
-		enable_audio = val;
+	/// ditto.
+	@property void AudioEnabled(bool val) {
+		enableAudio = val;
 		if (val == true) DefaultAudioDevice = new AudioDevice();
 		else DefaultAudioDevice = null;
 	}
 
-	public @property float FPS() {
-		if (delta_frames != 0) {
-			return 1000/delta_frames;
-		}
-		return 0f;
+	/// How many miliseconds since the last frame was drawn
+	@property ulong Frametime() {
+		return frameTimeDelta;
 	}
 
-	public @property int AverageFPS() {
-		if (avg_fps != 0) {
-			return cast(int)(1000/cast(double)avg_fps);
-		}
-		return 0;
-	}
+	/// The window the game is being rendered to
+	@property win.Window Window() { return window; }
 
-	public @property float Frametime() {
-		return delta_frames;
-	}
-
-	public @property win.Window Window() { return window; }
-
+	/**
+		Create a new game instance.
+	*/
 	this(bool audio = true, bool eventSystem = true) {
-		enable_audio = audio;
+		enableAudio = audio;
 		if (eventSystem) events = new GameEventSystem();
 	}
 
@@ -175,76 +224,71 @@ public:
 		destroy(window);
 	}
 
-	public void Run() {
+	/**
+		Start/run the game
+	*/
+	void Run() {
 		if (window is null) {
 			window = new SDLGameWindow(new Rectangle(0, 0, 0, 0), false);
 		}
 		InitLibraries();
 		window.Show();
+		Renderer.setWindow(window);
+		Renderer.Init();
 		
-		do_update();
+		doUpdate();
 		UnInitLibraries();
 	}
 
-	public void PollEvents() {
+	/**
+		Poll system events
+	*/
+	void PollEvents() {
 		events.Update();
 	}
 
-	/// Run a single iteration
-	public bool RunOne() {
+	
+	/**
+		Run a single frame of the game
+	*/
+	bool RunOne() {
 		//FPS begin counting.
-		start_frames = SDL_GetTicks();
-		times.TotalTime.BaseValue = start_frames;
+		frameTimeStart = SDL_GetTicks();
+		times.updateTotal(frameTimeStart);
 
+		//Update events.
 		if (events !is null) {
-			//Update events.
 			PPEvents.PumpEvents();
 
 			//Do actual updating and drawing.
 			events.Update();
 		}
 		
+		// Run user set update and draw functions
 		Update(times);
 		Draw(times);
 
 		// Exit the game if the window is closed.
 		if (!window.Visible) {
-			End();
+			Quit();
 			return true;
 		}
 
 		//Swap buffers and chain.
-		if (sprite_batch !is null) sprite_batch.SwapChain();
+		if (spriteBatch !is null) spriteBatch.SwapChain();
 		Renderer.SwapBuffers();
 
-		if (CountFPS) {
-			//FPS counter.
-			delta_frames = SDL_GetTicks() - start_frames;
-			times.DeltaTime.BaseValue = delta_frames;
-			last_frames = start_frames;
-
-			if (samples.length <= MAX_SAMPLES) {
-				samples.length++;
-			} else {
-				samples[0] = -1;
-				for (int i = 1; i < samples.length; i++) {
-					if (samples[i-1] == -1) {
-						samples[i-1] = samples[i];
-						samples[i] = -1;
-					}
-				}
-				samples[samples.length-1] = cast(long)delta_frames;
-			}
-			double t = 0;
-			foreach(ulong sample; samples) {
-				t += cast(double)sample;
-			}
-			t /= MAX_SAMPLES;
-			avg_fps = t;
-		}
+		// Update frametime delta
+		frameTimeDelta = SDL_GetTicks() - frameTimeStart;
+		times.updateDelta(frameTimeDelta);
+		frameTimeLast = frameTimeStart;
 		return false;
 	}
 
+
+	/**
+		Prepare the backend for use.
+	*/
 	void Prepare(bool waitForVisible = true) {
 		// Preupdate before init, just in case some event functions are use there.
 		if (events !is null) events.Update();
@@ -267,22 +311,25 @@ public:
 			};
 		}
 		
-		times = new GameTimes(new GameTime(0), new GameTime(0));
-		int avg_c = 0;
+		times = new GameTime(new GameTimeSpan(0), new GameTimeSpan(0));
 
 		// Init sprite batch
-		this.sprite_batch = Renderer.NewBatcher();
+		this.spriteBatch = new SpriteBatch();
 		this.Content = new ContentManager();
 
-		if (enable_audio) DefaultAudioDevice = new AudioDevice();
+		if (enableAudio) DefaultAudioDevice = new AudioDevice();
 		
 		Init();
 		LoadContent();
 		Logger.Debug("~~~ Gameloop ~~~");
 	}
-
-	public void End() {
+	
+	/**
+		Quits the game
+	*/
+	void Quit() {
 		import polyplex.core.audio.music;
+
 
 		// Stop music thread(s) and wait...
 		stopMusicThread();
@@ -298,22 +345,7 @@ public:
 		Logger.Success("Cleanup completed...");
 
 		Logger.Success("~~~ GAME ENDED ~~~");
-	}
-
-    private void do_update() {
-		Prepare();
-		while (!RunOne()) {
-		}
-	}
-
-	public void Quit() {
 		this.window.Close();
 	}
-
-	public abstract void Init();
-	public abstract void LoadContent();
-	public abstract void UnloadContent();
-	public abstract void Update(GameTimes game_time);
-	public abstract void Draw(GameTimes game_time);
 }
 
