@@ -41,6 +41,13 @@ configuration "OpenGL" {
 	versions "SDL_209" "GL_33" "GL_AllowDeprecated" "OpenGL"
 }
 
+configuration "OpenGL_ES" {
+	targetType "dynamicLibrary"
+
+	// We're targeting SDL 2.0.9, as well OpenGL 3.3 (w/ some depricated functions)
+	versions "SDL_209" "GL_33" "GL_AllowDeprecated" "OpenGL_ES"
+}
+
 configuration "Vulkan" {
 	targetType "dynamicLibrary"
 	versions "Vulkan" "SDL_209"

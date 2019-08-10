@@ -9,6 +9,10 @@ version(OpenGL) {
 	public import polyplex.core.render.gl;
 }
 
+version(OpenGL_ES) {
+	public import polyplex.core.render.gl;
+}
+
 version(Vulkan) {
 	public import polyplex.core.render.vk;
 }
