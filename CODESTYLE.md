@@ -1,3 +1,5 @@
+# NOTE: These will be rewritten soon
+
 # Coding Guidelines
 These code guidelines should be followed when developing for Polyplex, right now not all of polyplex adheres to this, but should do when 1.0 is ready.
 Please note that these guidelines are based of the MonoGame Guidelines, adapted for D and the Polyplex prefered codestyle. And it will be expanded on as time goes.
