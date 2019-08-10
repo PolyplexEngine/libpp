@@ -1,48 +1,47 @@
+/*
+		Basic Info
+*/
 name "pp"
 description "The base library of the polyplex engine. (Heavily WIP, non-idiomatic)"
 license "Boost"
-dependency "bindbc-opengl" version=">0.5.0"
-dependency "colorize" version="~>1.0.5"
-dependency "pp:openal" version="*"
-dependency "pp:derelict-vulkan" version="*"
-dependency "ppc" version="~>0.2.5"
-dependency "sharpevents" version="~>1.0.0"
-dependency "pp:derelict-util" version="*"
-dependency "bindbc-sdl" version="~>0.10.1"
-dependency "bindbc-loader" version="~>0.2.1"
 targetType "dynamicLibrary"
-versions "SDL_209" "GL_33" "GL_AllowDeprecated"
 stringImportPaths "shaders/"
-configuration "simplemath" {
-	targetType "dynamicLibrary"
-	versions "SIMPLE_MATH"
-}
-configuration "glmath" {
-	targetType "dynamicLibrary"
-	versions "GL_MATH"
-}
-subPackage {
-	name "derelict-util"
-	description "Cross-platform shared library loader and a number of utility modules used by the Derelict libraries."
-	authors "Mike Parker" "Polyplex Developers"
-	license "Boost"
-	targetPath "lib"
-	libs "dl" platform="linux"
-	sourcePaths "modules/pp-derelict-util/source"
-	importPaths "modules/pp-derelict-util/source"
-}
+
+/*
+		Subpackages
+*/
 subPackage "./modules/openal"
-subPackage {
-	name "derelict-vulkan"
-	description "A dynamic binding to the vulkan api."
-	authors "Felix Hufnagel" "Polyplex Developers"
-	copyright "Copyright © 2016, Felix Hufnagel"
-	license "BSL-1.0"
-	dependency "pp:derelict-util" version=">=0.0.0"
-	dependency "xcb-d" version="~>2.1.0" optional=true
-	dependency "xlib-d" version="~>0.1.1" optional=true
-	targetType "library"
-	targetPath "lib"
-	sourcePaths "modules/pp-derelict-vulkan/source"
-	importPaths "modules/pp-derelict-vulkan/source"
+
+/*
+		Imports
+*/
+
+// Graphics API stuff
+dependency "bindbc-loader" version="~>0.2.1"
+dependency "bindbc-opengl" version=">0.5.0"
+dependency "bindbc-sdl" version="~>0.10.1"
+
+// Backend functionality stuff
+dependency "colorize" version="~>1.0.5"
+dependency "sharpevents" version="~>1.0.0"
+dependency "ppc" version="~>0.2.5"
+
+// Audio stuff
+dependency "pp:openal" version="*"
+
+
+/*
+		Sub Configurations
+*/
+
+configuration "OpenGL" {
+	targetType "dynamicLibrary"
+
+	// We're targeting SDL 2.0.9, as well OpenGL 3.3 (w/ some depricated functions)
+	versions "SDL_209" "GL_33" "GL_AllowDeprecated" "OpenGL"
+}
+
+configuration "Vulkan" {
+	targetType "dynamicLibrary"
+	versions "Vulkan" "SDL_209"
 }
