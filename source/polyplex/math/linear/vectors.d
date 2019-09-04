@@ -1,644 +1,385 @@
 module polyplex.math.linear.vectors;
-import polyplex.utils.strutils;
-import std.math, std.traits, std.string;
+import std.math, std.traits, std.string, std.range.primitives, std.format;
 import polyplex.math;
 
-/**
-	A 2 dimensional vector.
-*/
-public struct Vector2T(T) if (isNumeric!(T)) {
-	private alias GVector = typeof(this);
-	public alias Type = T;
-	enum Dimensions = 2;
+public:
+
+/// Shared constructors between vectors
+enum SharedVectorCtor = q{
+
+	/// Special constructor that fills the vector with specified value
+	this(Y)(Y value) if (isNumeric!Y) {
+		static foreach(i; 0..Dimensions) {
+			values[i] = cast(T)value;
+		}
+	}
+
+	/// Construct from vector
+	this(Y)(Y other) if (IsVector!Y) {
+		this.values[] = other.values[0..Dimensions];
+	}
+
+	/// Construct from static array of coordinates
+	this(T[Dimensions] values) {
+		this = values[0..Dimensions];
+	}
+
+	/// Construct from dynamic array of coordinates
+	this(T[] values) {
+		this = values[0..Dimensions];
+	}
+};
+
+/// Vector operations are implemented via this.
+mixin template SharedVectorOp(T, GVector, int Dimensions) {
+
+	static assert(Dimensions > 1 && Dimensions < 5, "The dimensions of a vector can minimum be 2, maximum be 4");
 
 	/**
-		Due to https://issues.dlang.org/show_bug.cgi?id=8006 this has to be flipped like this
-
-		TOOD: Replace with getter/setter structure once https://github.com/dlang/dmd/pull/7079 is merged.
-	**/
-	private @safe nothrow @property T* data() {
-		return this.ptr;
-	}
-	
-	private @property void data(T[Dimensions] data) {
-		X = data[0];
-		Y = data[1];
-	}
-
-	/// The X component
-	public T X = 0;
-
-	/// The Y component
-	public T Y = 0;
-
-	/// Constructor
-	this(T x) {
-		this.X = x;
-		this.Y = x;
-	}
-
-	/// Constructor
-	this(T x, T y) {
-		this.X = x;
-		this.Y = y;
-	}
-
-	this(Vector3T!T vec) {
-		this.X = vec.X;
-		this.Y = vec.Y;
-	}
-
-	this(Vector4T!T vec) {
-		this.X = vec.X;
-		this.Y = vec.Y;
-	}
-
-	/**
-		Pointer to the underlying array data.
+		OpenGL helper function to get the pointer to the start of the vector data.
 	*/
-	public T* ptr() { return &X; }
+	T* ptr() { return values.ptr; }
 
-	// Binary actions.
-	public @trusted nothrow GVector opBinary(string op, T2)(T2 other) if (IsVector!T2) { 
-		// Operation on these, (due to being smallest size) can be done faster this way.
-		mixin(q{
-			return GVector(
-				this.X {0} other.X, 
-				this.Y {0} other.Y);
-			}.Format(op)
-		); 
+	/// Allow casting this vector to an other type of vector
+	Y opCast(Y)() if (IsVector!Y) {
+		return Y(this);
 	}
 
-	// Binary actions numeric.
-	public @trusted nothrow GVector opBinary(string op, T2)(T2 other) if (isNumeric!(T2)) {
-		mixin(q{
-			return GVector(
-				this.X {0} other, 
-				this.Y {0} other);
-			}.Format(op)
-		); 
+	/// Allow doing binary operations between 2 vectors
+	GVector opBinary(string op, T2)(T2 other) if (IsVector!T2) {
+		GVector vec;
+		static foreach(i; 0..Dimensions) {
+			// If we're outside the bounds of the other vector then skip the axies
+			static if (i >= other.Dimensions) break;
+			mixin(q{ vec.values[i] = this.values[i] %s other.values[i]; }); 
+		}
+		return vec;
 	}
 
-	// Binary Action w/ assignment
-	public @trusted nothrow void opOpAssign(string op, T2)(T2 other) if (isNumeric!(T2) || IsVector!(T2)) { 
-		mixin(q{this = this {0} other;}.Format(op));
+	/// Allow doing binary operations between a vector and a numeric type
+	GVector opBinary(string op, T2)(T2 other) if (isNumeric!(T2)) {
+		GVector vec;
+		static foreach(i; 0..Dimensions) {
+			mixin(q{ vec.values[i] = this.values[i] %s other; }); 
+		}
+		return vec;
+	}
+
+	/// Binary operations between this and a vector or a numeric type.
+	void opOpAssign(string op, T2)(T2 other) if (isNumeric!T2 || IsVector!T2) {
+		mixin(q{this = this %s other;}.format(op));
+	}
+
+	/// Binary operations between this and a numeric type.
+	void opAssign(T2)(T2 other) if (isNumeric!T2) {
+		this = [other];
+	}
+
+	/// Binary operations between this and a vector.
+	void opAssign(T2)(T2 other) if (!is(T2 : GVector) && IsVector!T2) {
+		this = cast(GVector)other;
+	}
+
+	/// Binary operations between this and arrays.
+	void opAssign(T2)(T2 rhs) if (IsNumericArray!T2) {
+		static foreach(i; 0..Dimensions) {
+			values[i] = cast(T)rhs[i];
+		}
 	}
 
 	/**
-		Returns:
-			The difference between the 2 vectors.
-	**/
-	public @trusted nothrow GVector Difference(T2)(T2 other) if (IsVector!T2) {
+		Get the difference between 2 vectors
+		Any difference outside the bounds of the vector will be ignored.
+	*/
+	GVector Difference(T2)(T2 other) if (IsVector!T2) {
 		return other-this;
 	}
 
 	/**
-		Returns:
-			The distance between this and another vector.
-	**/
-	public @trusted nothrow T Distance(T2)(T2 other) if (IsVector!T2) {
+		Get the distance between 2 vectors
+		Any difference outside the bounds of the vector will be ignored.
+	*/
+	T Distance(T2)(T2 other) if (IsVector!T2) {
 		return (other-this).Length;
 	}
 
 	/**
-		Returns:
-			The length/magnitude of this vector.
-	**/
-	public @trusted nothrow T Length() {
-		T len = (X*X)+(Y*Y);
+		Get the length/magnitude of this vector
+	*/
+	T Length() {
+		T len;
+		static foreach(i; 0..Dimensions) {
+			len += (values[i]*values[i]);
+		}
 		return cast(T)Mathf.Sqrt(cast(float)len);
 	}
 
 	/**
-		Returns:
-			A normalized version of this vector.
-	**/
-	public @trusted nothrow GVector Normalize() {
-		GVector o;
-		T len = Length();
-		o.X = this.X/len;
-		o.Y = this.Y/len;
-		return o;
-	}
-
-
-	public @trusted nothrow T Det(GVector other) {
-		return (this.X*other.Y)-(this.Y*other.X);
-	}
-
-	/// Dot product of a vector.
-	public @trusted nothrow T Dot(GVector other) {
-		return (this.X*other.X)+(this.Y*other.Y);
-	}
-
-	/**
-		Returns:
-			Initial (zero) state of this vector.
-	**/
-	public static GVector Zero() {
-		return GVector(0, 0);
-	}
-
-	/**
-		Returns:
-			Initial (one) state of this vector.
-	**/
-	public static GVector One() {
-		return GVector(1, 1);
-	}
-	
-	/**
-		Returns:
-			Up unit vector
-	**/
-	public static GVector Up() {
-		return GVector(0, 1);
-	}
-
-	/**
-		Returns:
-			Down unit vector
-	**/
-	public static GVector Down() {
-		return GVector(0, -1);
-	}
-
-	/**
-		Returns:
-			Left unit vector
-	**/
-	public static GVector Left() {
-		return GVector(0, -1);
-	}
-
-	/**
-		Returns:
-			Right unit vector
-	**/
-	public static GVector Right() {
-		return GVector(0, 1);
-	}
-
-	/**
-		Returns:
-			String representation of the array.
-	**/
-	public string ToString() {
-		string o = "<";
-		static foreach(i; 0 .. Dimensions) {
-			switch(i) {
-				case (Dimensions-1):
-					o~= "{0}".Format(this.data[i]);
-					break;
-				default:
-					o ~= "{0}, ".Format(this.data[i]);
-					break;
-			}
-		}
-		return o~">";
-	}
-
-	/// Backwards compatiblity with glmath.
-	alias toString = ToString;
-}
-
-public struct Vector3T(T) if (isNumeric!T) {
-	private alias GVector = typeof(this);
-	public alias Type = T;
-	enum Dimensions = 3;
-
-	/**
-		Due to https://issues.dlang.org/show_bug.cgi?id=8006 this has to be flipped like this
-
-		TOOD: Replace with getter/setter structure once https://github.com/dlang/dmd/pull/7079 is merged.
-	**/
-	private @safe nothrow @property T* data() {
-		return this.ptr;
-	}
-	
-	private @property void data(T[Dimensions] data) {
-		X = data[0];
-		Y = data[1];
-		Z = data[2];
-	}
-
-	/// The X component
-	public T X = 0;
-
-	/// The Y component
-	public T Y = 0;
-
-	// The Z component
-	public T Z = 0;
-
-	/// Constructor
-	this(T x) {
-		this.X = x;
-		this.Y = x;
-		this.Z = 0;
-	}
-
-	/// Constructor
-	this(T x, T y) {
-		this.X = x;
-		this.Y = y;
-		this.Z = 0;
-	}
-
-	/// Constructor
-	this(T x, T y, T z) {
-		this.X = x;
-		this.Y = y;
-		this.Z = z;
-	}
-
-
-	this(Vector2T!T vec) {
-		this.X = vec.X;
-		this.Y = vec.Y;
-		this.Z = 0;
-	}
-
-	this(Vector4T!T vec) {
-		this.X = vec.X;
-		this.Y = vec.Y;
-		this.Z = vec.Z;
-	}
-
-	/**
-		Pointer to the underlying array data.
+		Get the length/magnitude of this vector
 	*/
-	public T* ptr() { return &X; }
+	alias Magnitude = Length;
 
 	/**
-		Generic opBinary operation for Vectors.
+		Get the normalized vector
 	*/
-	public @trusted nothrow GVector opBinary(string op, T2)(T2 other) if (IsVector!T2) {
-		GVector o;
-		// Get the length of the smallest vector
-		
-		static if (other.Dimensions < this.Dimensions) enum len = other.Dimensions;
-		else enum len = this.Dimensions;
-
-		// Do the operations.
-		static foreach(i; 0 .. len) {
-			mixin(q{o.data[i] = this.data[i] {0} other.data[i];}.Format(op));
+	GVector Normalize() {
+		// Normalize by dividing the values from the current values array by the magnitude/length
+		GVector vec;
+		immutable(T) len = Length();
+		static foreach(i; 0..Dimensions) {
+			vec.values[i] = values[i]/len;
 		}
-		return o;
-	}
-
-	// Binary actions numeric.
-	public @trusted nothrow GVector opBinary(string op)(T other) if (isNumeric!(T)) {
-		mixin(q{
-			return GVector(
-				this.X {0} other, 
-				this.Y {0} other, 
-				this.Z {0} other);
-			}.Format(op)
-		); 
-	}
-
-	// Binary Action w/ assignment
-	public @trusted nothrow void opOpAssign(string op)(T other) if (isNumeric!(T) || IsVector!(T)) { 
-		mixin(q{this = this {0} other;}.Format(op));
+		return vec;
 	}
 
 	/**
-		Returns:
-			The difference between the 2 vectors.
-	**/
-	public @trusted nothrow GVector Difference(T2)(T2 other) if (IsVector!T2) {
-		return other-this;
-	}
-
-	/**
-		Returns:
-			The distance between this and another vector.
-	**/
-	public @trusted nothrow T Distance(T2)(T2 other) if (IsVector!T2) {
-		return (other-this).Length;
-	}
-
-	/**
-		Returns:
-			The length/magnitude of this vector.
-	**/
-	public @trusted nothrow T Length() {
-		T len = (X*X)+(Y*Y)+(Z*Z);
-		return cast(T)Mathf.Sqrt(cast(float)len);
-	}
-
-	/**
-		Returns:
-			A normalized version of this vector.
-	**/
-	public @trusted nothrow GVector Normalize() {
-		GVector o;
-		T len = Length();
-		static foreach(i; 0 .. Dimensions) {
-			o.data[i] = this.data[i]/len;
+		Get the dot product of 2 vectors
+		Any difference outside the bounds of the vector will be ignored.
+	*/
+	T Dot(T2)(T2 other) if (IsVector!T2) {
+		T dot;
+		static foreach(i, val; this.values) {
+			static if (i > other.values.length) break;
+			dot += (val*other.values[i]);
 		}
-		return o;
+		return cast(T)dot;
 	}
 
-	/// Dot product of a vector.
-	public @trusted nothrow T Dot(GVector other) {
-		return (this.X*other.X)+(this.Y*other.Y)+(this.Z*other.Z);
+	/**
+		Returns a one vector (vector of all ones)
+	*/
+	static GVector One() {
+		return GVector(1);
 	}
 
-	/// Cross product of a vector.
-	public @trusted nothrow GVector Cross(GVector other) {
+	/**
+		Returns a zero vector (vector of all zeroes)
+	*/
+	static GVector Zero() {
+		return GVector(0);
+	}
+
+	/**
+		Cross product of 2D vector
+	*/
+	GVector Cross()(GVector other) if (Dimensions == 2) {
+		return GVector(
+			(this.Y*other.Z)-(this.Z*other.Y),
+			(this.X*other.Y)-(this.Y*other.X));
+	}
+
+	/**
+		Cross product of 2D vector
+	*/
+	GVector Cross()(GVector other) if (Dimensions == 3) {
 		return GVector(
 			(this.Y*other.Z)-(this.Z*other.Y),
 			(this.Z*other.X)-(this.X*other.Z),
 			(this.X*other.Y)-(this.Y*other.X));
 	}
 
-	/**
-		Returns:
-			Initial (zero) state of this vector.
-	**/
-	public static Vector3T!(T) Zero() {
-		return Vector3T!(T)(0, 0, 0);
-	}
+	static if (Dimensions >= 2) {
 
-	/**
-		Returns:
-			Initial (one) state of this vector.
-	**/
-	public static GVector One() {
-		return GVector(1, 1, 1);
-	}
-
-	/**
-		Returns:
-			Up unit vector
-	**/
-	public static GVector Up() {
-		return GVector(0, -1, 0);
-	}
-
-	/**
-		Returns:
-			Down unit vector
-	**/
-	public static GVector Down() {
-		return GVector(0, 1, 0);
-	}
-
-	/**
-		Returns:
-			Left unit vector
-	**/
-	public static GVector Left() {
-		return GVector(0, -1, 0);
-	}
-
-	/**
-		Returns:
-			Right unit vector
-	**/
-	public static GVector Right() {
-		return GVector(0, 1, 0);
-	}
-
-	/**
-		Returns:
-			Left unit vector
-	**/
-	public static GVector Forward() {
-		return GVector(0, 0, -1);
-	}
-
-	/**
-		Returns:
-			Right unit vector
-	**/
-	public static GVector Back() {
-		return GVector(0, 0, 1);
-	}
-
-	/**
-		Returns:
-			String representation of the array.
-	**/
-	public string ToString() {
-		string o = "<";
-		static foreach(i; 0 .. Dimensions) {
-			switch(i) {
-				case (Dimensions-1):
-					o~= "{0}".Format(this.data[i]);
-					break;
-				default:
-					o ~= "{0}, ".Format(this.data[i]);
-					break;
-			}
+		/**
+			Returns a vector pointing to the global up
+		*/
+		static GVector Up() {
+			GVector v;
+			v.Y = -1;
+			return v;
 		}
-		return o~">";
+
+		/**
+			Returns a vector pointing to the global down
+		*/
+		static GVector Down() {
+			GVector v;
+			v.Y = 1;
+			return v;
+		}
+
+		/**
+			Returns a vector pointing to the global up
+		*/
+		static GVector Left() {
+			GVector v;
+			v.X = -1;
+			return v;
+		}
+
+		/**
+			Returns a vector pointing to the global down
+		*/
+		static GVector Right() {
+			GVector v;
+			v.X = 1;
+			return v;
+		}
 	}
-	
-	/// Backwards compatiblity with glmath.
-	alias toString = ToString;
+
+	static if (Dimensions >= 3) {
+
+		/// TODO: If the Z axis is flipped then flip the logic here!
+
+		/**
+			Returns a vector pointing to the global up
+		*/
+		static GVector Forward() {
+			GVector v;
+			v.Z = 1;
+			return v;
+		}
+
+		/**
+			Returns a vector pointing to the global down
+		*/
+		static GVector Backward() {
+			GVector v;
+			v.Z = -1;
+			return v;
+		}
+
+	}
 }
 
-public struct Vector4T(T) if (isNumeric!(T)) {
-	private alias GVector = typeof(this);
-	public alias Type = T;
+/**
+	A 2D vector
+*/
+@trusted 
+nothrow
+struct Vector2T(T) if (isNumeric!T) {
+private:
+	alias GVector = typeof(this);
+
+public:
+	/// The count of dimensions the vector consists of
+	enum Dimensions = 2;
+
+	union {
+		struct {
+			/// The X component
+			T X = 0;
+
+			/// The Y component
+			T Y = 0;
+		}
+
+		/// An array of the values in this vector
+		T[Dimensions] values;
+	}
+
+	/// Construct from X and Y coordinates
+	this(Y)(Y x, Y y) if (isNumeric!Y) {
+		this.X = cast(T)x;
+		this.Y = cast(T)y;
+	}
+
+	mixin(SharedVectorCtor);
+	mixin SharedVectorOp!(T, GVector, Dimensions);
+}
+
+/**
+	A 3D vector
+*/
+@trusted 
+nothrow
+struct Vector3T(T) if (isNumeric!T) {
+private:
+	alias GVector = typeof(this);
+
+public:
+	/// The count of dimensions the vector consists of
+	enum Dimensions = 3;
+
+	union {
+		struct {
+			/// The X component
+			T X = 0;
+
+			/// The Y component
+			T Y = 0;
+
+			/// The Z component
+			T Z = 0;
+		}
+
+		/// An array of the values in this vector
+		T[Dimensions] values;
+	}
+
+	/// Construct from X and Y coordinates
+	this(Y)(Y x, Y y) if (isNumeric!Y) {
+		this.X = cast(T)x;
+		this.Y = cast(T)y;
+	}
+
+	/// Construct from X and Y coordinates
+	this(Y)(Y x, Y y, Y z) if (isNumeric!Y) {
+		this.X = cast(T)x;
+		this.Y = cast(T)y;
+		this.Z = cast(T)z;
+	}
+	
+	mixin(SharedVectorCtor);
+	mixin SharedVectorOp!(T, GVector, Dimensions);
+}
+
+/**
+	A 4D vector
+*/
+@trusted 
+nothrow
+struct Vector4T(T) if (isNumeric!T) {
+private:
+	alias GVector = typeof(this);
+
+public:
+	/// The count of dimensions the vector consists of
 	enum Dimensions = 4;
 
-	/**
-		Due to https://issues.dlang.org/show_bug.cgi?id=8006 this has to be flipped like this
+	union {
+		struct {
+			/// The X component
+			T X = 0;
 
-		TOOD: Replace with getter/setter structure once https://github.com/dlang/dmd/pull/7079 is merged.
-	**/
-	private @safe nothrow @property T* data() {
-		return this.ptr;
-	}
+			/// The Y component
+			T Y = 0;
 
-	private @property void data(T[Dimensions] data) {
-		X = data[0];
-		Y = data[1];
-		Z = data[2];
-		W = data[3];
-	}
+			/// The Z component
+			T Z = 0;
 
-	/// The X component
-	public T X = 0;
-
-	/// The Y component
-	public T Y = 0;
-
-	// The Z component
-	public T Z = 0;
-
-	// The W component
-	public T W = 0;
-
-	/// Constructor
-	this(T x) {
-		this.X = x;
-		this.Y = x;
-		this.Z = 0;
-		this.W = 0;
-	}
-
-	/// Constructor
-	this(T x, T y) {
-		this.X = x;
-		this.Y = y;
-		this.Z = 0;
-		this.W = 0;
-	}
-
-	/// Constructor
-	this(T x, T y, T z) {
-		this.X = x;
-		this.Y = y;
-		this.Z = z;
-		this.W = 0;
-	}
-
-	/// Constructor
-	this(T x, T y, T z, T w) {
-		this.X = x;
-		this.Y = y;
-		this.Z = z;
-		this.W = w;
-	}
-
-	this(Vector2T!T vec) {
-		this.X = vec.X;
-		this.Y = vec.Y;
-		this.Z = 0;
-		this.W = 0;
-	}
-
-	this(Vector3T!T vec) {
-		this.X = vec.X;
-		this.Y = vec.Y;
-		this.Z = vec.Z;
-		this.W = 0;
-	}
-
-	/**
-		Pointer to the underlying array data.
-	*/
-	public T* ptr() { return &X; }
-	
-	/**
-		Generic opBinary operation for Vectors.
-	*/
-	public @trusted nothrow GVector opBinary(string op, T2)(T2 other) if (IsVector!(T2)) {
-		GVector o;
-		// Get the length of the smallest vector
-		
-		static if (other.Dimensions < this.Dimensions) enum len = other.Dimensions;
-		else enum len = this.Dimensions;
-
-		// Do the operations.
-		static foreach(i; 0 .. len) {
-			mixin(q{o.data[i] = this.data[i] {0} other.data[i];}.Format(op));
+			/// The Z component
+			T W = 0;
 		}
-		return o;
-	}
-	
-	// Binary actions numeric.
-	public @trusted nothrow GVector opBinary(string op)(T other) if (isNumeric!(T)) {
-		mixin(q{
-			return GVector(
-				this.X {1} other, 
-				this.Y {1} other, 
-				this.Z {1} other, 
-				this.W {1} other);
-			}.Format(T.stringof, op)
-		); 
+
+		/// An array of the values in this vector
+		T[Dimensions] values;
 	}
 
-	// Binary Action w/ assignment
-	public @trusted nothrow void opOpAssign(string op, T2)(T2 other) if (isNumeric!(T2) || IsVector!(T2)) { 
-		mixin(q{this = this {0} other;}.Format(op));
+	/// Construct from X and Y coordinates
+	this(Y)(Y x, Y y) if (isNumeric!Y) {
+		this.X = cast(T)x;
+		this.Y = cast(T)y;
 	}
 
-	/**
-		Returns:
-			The difference between the 2 vectors.
-	**/
-	public @trusted nothrow GVector Difference(T2)(T2 other) if (IsVector!T2){
-		return other-this;
+	/// Construct from X and Y coordinates
+	this(Y)(Y x, Y y, Y z) if (isNumeric!Y) {
+		this.X = cast(T)x;
+		this.Y = cast(T)y;
+		this.Z = cast(T)z;
 	}
 
-	/**
-		Returns:
-			The distance between this and another vector.
-	**/
-	public @trusted nothrow T Distance(T2)(T2 other) if (IsVector!T2) {
-		return (other-this).Length;
+	/// Construct from X and Y coordinates
+	this(Y)(Y x, Y y, Y z, Y w) if (isNumeric!Y) {
+		this.X = cast(T)x;
+		this.Y = cast(T)y;
+		this.Z = cast(T)z;
+		this.W = cast(T)w;
 	}
 
-	/**
-		Returns:
-			The length/magnitude of this vector.
-	**/
-	public @trusted nothrow T Length() {
-		T len = (X*X)+(Y*Y)+(Z*Z)+(W*W);
-		return cast(T)Mathf.Sqrt(cast(float)len);
-	}
-
-	/**
-		Returns:
-			A normalized version of this vector.
-	**/
-	public @trusted nothrow GVector Normalize() {
-		GVector o;
-		T len = Length();
-		static foreach(i; 0 .. Dimensions) {
-			o.data[i] = this.data[i]/len;
-		}
-		return o;
-	}
-
-	/// Dot product of a vector.
-	public @trusted nothrow T Dot(GVector other) {
-		return (this.X*other.X)+(this.Y*other.Y)+(this.Z*other.Z)+(this.W*other.W);
-	}
-
-	/**
-		Returns:
-			Initial (zero) state of this vector.
-	**/
-	public static GVector Zero() {
-		return GVector(0, 0, 0, 0);
-	}
-
-	/**
-		Returns:
-			Initial (one) state of this vector.
-	**/
-	public static GVector One() {
-		return GVector(1, 1, 1, 1);
-	}
-
-	/**
-		Returns:
-			String representation of the array.
-	**/
-	public string ToString() {
-		string o = "<";
-		static foreach(i; 0 .. Dimensions) {
-			switch(i) {
-				case (Dimensions-1):
-					o~= "{0}".Format(this.data[i]);
-					break;
-				default:
-					o ~= "{0}, ".Format(this.data[i]);
-					break;
-			}
-		}
-		return o~">";
-	}
-	
-	/// Backwards compatiblity with glmath.
-	alias toString = ToString;
+	// Implement shared vector operations & constructors
+	mixin(SharedVectorCtor);
+	mixin SharedVectorOp!(T, GVector, Dimensions);
 }
 
 // Copied from the GLMath implementation, checks if T is a Vector2T
@@ -649,6 +390,8 @@ enum IsVector3T(T) = is(T : Vector3T!U, U...);
 
 // Copied from the GLMath implementation, checks if T is a Vector4T
 enum IsVector4T(T) = is(T : Vector4T!U, U...);
+
+enum IsNumericArray(T) = isArray!T && isNumeric!(ElementType!T);
 
 //Combination of all IsVector
 enum IsVector(T) = (IsVector2T!T || IsVector3T!T || IsVector4T!T);
