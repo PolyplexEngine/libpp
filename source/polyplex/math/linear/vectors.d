@@ -243,6 +243,11 @@ mixin template SharedVectorOp(T, GVector, int Dimensions) {
 		}
 
 	}
+
+	string toString() {
+		import std.conv : text;
+		return values.text;
+	}
 }
 
 
