@@ -2,7 +2,7 @@ module polyplex.math.linear.vectors;
 import std.math, std.traits, std.string, std.range.primitives, std.format;
 import polyplex.math;
 
-public:
+private:
 
 /// Shared constructors between vectors
 enum SharedVectorCtor = q{
@@ -16,7 +16,10 @@ enum SharedVectorCtor = q{
 
 	/// Construct from vector
 	this(Y)(Y other) if (IsVector!Y) {
-		this.values[] = other.values[0..Dimensions];
+		static foreach(i; 0..Dimensions) {
+			// If we're outside the bounds of the other vector then skip the axies
+			static if (i < other.Dimensions) mixin(q{ values[i] = other.values[i]; }); 
+		}
 	}
 
 	/// Construct from static array of coordinates
@@ -50,8 +53,7 @@ mixin template SharedVectorOp(T, GVector, int Dimensions) {
 		GVector vec;
 		static foreach(i; 0..Dimensions) {
 			// If we're outside the bounds of the other vector then skip the axies
-			static if (i >= other.Dimensions) break;
-			mixin(q{ vec.values[i] = this.values[i] %s other.values[i]; }); 
+			static if (i < other.Dimensions) mixin(q{ vec.values[i] = this.values[i] %s other.values[i]; }.format(op)); 
 		}
 		return vec;
 	}
@@ -138,9 +140,8 @@ mixin template SharedVectorOp(T, GVector, int Dimensions) {
 	*/
 	T Dot(T2)(T2 other) if (IsVector!T2) {
 		T dot;
-		static foreach(i, val; this.values) {
-			static if (i > other.values.length) break;
-			dot += (val*other.values[i]);
+		static foreach(i; 0..Dimensions) {
+			static if (i < other.Dimensions) dot += (val*other.values[i]);
 		}
 		return cast(T)dot;
 	}
@@ -244,6 +245,8 @@ mixin template SharedVectorOp(T, GVector, int Dimensions) {
 	}
 }
 
+
+public:
 /**
 	A 2D vector
 */
@@ -256,6 +259,8 @@ private:
 public:
 	/// The count of dimensions the vector consists of
 	enum Dimensions = 2;
+
+	alias Type = T;
 
 	union {
 		struct {
@@ -292,6 +297,8 @@ private:
 public:
 	/// The count of dimensions the vector consists of
 	enum Dimensions = 3;
+
+	alias Type = T;
 
 	union {
 		struct {
@@ -338,6 +345,8 @@ private:
 public:
 	/// The count of dimensions the vector consists of
 	enum Dimensions = 4;
+
+	alias Type = T;
 
 	union {
 		struct {
