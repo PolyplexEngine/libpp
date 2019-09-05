@@ -199,7 +199,7 @@ mixin template SharedVectorOp(T, GVector, int Dimensions) {
 		}
 
 		/**
-			Returns a vector pointing to the global up
+			Returns a vector pointing to the global left
 		*/
 		static GVector Left() {
 			GVector v;
@@ -208,7 +208,7 @@ mixin template SharedVectorOp(T, GVector, int Dimensions) {
 		}
 
 		/**
-			Returns a vector pointing to the global down
+			Returns a vector pointing to the global right
 		*/
 		static GVector Right() {
 			GVector v;
@@ -222,7 +222,8 @@ mixin template SharedVectorOp(T, GVector, int Dimensions) {
 		/// TODO: If the Z axis is flipped then flip the logic here!
 
 		/**
-			Returns a vector pointing to the global up
+			Returns a vector pointing to the global forward
+			This is only usable on Vectors with a Z axis!
 		*/
 		static GVector Forward() {
 			GVector v;
@@ -231,7 +232,8 @@ mixin template SharedVectorOp(T, GVector, int Dimensions) {
 		}
 
 		/**
-			Returns a vector pointing to the global down
+			Returns a vector pointing to the global backward
+			This is only usable on Vectors with a Z axis!
 		*/
 		static GVector Backward() {
 			GVector v;
