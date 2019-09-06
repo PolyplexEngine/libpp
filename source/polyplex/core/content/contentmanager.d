@@ -120,6 +120,6 @@ public class ContentManager {
 				sc.Geometry = v.toString;
 			}
 		}
-		return new GLShader(sc);
+		return new Shader(sc);
 	}
 }
