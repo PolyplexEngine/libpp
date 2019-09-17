@@ -62,7 +62,7 @@ mixin template SharedVectorOp(T, GVector, int Dimensions) {
 	GVector opBinary(string op, T2)(T2 other) if (isNumeric!(T2)) {
 		GVector vec;
 		static foreach(i; 0..Dimensions) {
-			mixin(q{ vec.values[i] = this.values[i] %s other; }); 
+			mixin(q{ vec.values[i] = this.values[i] %s other; }.format(op)); 
 		}
 		return vec;
 	}
