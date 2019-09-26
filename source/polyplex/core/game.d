@@ -121,6 +121,13 @@ private:
 	ulong frameTimeLast = 0;
 	bool enableAudio = true;
 
+	double fixedft;
+	double accumulator = 0.0;
+	double targetStep = 60;
+	double dt() {
+		return 1/targetStep;
+	}
+
     void doUpdate() {
 		Prepare();
 		while (!RunOne()) {
@@ -161,13 +168,20 @@ public abstract {
 	/**
 		Run an update iteration
 	*/
-	void Update(GameTime game_time);
+	void Update(GameTime gameTime);
 
 	/**
 		Run a draw iteration
 	*/
-	void Draw(GameTime game_time);
+	void Draw(GameTime gameTime);
 }
+
+public:
+
+	/**
+		Run a fixed time step update
+	*/
+	void FixedUpdate(double fixedDelta) { }
 
 public final:
 	/// Wether the engine should count FPS and frametimes.
@@ -206,6 +220,11 @@ public final:
 	/// How many miliseconds since the last frame was drawn
 	@property double Frametime() {
 		return frameTimeDelta;
+	}
+
+	/// How many miliseconds since the last frame was drawn
+	@property double FixedFrametime() {
+		return fixedft;
 	}
 
 	/// The window the game is being rendered to
@@ -264,6 +283,14 @@ public final:
 			events.Update();
 		}
 		
+		fixedft = frameTimeDelta > 0.25 ? 0.25 : frameTimeDelta;
+		accumulator += fixedft;
+
+		while (accumulator >= dt) {
+			FixedUpdate(dt);
+			accumulator -= dt;
+		}
+
 		// Run user set update and draw functions
 		Update(times);
 		Draw(times);
