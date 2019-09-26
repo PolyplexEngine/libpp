@@ -121,12 +121,8 @@ private:
 	ulong frameTimeLast = 0;
 	bool enableAudio = true;
 
-	double fixedft;
-	double accumulator = 0.0;
-	double targetStep = 60;
-	double dt() {
-		return 1/targetStep;
-	}
+	double lag = 0.0;
+	double msTarget = 0.250;
 
     void doUpdate() {
 		Prepare();
@@ -224,7 +220,12 @@ public final:
 
 	/// How many miliseconds since the last frame was drawn
 	@property double FixedFrametime() {
-		return fixedft;
+		return msTarget;
+	}
+
+	/// Returns true if the game is running slowly
+	@property bool IsGameLagging() {
+		return lag > 10.0;
 	}
 
 	/// The window the game is being rendered to
@@ -282,17 +283,18 @@ public final:
 			//Do actual updating and drawing.
 			events.Update();
 		}
-		
-		fixedft = frameTimeDelta > 0.25 ? 0.25 : frameTimeDelta;
-		accumulator += fixedft;
-
-		while (accumulator >= dt) {
-			FixedUpdate(dt);
-			accumulator -= dt;
-		}
 
 		// Run user set update and draw functions
 		Update(times);
+		
+		lag += frameTimeDelta;
+		while (lag >= msTarget) {
+
+			FixedUpdate(msTarget);
+			lag -= msTarget;
+		}
+		if (lag < 0) lag = 0;
+		
 		Draw(times);
 
 		// Exit the game if the window is closed.
@@ -309,6 +311,7 @@ public final:
 		frameTimeDelta = cast(double)((SDL_GetPerformanceCounter() - frameTimeStart) * 1000) / cast(double)SDL_GetPerformanceFrequency();
 		times.updateDelta(frameTimeDelta);
 		frameTimeLast = frameTimeStart;
+
 		return false;
 	}
 
