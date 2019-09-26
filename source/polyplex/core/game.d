@@ -25,18 +25,18 @@ import std.conv;
 import core.memory;
 
 class GameTimeSpan {
-	private ulong ticks;
+	private double ticks;
 
-	public @property ulong BaseValue() { return ticks; }
-	public @property void BaseValue(ulong ticks) { this.ticks = ticks; }
+	public @property double BaseValue() { return ticks; }
+	public @property void BaseValue(double ticks) { this.ticks = ticks; }
 
-	public @property ulong LMilliseconds() { return ticks; }
-	public @property ulong LSeconds() { return LMilliseconds/1000; }
+	public @property ulong LMilliseconds() { return cast(ulong)(ticks*1000); }
+	public @property ulong LSeconds() { return cast(ulong)ticks; }
 	public @property ulong LMinutes() { return LSeconds/60; }
 	public @property ulong LHours() { return LMinutes/60; }
 
-	public @property double Milliseconds() { return cast(double)ticks; }
-	public @property double Seconds() { return Milliseconds/1000; }
+	public @property double Milliseconds() { return ticks*1000; }
+	public @property double Seconds() { return ticks; }
 	public @property double Minutes() { return Seconds/60; }
 	public @property double Hours() { return Minutes/60; }
 
@@ -103,11 +103,11 @@ public:
 	GameTimeSpan DeltaTime;
 
 private:
-	void updateDelta(ulong delta) {
+	void updateDelta(double delta) {
 		DeltaTime.BaseValue = delta;
 	}
 	
-	void updateTotal(ulong total) {
+	void updateTotal(double total) {
 		TotalTime.BaseValue = total;
 	}
 }
@@ -117,7 +117,7 @@ private:
 	GameEventSystem events;
 	GameTime times;
 	ulong frameTimeStart = 0;
-	ulong frameTimeDelta = 0;
+	double frameTimeDelta = 0;
 	ulong frameTimeLast = 0;
 	bool enableAudio = true;
 
@@ -204,7 +204,7 @@ public final:
 	}
 
 	/// How many miliseconds since the last frame was drawn
-	@property ulong Frametime() {
+	@property double Frametime() {
 		return frameTimeDelta;
 	}
 
@@ -253,8 +253,8 @@ public final:
 	*/
 	bool RunOne() {
 		//FPS begin counting.
-		frameTimeStart = SDL_GetTicks();
-		times.updateTotal(frameTimeStart);
+		frameTimeStart = SDL_GetPerformanceCounter();
+		times.updateTotal(cast(double)(SDL_GetTicks()/1000));
 
 		//Update events.
 		if (events !is null) {
@@ -279,7 +279,7 @@ public final:
 		Renderer.SwapBuffers();
 
 		// Update frametime delta
-		frameTimeDelta = SDL_GetTicks() - frameTimeStart;
+		frameTimeDelta = cast(double)((SDL_GetPerformanceCounter() - frameTimeStart) * 1000) / cast(double)SDL_GetPerformanceFrequency();
 		times.updateDelta(frameTimeDelta);
 		frameTimeLast = frameTimeStart;
 		return false;
