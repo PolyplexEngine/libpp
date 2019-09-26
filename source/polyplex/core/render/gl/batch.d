@@ -516,7 +516,16 @@ public:
 
 			Vector2 next = position;
 			size_t i = 0;
+			size_t line = 0;
 			while(i < text.length) {
+
+				if (text[i] == '\n') {
+					line++;
+					i++;
+					next.X = position.X;
+					next.Y += font.BaseCharSize.Y+ (font.BaseCharSize.Y/2);
+					continue;
+				}
 
 				if (i < text.length-4) {
 
