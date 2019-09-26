@@ -357,7 +357,7 @@ public:
 		elementBuffer = new Buffer();
 		elementBuffer.Bind(BufferType.Vertex);
 		elementBuffer.Data(elementArray.sizeof, elementArray.ptr, BufferUsage.DynamicDraw);
-		Logger.VerboseDebug("Some OpenGL features are not implemented yet, namely DepthStencilState, RasterizerState and some SpriteSortModes.");
+		Logger.Warn("Some OpenGL features are not implemented yet, namely DepthStencilState, RasterizerState and some SpriteSortModes.");
 	}
 
 	/// Initialize sprite batch
