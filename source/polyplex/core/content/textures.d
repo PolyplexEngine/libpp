@@ -334,8 +334,8 @@ public abstract class Texture2D {
 
 	this() { }
 
-	public Rectangle Size() {
-		return new Rectangle(0, 0, Width, Height);
+	public Rectanglei Size() {
+		return Rectanglei(0, 0, Width, Height);
 	}
 
 	/**

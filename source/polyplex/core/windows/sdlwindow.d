@@ -22,7 +22,7 @@ public enum WindowPosition {
 public class SDLGameWindow : Window {
 	private string start_title;
     private SDL_Window* window;
-	private Rectangle start_bounds;
+	private Rectanglei startBounds;
 
 	/*
 		Gets whenever the window is visible
@@ -96,7 +96,7 @@ public class SDLGameWindow : Window {
 		SDL_SetWindowPosition(this.window, cast(int)pos.X, cast(int)pos.Y);
 	}
 
-    this(string name, Rectangle bounds, bool focus = true) {
+    this(string name, Rectanglei bounds, bool focus = true) {
 		super(name);
         if (!SDL_Init(SDL_INIT_EVERYTHING) < 0) {
             Logger.Fatal("Initialization of SDL2 failed!...\n{0}", SDL_GetError());
@@ -115,7 +115,7 @@ public class SDLGameWindow : Window {
 		};
 
 		//Set info.
-        this.start_bounds = bounds;
+        this.startBounds = bounds;
 		this.start_title = name;
 
 		this.AutoFocus = focus;
@@ -123,21 +123,20 @@ public class SDLGameWindow : Window {
 
 
 		//Cap info.
-		if (this.start_bounds is null) this.start_bounds = new Rectangle(WindowPosition.Undefined, WindowPosition.Undefined, 640, 480);
-		if (this.start_bounds.X == WindowPosition.Center) this.start_bounds.X = SDL_WINDOWPOS_CENTERED;
-		if (this.start_bounds.Y == WindowPosition.Center) this.start_bounds.Y = SDL_WINDOWPOS_CENTERED;
-		if (this.start_bounds.X == WindowPosition.Undefined) this.start_bounds.X = SDL_WINDOWPOS_UNDEFINED;
-		if (this.start_bounds.Y == WindowPosition.Undefined) this.start_bounds.Y = SDL_WINDOWPOS_UNDEFINED;
-		if (this.start_bounds.Width == WindowPosition.Undefined) this.start_bounds.Width = 640;
-		if (this.start_bounds.Height == WindowPosition.Undefined) this.start_bounds.Height = 480;
+		if (this.startBounds.X == WindowPosition.Center) this.startBounds.X = SDL_WINDOWPOS_CENTERED;
+		if (this.startBounds.Y == WindowPosition.Center) this.startBounds.Y = SDL_WINDOWPOS_CENTERED;
+		if (this.startBounds.X == WindowPosition.Undefined) this.startBounds.X = SDL_WINDOWPOS_UNDEFINED;
+		if (this.startBounds.Y == WindowPosition.Undefined) this.startBounds.Y = SDL_WINDOWPOS_UNDEFINED;
+		if (this.startBounds.Width == WindowPosition.Undefined) this.startBounds.Width = 640;
+		if (this.startBounds.Height == WindowPosition.Undefined) this.startBounds.Height = 480;
     }
 
-	this (Rectangle bounds, bool focus = true) {
+	this (Rectanglei bounds, bool focus = true) {
 		this("My Game", bounds, focus);
 	}
 
 	this(bool focus = true) {
-		this(new Rectangle(WindowPosition.Undefined, WindowPosition.Undefined, 640, 480), focus);
+		this(Rectanglei(WindowPosition.Undefined, WindowPosition.Undefined, 640, 480), focus);
 	}
 
     ~this() {
@@ -185,7 +184,7 @@ public class SDLGameWindow : Window {
 		int x, y, width, height;
 		SDL_GetWindowPosition(this.window, &x, &y);
 		SDL_GetWindowSize(this.window, &width, &height);
-		updateBounds(new Rectangle(x, y, width, height));
+		updateBounds(Rectanglei(x, y, width, height));
 	}
 
 	/**
@@ -217,7 +216,7 @@ public class SDLGameWindow : Window {
 	*/
     override void Show() {
 		Logger.Debug("Spawning window...");
-		this.window = SDL_CreateWindow(this.start_title.toStringz, this.start_bounds.X, this.start_bounds.Y, this.start_bounds.Width, this.start_bounds.Height, SDL_WINDOW_OPENGL);
+		this.window = SDL_CreateWindow(this.start_title.toStringz, this.startBounds.X, this.startBounds.Y, this.startBounds.Width, this.startBounds.Height, SDL_WINDOW_OPENGL);
 		if (this.window == null) {
 			destroy(this.window);
 			Logger.Fatal("Window creation error: {0}", SDL_GetError());

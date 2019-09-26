@@ -229,7 +229,7 @@ public final:
 	*/
 	void Run() {
 		if (window is null) {
-			window = new SDLGameWindow(new Rectangle(0, 0, 0, 0), false);
+			window = new SDLGameWindow(Rectanglei(0, 0, 0, 0), false);
 		}
 		InitLibraries();
 		window.Show();

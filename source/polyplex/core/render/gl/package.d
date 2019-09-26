@@ -24,7 +24,7 @@ public class Renderer {
 static:
 private:
 	win.Window window;
-	Rectangle scissorRect;
+	Rectanglei scissorRect;
 
 package(polyplex):
 	void setWindow(win.Window parent) {
@@ -61,11 +61,11 @@ public:
 		Logger.Info("OpenGL initialized...");
 	}
 	
-	@property Rectangle ScissorRectangle() {
+	@property Rectanglei ScissorRectangle() {
 		return scissorRect;
 	}
 
-	@property void ScissorRectangle(Rectangle rect) {
+	@property void ScissorRectangle(Rectanglei rect) {
 		scissorRect = rect;
 		glScissor(
 			scissorRect.X, 

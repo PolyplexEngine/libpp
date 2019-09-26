@@ -14,17 +14,17 @@ public :
 
 public class WindowBounds {
 private :
-	Rectangle winRect;
+	Rectanglei winRect;
 	Window owner;
 protected :
-	void updateWindowBounds(Rectangle rect) {
+	void updateWindowBounds(Rectanglei rect) {
 		winRect = rect;
 	}
 public :
 
 	Event windowResizeRequestEvent;
 	Event windowPositionRequestEvent;
-	this(Window owner, Rectangle winRect) {
+	this(Window owner, Rectanglei winRect) {
 		windowResizeRequestEvent = new Event();
 		windowPositionRequestEvent = new Event();
 		this.owner = owner;
@@ -76,7 +76,7 @@ protected :
 	GraphicsBackend ActiveBackend;
 	GraphicsContext ActiveContext;
 
-	void updateBounds(Rectangle rect) {
+	void updateBounds(Rectanglei rect) {
 		ClientBounds.updateWindowBounds(rect);
 	}
 
