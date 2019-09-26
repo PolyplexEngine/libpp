@@ -18,7 +18,7 @@ enum SharedVectorCtor = q{
 	this(Y)(Y other) if (IsVector!Y) {
 		static foreach(i; 0..Dimensions) {
 			// If we're outside the bounds of the other vector then skip the axies
-			static if (i < other.Dimensions) mixin(q{ values[i] = other.values[i]; }); 
+			static if (i < other.Dimensions) mixin(q{ values[i] = cast(T)other.values[i]; }); 
 		}
 	}
 
@@ -158,6 +158,20 @@ mixin template SharedVectorOp(T, GVector, int Dimensions) {
 	*/
 	static GVector Zero() {
 		return GVector(0);
+	}
+
+	/**
+		Returns a zero vector (vector of all NaN)
+	*/
+	static GVector NaN()() if (is(T : float) || is(T : double)) {
+		return GVector(T.nan);
+	}
+
+	/**
+		Returns a zero vector (vector of all infinity)
+	*/
+	static GVector Infinity()() if (is(T : float) || is(T : double))  {
+		return GVector(T.infinity);
 	}
 
 	/**
