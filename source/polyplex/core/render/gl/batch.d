@@ -46,6 +46,9 @@ private:
 	static Camera defaultCamera;
 	static bool hasInitCompleted;
 
+	// Previous shader, used in font rendering
+	Shader prevShader;
+
 	// State info
 	int queued;
 	bool hasBegun;
@@ -443,51 +446,121 @@ public:
 		draw(buffer.Width, buffer.Height, pos, cutout, rotation, origin, color, flip, zlayer);
 	}
 
-	void DrawString(SpriteFont font, string text, Vector2 position, Color color, float scale = 1f, float zlayer = 0f, Shader textShader = null) {
+	/**
+		Begin string rendering
+	*/
+	void BeginString(SpriteFont font, Shader textShader = null) {
 		isRenderbuffer = false;
-
-		Shader prevShader = this.shader;
+		prevShader = this.shader;
 
 		// Support custom font shaders.
 		checkFlush([(cast(GlTexture2DImpl!(GL_RED, 1))font.getTexture()).GLTexture]);
-
 		this.shader = textShader !is null ? textShader : defaultShaderFont;
+	}
 
-		// Measure the tallest height (used for rendering)
-		Vector2 measured = font.MeasureString(text);
-
-		Texture2D tex = font.getTexture();
-
-		int x = 0;
-
-		Rectangle clipRectangle = new Rectangle(0, 0);
-		import std.encoding;
-		foreach(dchar c; text) {
-			auto info = font[cast(char)c];
-			if (info is null) continue;
-			
-			int posX = cast(int)((position.X+x) + info.bearing.x * scale);
-			int posY = cast(int)(((position.Y-info.size.y) + cast(int)(info.size.y - info.bearing.y)+cast(int)measured.Y)*scale);
-			Rectangle currentRectangle = new Rectangle(
-				posX, 
-				posY,
-				cast(int)(info.size.x*scale), 
-				cast(int)(info.size.y*scale));
-
-			clipRectangle.X = cast(int)info.origin.x;
-			clipRectangle.Y = cast(int)info.origin.y;
-			clipRectangle.Width = cast(int)info.size.x;
-			clipRectangle.Height = cast(int)info.size.y;
-
-			draw(tex.Width, tex.Height, currentRectangle, clipRectangle, 0f, Vector2(0, 0), color, SpriteFlip.None, zlayer);
-
-			// Bitshift 6 times to get value in pixels
-			x += cast(int)((info.advance.x >> 6) * scale);
-		}
+	/**
+		End string rendering
+	*/
+	void EndString() {
 		Flush();
 
 		// Revert back to the previous shader.
 		this.shader = prevShader;
+	}
+
+	/**
+		Draws a single character, returns the spot for the next character to be drawn
+
+		Notice: You'll have to execute BeginString before rendering a character and EndString after you're done rendering characters
+		Otherwise the wrong shaders will be used, etc.
+	*/
+	Vector2 DrawChar(SpriteFont font, dchar character, Vector2 position, Color color, float scale = 1, float zlayer = 0f) {
+
+		auto info = font[cast(char)character];
+		if (info is null) return Vector2.NaN;
+
+		// Position to draw
+		float posX = cast(int)(position.X + info.bearing.x * scale);
+		float posY = cast(int)(((position.Y-info.size.y) + cast(int)(info.size.y - info.bearing.y)+font.BaseCharSize.Y)*scale);
+		Rectangle currentRectangle = Rectangle(
+			posX, 
+			posY,
+			info.size.x*scale, 
+			info.size.y*scale);
+
+		// Clipping for character
+		Rectangle clipRectangle = Rectangle(info.origin.x, info.origin.y, info.size.x, info.size.y);
+
+		// Send to rendering
+		draw(font.TexSize.X, font.TexSize.Y, currentRectangle, clipRectangle, 0f, Vector2(0, 0), color, SpriteFlip.None, zlayer);
+
+		// Bitshift 6 times to get value in pixels
+		return Vector2(position.X+((info.advance.x >> 6) * scale), position.Y);
+	}
+
+	/**
+		Draws a string
+
+		Allows special formatting rules:
+			[c=(HEX)] to change the color
+			[c=clear] to clear colors
+	*/
+	void DrawString(SpriteFont font, string text, Vector2 position, Color color, float scale = 1f, float zlayer = 0f, Shader textShader = null) {
+
+		import std.conv : to;
+
+		Color startColor = color;
+		Color currentColor = startColor;
+
+		BeginString(font, textShader);
+
+			Vector2 next = position;
+			size_t i = 0;
+			while(i < text.length) {
+
+				if (i < text.length-4) {
+
+					// Check if we're in a formatting rule
+					if (text[i] == '[' && text[i+2] == '=') {
+						switch(text[i+1]) {
+							// Color formatting rule
+							case 'c':
+								// Move the 4 characters of the formatting rule on
+								i += 3;
+								string fmtColorStr;
+
+								while (text[i] != ']') {
+									fmtColorStr ~= text[i++];
+								}
+
+								// Skip the last closing bracket
+								i++;
+								
+								// If the command was to clear color, clear it.
+								if (fmtColorStr == "clear") {
+									currentColor = startColor;
+									continue;
+								}
+
+								currentColor = new Color(fmtColorStr.to!uint(16));
+								break;
+
+							// Wasn't a formatting rule, nevermind
+							default: break;
+						}
+					}
+				}
+
+				// Draw a character
+				dchar c = cast(dchar)text[i];
+				next = DrawChar(font, c, next, currentColor, scale, zlayer);
+
+				// Next character
+				i++;
+			}
+
+		EndString();
+
 	}
 	
 	void Flush() {
