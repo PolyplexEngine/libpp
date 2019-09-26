@@ -529,6 +529,7 @@ public:
 								i += 3;
 								string fmtColorStr;
 
+								// Fetch all the assignment data untill we hit the end
 								while (text[i] != ']') {
 									fmtColorStr ~= text[i++];
 								}
@@ -539,10 +540,19 @@ public:
 								// If the command was to clear color, clear it.
 								if (fmtColorStr == "clear") {
 									currentColor = startColor;
-									continue;
+									break;
 								}
 
-								currentColor = new Color(fmtColorStr.to!uint(16));
+								// Break out if the color data length isn't an even number
+								if (fmtColorStr.length % 2 != 0) break;
+
+								// pushback value to allow shorter hex values
+								size_t pushBack = 8*(3-((fmtColorStr.length/2)-1));
+
+								// The output color value, if no alpha was chosen then automatically insert 255.
+								uint colorValue = ((fmtColorStr.length/2) < 4 ? 0x000000FF : 0x00) | (fmtColorStr.to!uint(16) << pushBack);
+
+								currentColor = new Color(colorValue);
 								break;
 
 							// Wasn't a formatting rule, nevermind
