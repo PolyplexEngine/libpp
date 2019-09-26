@@ -44,7 +44,7 @@ public:
 
 	/// Constructor
 	this(uint packed) {
-		this((packed >> 24) & 0xff, (packed >> 16) & 0xff, (packed >> 8) & 0xff, (packed >> 0) & 0xff);
+		this((packed >> 24) & 0xff, (packed >> 16) & 0xff, (packed >> 8) & 0xff, packed & 0xff);
 	}
 
 	/// Float variant of red color
