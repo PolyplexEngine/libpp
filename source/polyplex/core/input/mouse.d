@@ -57,29 +57,54 @@ public class MouseState {
 
 public class Mouse {
 
+	private static int lastX = 0;
+	private static int lastY = 0;
+
 	/**
 		Returns the current state of the mouse.
 	*/
 	public static MouseState GetState() {
-		int x;
-		int y;
-		int mask = SDL_GetMouseState(&x, &y);
+		
+		// Cursed allocation
+		int* x = new int;
+		int* y = new int;
+		immutable(int) mask = SDL_GetMouseState(x, y);
+
+		// Get last state if we're null
+		if (x is null) x = &lastX;
+		if (y is null) y = &lastY;
+
+		// Update last state to newest state
+		lastX = *x;
+		lastY = *y;
+
 		float scroll = 0;
 		foreach(SDL_Event ev; PPEvents.Events) {
 			if (ev.type == SDL_MOUSEWHEEL) {
 				scroll = ev.wheel.y;
 			}
 		}
-		return new MouseState(x, y, mask, scroll);
+		return new MouseState(*x, *y, mask, scroll);
 	}
 
 	/**
 		Gets the current state of the mouse.
 	*/
 	public static Vector2 Position() {
-		int x;
-		int y;
-		SDL_GetMouseState(&x, &y);
-		return Vector2(x, y);
+		
+		// Cursed allocation
+		int* x = new int;
+		int* y = new int;
+		SDL_GetMouseState(x, y);
+
+		// Get last state if we're null
+		if (x is null) x = &lastX;
+		if (y is null) y = &lastY;
+
+		// Update last state to newest state
+		lastX = *x;
+		lastY = *y;
+
+		return Vector2(*x, *y);
 	}
 }

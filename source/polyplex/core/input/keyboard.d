@@ -167,8 +167,8 @@ public class KeyboardState {
 
 	this(ubyte* key_states, int size) {
 		// SDL wants to override the values, so we manually copy them in to another array.
+		this.key_states = new ubyte[size];
 		foreach(i; 0 .. size) {
-			this.key_states.length++;
 			this.key_states[i] = key_states[i];
 		}
 	}
@@ -211,12 +211,20 @@ public class KeyboardState {
 
 public class Keyboard {
 
+	private static KeyboardState backupState;
+
 	/**
 		Returns the current state of the keyboard.
 	*/
 	public static KeyboardState GetState() {
-		int elements;
-		ubyte* arr = SDL_GetKeyboardState(&elements);
-		return new KeyboardState(arr, elements);
+		int* elements = new int;
+		ubyte* arr = SDL_GetKeyboardState(elements);
+
+		// Make sure we do actually recieve any data.
+		if (elements is null) return backupState;
+
+		// If so, we update our backup state and return the new state
+		backupState = new KeyboardState(arr, *elements);
+		return backupState;
 	}
 }
