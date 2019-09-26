@@ -35,15 +35,17 @@ public:
 
 	/// Measure the size of a string
 	Vector2 MeasureString(string text) {
+		int lines = 1;
 		Vector2 size = Vector2(0, 0);
 		foreach(char c; text) {
+			if (c == '\n') lines++;
 			if (this[c] is null) continue;
 			
 			// Bitshift by 6 to make it be in pixels
 			size.X += (this[c].advance.x >> 6);
-			if (this[c].bearing.y > size.Y) size.Y = this[c].bearing.y;
 		}
-		return size;
+		float height = lines*(baseCharSize.Y+(baseCharSize.Y/2));
+		return Vector2(size.X, height-(baseCharSize.Y/2));
 	}
 
 	/// Measure the size of an individual character
