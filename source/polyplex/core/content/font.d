@@ -10,21 +10,30 @@ private:
 	GlTexture2DImpl!(GL_RED, 1) texture;
 	TypeFace typeface;
 
+	Vector2i baseCharSize;
+
 public:
+	/// Constructor
 	this(TypeFace typeface) {
 		this.typeface = typeface;
 		PSize size = typeface.getAtlasSize();
 		this.texture = new GlTexture2DImpl!(GL_RED, 1)(new TextureImg(cast(int)size.width, cast(int)size.height, typeface.getTexture()));
+
+		// Gets the base character height of the character A
+		baseCharSize = cast(Vector2i)MeasureCharacter('A');
 	}
 
+	/// Returns the texture for this sprite font
 	Texture2D getTexture() {
 		return cast(Texture2D)texture;
 	}
 	
+	/// Indexer for glyph info
 	GlyphInfo* opIndex(char c) {
 		return typeface[c];
 	}
 
+	/// Measure the size of a string
 	Vector2 MeasureString(string text) {
 		Vector2 size = Vector2(0, 0);
 		foreach(char c; text) {
@@ -35,5 +44,24 @@ public:
 			if (this[c].bearing.y > size.Y) size.Y = this[c].bearing.y;
 		}
 		return size;
+	}
+
+	/// Measure the size of an individual character
+	Vector2 MeasureCharacter(char c) {
+		return Vector2((this[c].advance.x >> 6), this[c].bearing.y);
+	}
+
+	/**
+		Returns the base size for the character 'A'
+	*/
+	@property Vector2i BaseCharSize() {
+		return baseCharSize;
+	}
+
+	/**
+		Gets the size of the sprite font texture atlas
+	*/
+	@property Vector2i TexSize() {
+		return Vector2i(texture.Width, texture.Height);
 	}
 }
