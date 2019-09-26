@@ -240,7 +240,7 @@ private:
 
 	}
 	
-	void draw(int width, int height, Rectangle pos, Rectangle cutout, float rotation, Vector2 origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f) {
+	void draw(T, Y)(int width, int height, T pos, Y cutout, float rotation, Vector2 origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f) if (IsRectangleT!T && IsRectangleT!Y) {
 		float x1, y1;
 		float x2, y2;
 		float x3, y3;
@@ -426,21 +426,21 @@ public:
 		Begin(sortMode, blendState, sampleState, rasterState, shader, camera);
 	}
 
-	void Draw(Texture2D texture, Rectangle pos, Rectangle cutout, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f) {
+	void Draw(T, Y)(Texture2D texture, T pos, Y cutout, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f) if (IsRectangleT!T && IsRectangleT!Y) {
 		Draw(texture, pos, cutout, 0f, Vector2(-1, -1), color, flip, zlayer);
 	}
 
-	void Draw(Texture2D texture, Rectangle pos, Rectangle cutout, float rotation, Vector2 origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f) {
+	void Draw(T, Y)(Texture2D texture, T pos, Y cutout, float rotation, Vector2 origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f) if (IsRectangleT!T && IsRectangleT!Y) {
 		isRenderbuffer = false;
 		checkFlush([(cast(GlTexture2D)texture).GLTexture]);
 		draw(texture.Width, texture.Height, pos, cutout, rotation, origin, color, flip, zlayer);
 	}
 
-	void Draw(polyplex.core.render.Framebuffer buffer, Rectangle pos, Rectangle cutout, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f) {
+	void Draw(T, Y)(polyplex.core.render.Framebuffer buffer, T pos, Y cutout, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f) if (IsRectangleT!T && IsRectangleT!Y) {
 		Draw(buffer, pos, cutout, 0f, Vector2(-1, -1), color, flip, zlayer);
 	}
 
-	void Draw(polyplex.core.render.Framebuffer buffer, Rectangle pos, Rectangle cutout, float rotation, Vector2 origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f) {
+	void Draw(T, Y)(polyplex.core.render.Framebuffer buffer, T pos, Y cutout, float rotation, Vector2 origin, Color color, SpriteFlip flip = SpriteFlip.None, float zlayer = 0f) if (IsRectangleT!T && IsRectangleT!Y) {
 		isRenderbuffer = true;
 		checkFlush(buffer.OutTextures);
 		draw(buffer.Width, buffer.Height, pos, cutout, rotation, origin, color, flip, zlayer);
