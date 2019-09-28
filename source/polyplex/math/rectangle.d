@@ -92,7 +92,6 @@ public:
 		Gets wether this rectangle intersects another
 	*/
 	bool Intersects(T)(T other) if (IsRectangleT!T) {
-		if (other is null) return false;
 		bool v = (other.Left >= this.Right || other.Right <= this.Left || other.Top >= this.Bottom || other.Bottom <= this.Top);
 		return !v;
 	}
