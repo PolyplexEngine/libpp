@@ -57,9 +57,9 @@ private:
 	bool isRenderbuffer;
 
 	// Buffer
-	VertexArray 			elementVertexArray;
-	Buffer 					elementBuffer;
-	SprBatchData[6][2048] 	elementArray;
+	VertexArray 				elementVertexArray;
+	Buffer 						elementBuffer;
+	SprBatchData[6][16_384] 	elementArray;
 
 	// OpenGL state info.
 	SpriteSorting sortMode;
