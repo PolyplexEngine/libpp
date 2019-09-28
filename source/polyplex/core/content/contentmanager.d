@@ -127,13 +127,13 @@ public class ContentManager {
 		Load Raw file
 	*/
 	public T Load(T)(string name) if (is(T : string)) {
-		if (name[0] == '!') loadLocal!T(name);
+		if (name[0] == '!') return loadLocal!T(name[1..$]);
 		PPC ppc = PPC(this.ContentRoot~name~".ppc");
 		return cast(T)ppc.data.toArray();
 	}
 
 	public T loadLocal(T)(string name) if (is(T : string)) {
 		import fio = std.file;
-		return fio.read(T, string)(name);
+		return cast(T)fio.read(name);
 	}
 }
