@@ -1,4 +1,4 @@
-module polyplex.utils.random;
+module polyplex.math.random;
 import rnd = std.random;
 
 public class Random {
