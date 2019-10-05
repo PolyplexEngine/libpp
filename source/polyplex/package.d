@@ -52,8 +52,8 @@ private string get_system_lib(string libname, bool s = true) {
 	}
 
 	version(OSX) {
-		lstr = "libs/"~get_arch()~"/lib"~libname~".dylib";
-		plt = "darwin/osx";
+		// lstr = "libs/"~get_arch()~"/lib"~libname~".dylib";
+		// plt = "darwin/osx";
 	}
 	Logger.Info("Binding library {0}: [{1} on {2}] from {3}", libname, plt, get_arch(), lstr);
 	return lstr;
@@ -124,10 +124,15 @@ public void InitLibraries() {
 	//gl_init = true;
 }
 
+version(OSX) {
+	static assert(0, "macOS is NOT supported with Polyplex; and won't be for the forseeable future, sorry.");
+}
+
 shared static this() {
 	bool success = loadOAL();
 	Logger.Info("Bound OpenAL {0}!", success ? "successfully" : "unsuccessfully");
 	
+
 	import bindbc.sdl;
 	SDLSupport support = loadSDL();
 	if (support == SDLSupport.noLibrary) Logger.Fatal("SDL2 not found!");
