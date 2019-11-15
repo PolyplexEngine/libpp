@@ -373,9 +373,7 @@ public final:
 		GC.collect();
 
 		Logger.Success("Cleanup completed...");
-
 		Logger.Success("~~~ GAME ENDED ~~~");
-		this.window.Close();
 	}
 }
 
