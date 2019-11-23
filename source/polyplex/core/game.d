@@ -1,14 +1,16 @@
 module polyplex.core.game;
 
+import polyplex.utils.logging;
+
 import polyplex.math;
-static import win = polyplex.core.window;
 import polyplex.core.windows;
 import polyplex.core.render;
 import polyplex.core.input;
 import polyplex.core.events;
 import polyplex.core.content;
 import polyplex.core.audio;
-import polyplex.utils.logging;
+import polyplex.core.time;
+static import win = polyplex.core.window;
 
 import polyplex.utils.strutils;
 import polyplex : InitLibraries, UnInitLibraries;
@@ -24,94 +26,17 @@ import std.conv;
 
 import core.memory;
 
-class GameTimeSpan {
-	private double ticks;
+/**
+	The base system to manage a game
+	This class handles the following:
+	 * Spawning a GameWindow
+	 * Starting an event loop for input
+	 * Creating an audio subsystem
+	 * Fixed timestep updates
+	 * Content management pipeline creation
 
-	public @property double BaseValue() { return ticks; }
-	public @property void BaseValue(double ticks) { this.ticks = ticks; }
-
-	public @property ulong LMilliseconds() { return cast(ulong)(ticks*1000); }
-	public @property ulong LSeconds() { return cast(ulong)ticks; }
-	public @property ulong LMinutes() { return LSeconds/60; }
-	public @property ulong LHours() { return LMinutes/60; }
-
-	public @property double Milliseconds() { return ticks*1000; }
-	public @property double Seconds() { return ticks; }
-	public @property double Minutes() { return Seconds/60; }
-	public @property double Hours() { return Minutes/60; }
-
-	public static GameTimeSpan FromSeconds(ulong seconds) {
-		return new GameTimeSpan(seconds*1000);
-	}
-
-	public static GameTimeSpan FromMinutes(ulong minutes) {
-		return FromSeconds(minutes*60);
-	}
-
-	public static GameTimeSpan FromHours(ulong hours) {
-		return FromMinutes(hours*60);
-	}
-
-	public GameTimeSpan opBinary(string op:"+")(GameTimeSpan other) {
-		return new GameTimeSpan(this.ticks+other.ticks);
-	}
-
-	public GameTimeSpan opBinary(string op:"-")(GameTimeSpan other) {
-		return new GameTimeSpan(this.ticks-other.ticks);
-	}
-
-	public GameTimeSpan opBinary(string op:"/")(GameTimeSpan other) {
-		return new GameTimeSpan(this.ticks/other.ticks);
-	}
-
-	public GameTimeSpan opBinary(string op:"*")(GameTimeSpan other) {
-		return new GameTimeSpan(this.ticks*other.ticks);
-	}
-
-	public float PercentageOf(GameTimeSpan other) {
-		return cast(float)this.ticks/cast(float)other.ticks;
-	}
-
-	public string ToString() {
-		return LHours.text ~ ":" ~ (LMinutes%60).text ~ ":" ~ (LSeconds%60).text ~ "." ~ (LMilliseconds%60).text;
-	}
-
-	public string FormatTime(string formatstring) {
-		return Format(formatstring, LHours, LMinutes%60, LSeconds%60, LMilliseconds%60);
-	}
-
-	this(ulong ticks) {
-		this.ticks = ticks;
-	}
-}
-
-class GameTime {
-public:
-	this(GameTimeSpan total, GameTimeSpan delta) {
-		TotalTime = total;
-		DeltaTime = delta;
-	}
-
-	/**
-		The total time the game has been running
-	*/
-	GameTimeSpan TotalTime;
-
-	/**
-		The time between this and the last frame
-	*/
-	GameTimeSpan DeltaTime;
-
-private:
-	void updateDelta(double delta) {
-		DeltaTime.BaseValue = delta;
-	}
-	
-	void updateTotal(double total) {
-		TotalTime.BaseValue = total;
-	}
-}
-
+	Basicly, extend this class to create a game.
+*/
 abstract class Game {
 private:
 	GameEventSystem events;
@@ -141,37 +66,6 @@ package:
 		this.window = newWindow;
 	}
 
-
-public abstract {
-	/**
-		Initialize core game variables and the like.
-		
-		Content can be loaded in LoadContent.
-	*/
-	void Init();
-	/**
-		Load game assets from disk, etc.
-	*/
-	void LoadContent();
-
-	/**
-		Unload game assets, etc.
-
-		Use D's `destroy(<*>);` function to unload content
-	*/
-	void UnloadContent();
-
-	/**
-		Run an update iteration
-	*/
-	void Update(GameTime gameTime);
-
-	/**
-		Run a draw iteration
-	*/
-	void Draw(GameTime gameTime);
-}
-
 public:
 
 	/**
@@ -179,10 +73,42 @@ public:
 	*/
 	void FixedUpdate(double fixedDelta) { }
 
-public final:
+	// Abstract declarations
+	abstract {
+		/**
+			Initialize core game variables and the like.
+			
+			Content can be loaded in LoadContent.
+		*/
+		void Init();
+		/**
+			Load game assets from disk, etc.
+		*/
+		void LoadContent();
+
+		/**
+			Unload game assets, etc.
+
+			Use D's `destroy(<*>);` function to unload content
+		*/
+		void UnloadContent();
+
+		/**
+			Run an update iteration
+		*/
+		void Update(GameTime gameTime);
+
+		/**
+			Run a draw iteration
+		*/
+		void Draw(GameTime gameTime);
+	}
+
+final:
 	/// Wether the engine should count FPS and frametimes.
 	bool CountFPS = false;
 
+	/// Event raised when the window changes its size
 	Event OnWindowSizeChanged = new Event();
 
 	/// How much time since game started
