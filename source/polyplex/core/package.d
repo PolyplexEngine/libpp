@@ -9,6 +9,7 @@ public import polyplex.core.content;
 public import polyplex.core.color;
 public import polyplex.core.windows;
 public import polyplex.core.audio;
+public import polyplex.core.time;
 
 import polyplex;
 import polyplex.utils;
