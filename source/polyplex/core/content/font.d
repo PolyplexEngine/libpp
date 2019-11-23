@@ -29,7 +29,7 @@ public:
 	}
 	
 	/// Indexer for glyph info
-	GlyphInfo* opIndex(char c) {
+	GlyphInfo* opIndex(dchar c) {
 		return typeface[c];
 	}
 
@@ -37,7 +37,7 @@ public:
 	Vector2 MeasureString(string text) {
 		int lines = 1;
 		Vector2 size = Vector2(0, 0);
-		foreach(char c; text) {
+		foreach(dchar c; text) {
 			if (c == '\n') lines++;
 			if (this[c] is null) continue;
 			
@@ -49,7 +49,7 @@ public:
 	}
 
 	/// Measure the size of an individual character
-	Vector2 MeasureCharacter(char c) {
+	Vector2 MeasureCharacter(dchar c) {
 		return Vector2((this[c].advance.x >> 6), this[c].bearing.y);
 	}
 

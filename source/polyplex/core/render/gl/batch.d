@@ -14,6 +14,7 @@ import bindbc.opengl.gl;
 import polyplex.utils;
 import polyplex.math;
 import polyplex.utils.mathutils;
+import std.utf;
 
 import std.stdio;
 
@@ -476,7 +477,7 @@ public:
 	*/
 	Vector2 DrawChar(SpriteFont font, dchar character, Vector2 position, Color color, float scale = 1, float zlayer = 0f) {
 
-		auto info = font[cast(char)character];
+		auto info = font[character];
 		if (info is null) return Vector2.NaN;
 
 		// Position to draw
@@ -505,8 +506,9 @@ public:
 			[c=(HEX)] to change the color
 			[c=clear] to clear colors
 	*/
-	void DrawString(SpriteFont font, string text, Vector2 position, Color color, float scale = 1f, float zlayer = 0f, Shader textShader = null) {
+	void DrawString(SpriteFont font, string utf8text, Vector2 position, Color color, float scale = 1f, float zlayer = 0f, Shader textShader = null) {
 
+		dstring text = toUTF32(utf8text);
 		import std.conv : to;
 
 		Color startColor = color;
