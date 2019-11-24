@@ -28,42 +28,42 @@ public:
 		Gets the amount of milliseconds as a long
 	*/
 	@property ulong LMilliseconds() {
-		return cast(ulong)(ticks * 1000);
+		return cast(ulong)Milliseconds;
 	}
 
 	/**
 		Gets the amount of seconds as a long
 	*/
 	@property ulong LSeconds() {
-		return cast(ulong) ticks;
+		return cast(ulong)Seconds;
 	}
 
 	/**
 		Gets the amount of minutes as a long
 	*/
 	@property ulong LMinutes() {
-		return LSeconds / 60;
+		return cast(ulong)Minutes;
 	}
 
 	/**
 		Gets the amount of hours as a long
 	*/
 	@property ulong LHours() {
-		return LMinutes / 60;
+		return cast(ulong)Hours;
 	}
 
 	/**
 		Gets the amount of milliseconds as a double
 	*/
 	@property double Milliseconds() {
-		return ticks * 1000;
+		return ticks;
 	}
 
 	/**
 		Gets the amount of milliseconds as a double
 	*/
 	@property double Seconds() {
-		return ticks;
+		return ticks / 1000;
 	}
 
 	/**

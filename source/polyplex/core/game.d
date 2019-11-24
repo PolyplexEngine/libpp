@@ -200,7 +200,7 @@ final:
 	bool RunOne() {
 		//FPS begin counting.
 		frameTimeStart = SDL_GetPerformanceCounter();
-		times.updateTotal(cast(double)(SDL_GetTicks()/1000));
+		times.updateTotal(cast(double)SDL_GetTicks());
 
 		//Update events.
 		if (events !is null) {
