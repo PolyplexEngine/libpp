@@ -1,7 +1,7 @@
 [![Polyplex Logo][logo]](https://github.com/PolyplexEngine/branding)
 
 # Polyplex Main Library (libpp)
-<a href="https://www.patreon.com/bePatron?u=10156994" data-patreon-widget-type="become-patron-button"><img class="s5qsvfm-0 fIpNGV" src="https://c5.patreon.com/external/logo/become_a_patron_button.png"></a></img> <a href='https://ko-fi.com/O4O59UGN' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://az743702.vo.msecnd.net/cdn/kofi2.png?v=0' border='0' alt='Buy Clipsey a Coffee at ko-fi.com' /></a> [Mastodon](https://mastodon.social/@Polyplex) | [Twitter](https://twitter.com/polyplexengine)
+[Mastodon](https://mastodon.social/@Polyplex) | [Twitter](https://twitter.com/polyplexengine)
 
 [Join the Discord Server](https://discord.gg/Dus5ArV)
 
@@ -13,6 +13,8 @@ _OpenGL ES 2 and Vulkan will be supported in the future._
 libpp is the base rendering, input handling, content handling, etc. library for the WIP Polyplex engine.
 
 ### Top Tier Patrons
+Previously a patreon was up for this project, that's no longer the case.
+Here's the people who contributed the highest tier at the time
 * The Linux Gamer Community
 * WeimTime
 
@@ -77,7 +79,7 @@ class MyGame : Game
 
 	public override void Update(GameTimes game_time)
 	{
-		world.Update(game_time);
+		
 	}
 
 	public override void Draw(GameTimes game_time)
