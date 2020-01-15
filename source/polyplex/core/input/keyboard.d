@@ -155,6 +155,8 @@ enum Keys {
 	Down = SDL_SCANCODE_DOWN,
 	Left = SDL_SCANCODE_LEFT,
 	Right = SDL_SCANCODE_RIGHT,
+
+	ScancodeCount = SDL_NUM_SCANCODES
 }
 
 enum KeyState {
@@ -164,6 +166,10 @@ enum KeyState {
 
 public class KeyboardState {
 	private ubyte[] key_states;
+
+	this() {
+		this.key_states = new ubyte[Keys.ScancodeCount];
+	}
 
 	this(ubyte* key_states, int size) {
 		// SDL wants to override the values, so we manually copy them in to another array.
