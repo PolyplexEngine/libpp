@@ -36,13 +36,19 @@ public:
 	/// Measure the size of a string
 	Vector2 MeasureString(string text) {
 		int lines = 1;
+		float currentLineLength = 0;
 		Vector2 size = Vector2(0, 0);
 		foreach(dchar c; text) {
-			if (c == '\n') lines++;
+			if (c == '\n') {
+				lines++;
+				currentLineLength = 0;
+			}
 			if (this[c] is null) continue;
 			
 			// Bitshift by 6 to make it be in pixels
-			size.X += (this[c].advance.x >> 6);
+			currentLineLength += (this[c].advance.x >> 6);
+
+			if (currentLineLength > size.X) size.X = currentLineLength;
 		}
 		float height = lines*(baseCharSize.Y+(baseCharSize.Y/2));
 		return Vector2(size.X, height-(baseCharSize.Y/2));
