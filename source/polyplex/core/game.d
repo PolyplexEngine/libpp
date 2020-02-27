@@ -16,7 +16,7 @@ import polyplex.utils.strutils;
 import polyplex : InitLibraries, UnInitLibraries;
 
 import bindbc.sdl;
-import sev.event;
+import events;
 
 import std.math;
 import std.random;
