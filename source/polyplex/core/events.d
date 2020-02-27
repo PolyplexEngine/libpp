@@ -2,7 +2,7 @@ module polyplex.core.events;
 import polyplex.core.input;
 import bindbc.sdl;
 import std.stdio;
-import sev.event;
+import events;
 
 public class GameResizeEventArgs : EventArgs {
 	public void* SDLEvent;
@@ -24,8 +24,8 @@ public class PPEvents {
 public class GameEventSystem {
 	private bool lastHandled;
 
-	public Event OnWindowSizeChanged = new Event();
-	public Event OnExitRequested = new Event();
+	public Event!GameResizeEventArgs OnWindowSizeChanged = new Event!GameResizeEventArgs;
+	public BasicEvent OnExitRequested = new BasicEvent;
 
 	this() {
 	}

@@ -2,7 +2,7 @@ module polyplex.core.window;
 import polyplex.core.render;
 import polyplex.math;
 import polyplex;
-import sev.event;
+import events;
 
 public class BoundsEventArgs : EventArgs {
 public :
@@ -22,11 +22,11 @@ protected :
 	}
 public :
 
-	Event windowResizeRequestEvent;
-	Event windowPositionRequestEvent;
+	Event!BoundsEventArgs windowResizeRequestEvent;
+	Event!BoundsEventArgs windowPositionRequestEvent;
 	this(Window owner, Rectanglei winRect) {
-		windowResizeRequestEvent = new Event();
-		windowPositionRequestEvent = new Event();
+		windowResizeRequestEvent = new Event!BoundsEventArgs;
+		windowPositionRequestEvent = new Event!BoundsEventArgs;
 		this.owner = owner;
 		this.winRect = winRect;
 	}
@@ -57,7 +57,7 @@ public :
 		BoundsEventArgs args = new BoundsEventArgs();
 		args.Width = width;
 		args.Height = height;
-		windowResizeRequestEvent(cast(void*)this, cast(EventArgs)args);
+		windowResizeRequestEvent(cast(void*)this, args);
 	}
 
 	void MoveWindow(int x, int y) {
@@ -66,7 +66,7 @@ public :
 		BoundsEventArgs args = new BoundsEventArgs();
 		args.X = x;
 		args.Y = y;
-		windowPositionRequestEvent(cast(void*)this, cast(EventArgs)args);
+		windowPositionRequestEvent(cast(void*)this, args);
 	}
 }
 

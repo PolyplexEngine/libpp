@@ -109,7 +109,7 @@ final:
 	bool CountFPS = false;
 
 	/// Event raised when the window changes its size
-	Event OnWindowSizeChanged = new Event();
+	Event!GameResizeEventArgs OnWindowSizeChanged = new Event!GameResizeEventArgs;
 
 	/// How much time since game started
 	@property GameTimeSpan TotalTime() { return times.TotalTime; }
@@ -260,7 +260,7 @@ final:
 				window.Close();
 			};
 
-			events.OnWindowSizeChanged ~= (void* sender, EventArgs data) {
+			events.OnWindowSizeChanged ~= (void* sender, GameResizeEventArgs data) {
 				window.UpdateState();
 				Renderer.AdjustViewport();
 				OnWindowSizeChanged(sender, data);
