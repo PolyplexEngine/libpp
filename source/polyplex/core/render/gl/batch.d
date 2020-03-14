@@ -228,7 +228,7 @@ private:
 
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		shader.SetUniform(shader.GetUniform(UniformProjectionName), MultMatrices);
+		shader.SetUniform(shader.GetUniform(UniformProjectionName), viewProjectionMatrix);
 
 		GL.DrawArrays(GL.Triangles, 0, queued*6);
 
@@ -350,6 +350,16 @@ private:
 		queued++;
 	}
 
+	/// Get matrix.
+	Matrix4x4 defaultMultMatrices(Matrix4x4 mvpMatrix) {
+		switch(projectionState) {
+			case ProjectionState.Perspective:
+				return defaultCamera.ProjectPerspective(Renderer.Window.ClientBounds.Width, 90f, Renderer.Window.ClientBounds.Height) * mvpMatrix;
+			default:
+				return defaultCamera.ProjectOrthographic(Renderer.Window.ClientBounds.Width, Renderer.Window.ClientBounds.Height) * mvpMatrix;
+		}
+	}
+
 public:
 
 	this() {
@@ -370,16 +380,6 @@ public:
 		defaultShaderFont = new Shader(new ShaderCode(DefaultVertFont, DefaultFragFont));
 		defaultCamera = new Camera2D(Vector2(0, 0));
 		defaultCamera.Update();
-	}
-
-	/// Get matrix.
-	Matrix4x4 MultMatrices() {
-		switch(projectionState) {
-			case ProjectionState.Perspective:
-				return defaultCamera.ProjectPerspective(Renderer.Window.ClientBounds.Width, 90f, Renderer.Window.ClientBounds.Height) * viewProjectionMatrix;
-			default:
-				return defaultCamera.ProjectOrthographic(Renderer.Window.ClientBounds.Width, Renderer.Window.ClientBounds.Height) * viewProjectionMatrix;
-		}
 	}
 
 	/**
@@ -419,7 +419,7 @@ public:
 	void Begin(SpriteSorting sortMode, Blending blendState, Sampling sampleState, RasterizerState rasterState, Shader shader, Camera camera) {
 		Camera cam = camera !is null ? camera : defaultCamera;
 		cam.Update();
-		Begin(sortMode, blendState, sampleState, rasterState, shader, cam.Matrix);
+		Begin(sortMode, blendState, sampleState, rasterState, shader, defaultMultMatrices(cam.Matrix));
 	}
 
 	void Begin(SpriteSorting sortMode, Blending blendState, Sampling sampleState, RasterizerState rasterState, ProjectionState pstate, Shader shader, Camera camera) {
