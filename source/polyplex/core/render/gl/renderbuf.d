@@ -2,6 +2,7 @@ module polyplex.core.render.gl.renderbuf;
 import core = polyplex.core.render;
 import polyplex.core.render.gl.gloo;
 import polyplex.core.render.gl.gloo : RBO = Renderbuffer, FBO = Framebuffer;
+import core.memory : GC;
 
 enum Attachment {
     Color0=GL_COLOR_ATTACHMENT0,
@@ -107,6 +108,8 @@ public:
         destroy(fbo);
         destroy(renderTextures);
         destroy(drawBufs);
+        GC.collect();
+        
 
         this.width = width;
         this.height = height;
