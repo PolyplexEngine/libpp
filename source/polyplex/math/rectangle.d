@@ -100,7 +100,7 @@ public:
 		Gets wether a 2D vector is intersecting this rectangle
 	*/
 	bool Intersects(U)(U other) if (IsVector2T!U) {
-		bool v = (other.X >= this.Right || other.X <= this.Left || other.Y >= this.Bottom || other.Y <= this.Top);
+		bool v = (other.X >= this.Right || other.X < this.Left || other.Y >= this.Bottom || other.Y < this.Top);
 		return !v;
 	}
 
