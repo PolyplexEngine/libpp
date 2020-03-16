@@ -105,9 +105,6 @@ public:
 	}
 
 final:
-	/// Wether the engine should count FPS and frametimes.
-	bool CountFPS = false;
-
 	/// Event raised when the window changes its size
 	Event!GameResizeEventArgs OnWindowSizeChanged = new Event!GameResizeEventArgs;
 
