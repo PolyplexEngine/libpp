@@ -507,6 +507,7 @@ public:
 			[c=clear] to clear colors
 	*/
 	void DrawString(SpriteFont font, dstring text, Vector2 position, Color color, float scale = 1f, float zlayer = 0f, Shader textShader = null) {
+		import std.conv : to;
 		Color startColor = color;
 		Color currentColor = startColor;
 
@@ -588,7 +589,6 @@ public:
 	*/
 	void DrawString(SpriteFont font, string utf8text, Vector2 position, Color color, float scale = 1f, float zlayer = 0f, Shader textShader = null) {
 		dstring text = toUTF32(utf8text);
-		import std.conv : to;
 		DrawString(font, text, position, color, scale, zlayer, shader);
 	}
 
@@ -601,7 +601,6 @@ public:
 	*/
 	void DrawString(SpriteFont font, wstring utf16text, Vector2 position, Color color, float scale = 1f, float zlayer = 0f, Shader textShader = null) {
 		dstring text = toUTF32(utf16text);
-		import std.conv : to;
 		DrawString(font, text, position, color, scale, zlayer, shader);
 	}
 	
