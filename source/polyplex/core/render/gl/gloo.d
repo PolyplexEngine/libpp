@@ -230,6 +230,10 @@ static:
         glBlendFunc(logicOpA, logicOpB);
     }
 
+    void BlendFuncSeperate(GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha) {
+        glBlendFuncSeparate(srcRGB, dstRGB, srcAlpha, dstAlpha);
+    }
+
     /*
         Culling
     */
