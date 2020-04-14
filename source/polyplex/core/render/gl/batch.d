@@ -506,11 +506,7 @@ public:
 			[c=(HEX)] to change the color
 			[c=clear] to clear colors
 	*/
-	void DrawString(SpriteFont font, string utf8text, Vector2 position, Color color, float scale = 1f, float zlayer = 0f, Shader textShader = null) {
-
-		dstring text = toUTF32(utf8text);
-		import std.conv : to;
-
+	void DrawString(SpriteFont font, dstring text, Vector2 position, Color color, float scale = 1f, float zlayer = 0f, Shader textShader = null) {
 		Color startColor = color;
 		Color currentColor = startColor;
 
@@ -581,7 +577,32 @@ public:
 			}
 
 		EndString();
+	}
 
+	/**
+		Draws a string
+
+		Allows special formatting rules:
+			[c=(HEX)] to change the color
+			[c=clear] to clear colors
+	*/
+	void DrawString(SpriteFont font, string utf8text, Vector2 position, Color color, float scale = 1f, float zlayer = 0f, Shader textShader = null) {
+		dstring text = toUTF32(utf8text);
+		import std.conv : to;
+		DrawString(font, text, position, color, scale, zlayer, shader);
+	}
+
+	/**
+		Draws a string
+
+		Allows special formatting rules:
+			[c=(HEX)] to change the color
+			[c=clear] to clear colors
+	*/
+	void DrawString(SpriteFont font, wstring utf16text, Vector2 position, Color color, float scale = 1f, float zlayer = 0f, Shader textShader = null) {
+		dstring text = toUTF32(utf16text);
+		import std.conv : to;
+		DrawString(font, text, position, color, scale, zlayer, shader);
 	}
 	
 	void Flush() {
